@@ -1,0 +1,30 @@
+::ng-deep .custom-slider .ngx-slider .ngx-slider-bar {
+
+  font-size: 1px;
+  height: 2px;
+}
+
+::ng-deep .custom-slider .ngx-slider .ngx-slider-pointer {
+  width: 8px;
+  height: 8px;
+  top: auto;
+  color: #fff;
+  font-size: 1px;
+  /* to remove the default positioning */
+  bottom: 0;
+  /* background-color: #333;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px; */
+}
+::ng-deep .custom-slider .ngx-slider .ngx-slider-pointer:after {
+  display: none;
+}
+::ng-deep .custom-slider .ngx-slider .ngx-slider-bubble {
+  bottom: 14px;
+  font-size: 10px;
+}
+::ng-deep .custom-slider .ngx-slider .ngx-slider-limit {
+  font-weight: bold;
+  font-size: 10px;
+
+}

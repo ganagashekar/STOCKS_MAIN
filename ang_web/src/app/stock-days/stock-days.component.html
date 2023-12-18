@@ -1,0 +1,45 @@
+
+  <kendo-grid
+  [kendoGridBinding]="(gridData)"
+  [sortable]="true" [rowClass]="rowCallback"   >
+  <kendo-grid-column  [width]="500"   title="Stock">
+    <ng-template kendoGridCellTemplate let-dataItem>
+
+      <td style="text-align: left;min-width: 250px;"> <span  style="justify-content: space-between;text-align: left; font-size: 12px;">
+        <a target="_blank" href="https://www.msn.com/en-in/money/stockdetails/fi-{{dataItem.msn_secid}}?duration=5D">
+          {{dataItem.stock_name}}
+        </a>
+       </span></td>
+    </ng-template>
+    <mat-progress-bar
+    class="example-margin"
+    [color]="color"
+    [mode]="mode"
+    [value]="10"
+    [bufferValue]="8">
+</mat-progress-bar>
+<hr>
+</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="open">open</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="close">close</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="change">change</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="days">days</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="volumeC">volumeC</kendo-grid-column>
+
+  <kendo-grid-column [width]="100" field="bearishCount">BearishCount</kendo-grid-column>
+
+  <kendo-grid-column [width]="100" field="bullishCount">BullishCount</kendo-grid-column>
+
+  <kendo-grid-column [width]="150" field="estimate_recommendation">estimate_recommendation</kendo-grid-column>
+</kendo-grid>
+
+
+
+
+
+

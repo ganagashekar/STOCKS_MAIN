@@ -1,0 +1,75 @@
+
+
+
+
+
+
+
+<div class="card-container" style="width: 100%;float: left;">
+
+  <div>
+
+    <div class="example-container">
+      <mat-form-field>
+        <mat-select  placeholder="CKT" (selectionChange)="selectedCKTChange($event.value)"[formControl]="CKTName"  [(value)]="selectedCKTName">
+
+
+
+          <mat-option *ngFor="let topping of CKTNameList" [value]="topping.text">{{topping.text}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field floatLabel="always">
+        <mat-label>Amount</mat-label>
+        <mat-select (selectionChange)="selected($event.value)">
+          <mat-option  *ngFor="let food of foods" [value]="food.value">
+            {{food.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <input  (dateChange)="onDateChange($event)" matInput [matDatepicker]="picker" placeholder="Choose a date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+
+
+    </div>
+
+
+  </div>
+  <kendo-listview [data]="gridData">
+      <ng-template  kendoListViewItemTemplate let-dataItem="dataItem">
+        <mat-progress-bar
+                    class="example-margin"
+                    [color]="color"
+                    [mode]="mode"
+                    [value]="dataItem.bPrice"
+                    [bufferValue]="dataItem.sPrice">
+                </mat-progress-bar>
+
+
+                <table>
+                  <tr>
+                    <td style="text-align: left;min-width: 250px;"> <span  style="justify-content: space-between;text-align: left; font-size: 12px;"> 
+                      <a target="_blank" href="https://www.msn.com/en-in/money/stockdetails/fi-{{dataItem.msn_secid}}?duration=5D">
+                        {{dataItem.stock_name}}
+                      </a>
+                     </span></td>
+                    &nbsp; <td><span style="float: left;font-size: 12px;"> L : {{ dataItem.low }} |  H :  {{ dataItem.high }}  | Avg : {{ dataItem.avgPrice }} </span></td>
+                  &nbsp;<td><span style="float: right;font-size: 12px;">  {{ dataItem.volumeC }} </span></td>
+            &nbsp;
+                  |  &nbsp;&nbsp;<td>Open  : {{dataItem.open }}  - Last : {{dataItem.last}}</td>
+                  <!-- &nbsp; | &nbsp;&nbsp;<td>Buy Price   Min : {{dataItem.min_bPrice}}  - Max : {{dataItem.max_bPrice}}</td>
+                  &nbsp;| &nbsp;&nbsp;<td>Sell Price   Min : {{dataItem.min_sPrice}}  -  Max : {{dataItem.max_sPrice}}</td> -->
+                  </tr>
+                </table>
+
+
+      </ng-template>
+      <hr>
+  </kendo-listview>
+
+</div>
+
+

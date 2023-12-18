@@ -1,0 +1,114 @@
+<!-- [resizable]="true" [sortable]="true" [sort]="sort" -->
+
+<button (click)="getonlyfavorites()" mat-stroked-button color="accent">Favorites</button>
+
+
+<kendo-grid  [pageable]="true"
+[pageSize]="500" [sortable]="true" [kendoGridBinding]="(gridDataEquties | async)!"
+>
+    <kendo-grid-column [width]="400" title="Stock">
+        <ng-template kendoGridCellTemplate let-dataItem>
+
+          <a  matBadge="{{dataItem.noofrec}}" matBadgeSize="small" matBadgePosition="above" matBadgeColor="accent" target="_blank" href="{{dataItem.href }}" >
+
+
+            {{ dataItem.stockName  }}</a>
+
+
+
+            <mat-chip-list>
+
+
+              <div style="color: rgb(12, 11, 11); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+                {{dataItem.recmdtn}}
+              </div>
+              <div style="color: rgb(13, 12, 12); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+               Beta : {{dataItem.beta | number : '1.2-2'}}
+              </div>
+              <div style="color: rgb(7, 7, 7); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+               eps :  {{dataItem.eps | currency :'INR'}}
+              </div>
+              <div style="color: rgb(10, 10, 10); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+                Target : {{dataItem.target | currency :'INR'}}
+              </div>
+              <div style="color: rgb(10, 10, 10); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+                Vol : {{dataItem.volumeC }}
+              </div>
+              <div style="color: rgb(9, 9, 9); border-radius: 4px; font-size: 12px;margin: 1px;" [ngStyle]="{'background-color': carDateCalculator(dataItem.recmdtn) ? '#affbb5' : '#ffe8e7'}">
+                <a target="_blank" href="{{dataItem.stockdetailshref }}" >
+
+
+                  NS </a>
+              </div>
+
+             <app-favoriteButton (selectedChange)="addormidifyfavorite($event)" [msnid]="dataItem.secId" [selected]="dataItem.isfavorite" ></app-favoriteButton>
+            </mat-chip-list>
+
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column  [width]="70" title="Open" >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ dataItem.open | currency :'INR' }}
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column  [width]="70" title="Last">
+    <ng-template kendoGridCellTemplate let-dataItem>
+     <span> {{ dataItem.last | currency :'INR'  }} </span>
+
+
+  </ng-template>
+</kendo-grid-column>
+
+
+
+
+
+
+
+
+
+<kendo-grid-column [width]="70"  title="Change">
+  <ng-template kendoGridCellTemplate let-dataItem>
+
+      <span> {{ dataItem.change  }}</span>
+
+  </ng-template>
+</kendo-grid-column>
+
+
+
+
+
+
+
+<kendo-grid-column [width]="70"   title="1Wk" >
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{ dataItem.return1w | currency :'INR'  }}
+</ng-template>
+</kendo-grid-column>
+
+<kendo-grid-column [width]="70"  title="1M" >
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{ dataItem.return1m | currency :'INR'  }}
+</ng-template>
+</kendo-grid-column>
+<kendo-grid-column [width]="70"  title="3M" >
+  <ng-template kendoGridCellTemplate let-dataItem>
+    {{ dataItem.return3m | currency :'INR'  }}
+</ng-template>
+</kendo-grid-column>
+
+<kendo-grid-column [width]="380"  title="Chart" class="grid-one-day-chart"
+[sortable]="false">
+<ng-template kendoGridCellTemplate let-dataItem>
+
+    <day-chart  [data]="dataItem.intraday" [min]="dataItem.min" [open]="dataItem.int_open" [last]="dataItem.int_last" [max]="dataItem.max" [CurrentData]="dataItem" >
+    </day-chart>
+</ng-template>
+</kendo-grid-column>
+
+
+</kendo-grid>
+
+

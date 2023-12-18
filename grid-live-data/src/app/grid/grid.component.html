@@ -1,0 +1,110 @@
+<!-- [resizable]="true" [sortable]="true" [sort]="sort" -->
+<p class="grid-section-title">Explore the market</p>
+<kendo-grid [kendoGridBinding]="(gridDataEquties | async)!"
+ [rowClass]="rowCallback">
+    <kendo-grid-column field="currency" title="Crypto currency"  [sortable]="true" >
+        <ng-template kendoGridCellTemplate let-dataItem>
+
+          <div class="card-container">
+            <kendo-card width="320px" class="transaction-card">
+                <kendo-card-header class="k-hstack">
+
+                    <div>
+                      <!-- <span style="font-size: 12px;">  Open : {{ dataItem.open}} High : {{ dataItem.high}}</span> -->
+                        <h1 style="font-size: 10px;" kendoCardTitle class="card-title">
+                          {{ dataItem.open}}  {{ dataItem.stockName  }}
+
+                            <span class="k-icon k-i-arrow-60-down arrow-down" *ngIf="dataItem.change < prevDataItem.change"></span>
+            <span class="k-icon k-i-arrow-60-up arrow-up" *ngIf="dataItem.change > prevDataItem.change">
+
+            </span>
+            {{ dataItem.change }} % &nbsp;
+            <span>
+              | {{ dataItem.volume  }} | &nbsp;
+            </span>
+
+
+
+            <!-- <span
+            [@positiveState]="dataItem.last > prevDataItem.last ? true : false"
+            [@negativeState]="dataItem.last < prevDataItem.last ? true : false"
+        >
+           | {{ dataItem.volume  }} | &nbsp;
+        </span> -->
+
+        <!-- <span
+        [@positiveState]="dataItem.netQtry > prevDataItem.netQtry ? true : false"
+        [@negativeState]="dataItem.netQtry < prevDataItem.netQtry ? true : false"
+    >
+       | {{ dataItem.netQtry  }} | &nbsp;
+    </span> -->
+                             <!-- <span  class="price">{{ dataItem.change }}%</span> -->
+
+
+                             <!-- <span class="price"
+                             [@positiveState]="dataItem.last > prevDataItem.last ? true : false"
+                             [@negativeState]="dataItem.last < prevDataItem.last ? true : false"
+                         >
+                             {{ dataItem.last  }}
+                         </span> -->
+
+                            <!-- <span *ngIf="card.status === 'Buy'; else recieve" class="price">{{ dataItem.currentPrice  }}$</span> -->
+                            <span class="price"> {{ dataItem.last  }}</span> </h1>
+
+
+
+                    </div>
+
+                </kendo-card-header>
+            </kendo-card>
+        </div>
+
+            <!-- <div class="currency-container">
+                <img class="coin-logo" src="assets/coinslogo/{{ dataItem.currency }}.png" alt="coin logo" />
+                <span class="currency">
+                    {{ dataItem.currency }}
+                </span>
+                <span class="crypto-symbol"> ({{ dataItem.symbol }}) </span>
+            </div> -->
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="currentPrice" [width]="150" title="Price">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div>
+            <span>
+              <app-slider-Componeent [currentPrice]="dataItem.mostnumber" [open]="dataItem.open" [min_len]="dataItem.low" [max_len]="dataItem.high">
+
+              </app-slider-Componeent>
+            </span>
+          </div>
+            <!-- <span
+                [@positiveState]="dataItem.currentPrice > prevDataItem.currentPrice ? true : false"
+                [@negativeState]="dataItem.currentPrice < prevDataItem.currentPrice ? true : false"
+            >
+                {{ dataItem.currentPrice | currency }}
+            </span> -->
+        </ng-template>
+    </kendo-grid-column>
+    <!-- <kendo-grid-column class="priceColumn" field="change_24h"  [sortable]="true" title="24h%">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            <span> {{ dataItem.change_24h | number }}% </span>
+            <span class="k-icon k-i-arrow-60-down arrow-down" *ngIf="dataItem.change_24h < prevDataItem.change_24h"></span>
+            <span class="k-icon k-i-arrow-60-up arrow-up" *ngIf="dataItem.change_24h > prevDataItem.change_24h"></span>
+        </ng-template>
+    </kendo-grid-column> -->
+
+    <!-- <kendo-grid-column field="volume" title="Market Cap" format="c"> </kendo-grid-column> -->
+
+    <kendo-grid-column class="grid-one-day-chart"   field="intraday" title="1 Day Chart"
+      [sortable]="false">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <!-- <kendo-sparkline [data]="dataItem.intraday"></kendo-sparkline> -->
+        <!-- <kendo-sparkline  [data] ="(dataItem.intraday)"> </kendo-sparkline> -->
+          <!-- <day-chart  [data]="dataItem.intraday" [dataopen]="dataItem.dataopen" [changePct]="dataItem.change_24h">
+          </day-chart> -->
+
+          <day-chart  [data]="dataItem.intraday" [CurrentData]="dataItem" >
+          </day-chart>
+      </ng-template>
+   </kendo-grid-column>
+</kendo-grid>

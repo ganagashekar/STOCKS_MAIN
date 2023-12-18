@@ -1,0 +1,14 @@
+[
+    {
+        "id": 0,
+        "currency": "Bitcoin",
+        "symbol": "BTC",
+        "volume": 35666661.25,
+        "currentPrice": 48500.51,
+        "change_24h": 23.56,
+        "intraday": [
+         0.1,0.2,0.1
+      ],
+        "change_pct":-0.42
+    }
+]

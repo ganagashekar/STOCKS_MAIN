@@ -1,0 +1,38 @@
+.price-down .priceColumn,
+.arrow-down {
+    color: #f31700;
+}
+
+.price-up .priceColumn,
+.arrow-up {
+    color: #37b400;
+}
+
+.currency {
+    color: #4b5ffa;
+    font-weight: bold;
+}
+
+/* .crypto-symbol {
+    color: #959595;
+} */
+
+.currency {
+    margin: 3px 5px 0px 5px;
+    color: #4b5ffa;
+    font-weight: bold;
+}
+
+.currency-container {
+    display: flex;
+    align-items: center;
+}
+
+#my-grid tr.green {
+  background-color: b2f699;
+}
+
+#my-grid tr.red {
+  background-color: orange;
+}
+
