@@ -25,6 +25,13 @@ namespace STM_API.Hubs
             await Clients.Caller.SendAsync("SendPortfolioPosition", results);
         }
 
+        public async Task SetBuyPriceAlter(string symbol ,double price)
+        {
+            _breezapiServices.SetBuyPriceAlter(symbol,price);
+            await Clients.Caller.SendAsync("SendSetBuyPriceAlter", "Success For " + symbol + "at Price" + price );
+
+        }
+
         
     }
 }

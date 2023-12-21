@@ -38,5 +38,19 @@ namespace STM_API.Services
             }
             return JsonConvert.DeserializeObject<PortfolioPositions>(JsonString);
         }
+
+        internal void SetBuyPriceAlter(string symbol, double price)
+        {
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+                SqlCommand sqlComm = new SqlCommand("AddOrUpdateStockPriceConfig", conn);
+                sqlComm.Parameters.AddWithValue("@Symbol", (symbol));
+                sqlComm.Parameters.AddWithValue("@Price", price);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+                sqlComm.ExecuteNonQuery();
+                conn.Close();
+            }
+        }
     }
 }

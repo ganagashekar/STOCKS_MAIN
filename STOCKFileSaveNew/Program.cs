@@ -17,12 +17,7 @@ class Program
 
     //https://localhost:5001
    static StringBuilder stringBuilder = new StringBuilder();
-   // private static IHostBuilder CreateHostBuilder(string[] args) =>
-   //        Host.CreateDefaultBuilder(args)
-   //            .ConfigureServices((hostContext, services) =>
-   //            {
-   //                services.AddHostedService<Worker>();
-   //            });
+  
     static async Task Main(string[] args)
     {
 

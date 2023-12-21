@@ -43,6 +43,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<StockTicker>();
+builder.Services.AddScoped<BreezapiServices>();
 //builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 //{
 //    builder
@@ -86,6 +87,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 //app.UseEndpoints(endpoints => endpoints.MapHub<ICICIDirectHUB>("/livefeedhub")); // Restore this);
 app.MapHub<ICICIDirectHUB>("/livefeedhub");
+app.MapHub<BreezeOperationHUB>("/breezeoperation");
 //    , options =>
 //{
 //    options.Transports =

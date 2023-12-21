@@ -31,8 +31,11 @@
         public string VolumeC { set; get; }
     }
 
-
-
+    public class ChartData
+    {
+        public double value { get; set; }
+        public string extremum { get; set; }
+    }
     public class EquitiesHsitry
     {
         public string? msn_secid { get; set; }
