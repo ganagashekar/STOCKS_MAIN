@@ -9,10 +9,11 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 class Program
 {
-     public static string HUbUrl = "http://192.168.0.106:90/livefeedhub";
+    
 
     //https://localhost:5001
    static StringBuilder stringBuilder = new StringBuilder();
@@ -24,6 +25,16 @@ class Program
    //            });
     static async Task Main(string[] args)
     {
+
+        var builder = new ConfigurationBuilder() // .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
+              .SetBasePath(Directory.GetCurrentDirectory())
+              .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true);
+
+        IConfiguration config = builder.Build();
+
+        var HUbUrl = config.GetSection("appSettings:url").Value;
+
+        Console.WriteLine(HUbUrl);
 
         string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
         if (!File.Exists(filename))

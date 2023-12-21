@@ -797,6 +797,8 @@ namespace STM_API.Services
                             _stokc.return1w = Convert.ToDouble(r[35] ?? 0);
                             _stokc.return1m = Convert.ToDouble(r[36] ?? 0);
                             _stokc.return3m = Convert.ToDouble(r[37] ?? 0);
+                            _stokc.return1d = Convert.ToDouble(r[48] ?? 0);
+
                             _stokc.SECId = r[34].ToString();
                             _stokc.msn_secid = r[34].ToString();
                             _stokc.recmdtn = (r[38] ?? "").ToString();
@@ -807,9 +809,24 @@ namespace STM_API.Services
                             _stokc.target = (r[42] ?? "").ToString();
                             _stokc.isfavorite = Convert.ToBoolean(r[44] ?? false);
                             _stokc.VolumeC = (r[33] ?? "").ToString();
+                            _stokc.return6m= Convert.ToDouble(r[45] ?? 0);
+                            _stokc.return1Year = Convert.ToDouble(r[46] ?? 0);
+                            _stokc.returnYTD = Convert.ToDouble(r[47] ?? 0);
+                            _stokc.priceChange_Day = Convert.ToDouble(r[48] ?? 0);
 
+                            _stokc.priceChange_1w = Convert.ToDouble(r[49] ?? 0);
+                            _stokc.priceChange_1m = Convert.ToDouble(r[50] ?? 0);
+                            _stokc.priceChange_3m = Convert.ToDouble(r[51] ?? 0);
 
+                            _stokc.priceChange_6m = Convert.ToDouble(r[52] ?? 0);
+                            _stokc.priceChange_1year = Convert.ToDouble(r[53] ?? 0);
+                            _stokc.priceChange_YTD = Convert.ToDouble(r[54] ?? 0);
 
+                            _stokc.price52Weekshigh = Convert.ToDouble(r[55] ?? 0);
+                            _stokc.price52Weekslow = Convert.ToDouble(r[56] ?? 0);
+
+                            _stokc.IsLowerCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.lowerCktLm;
+                            _stokc.IsUpperCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.upperCktLm;
 
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);

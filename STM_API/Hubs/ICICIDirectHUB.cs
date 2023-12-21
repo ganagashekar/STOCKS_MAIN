@@ -18,7 +18,7 @@ namespace STM_API.Hubs
         private readonly StockTicker _stockTicker;
         public string GetConnectionId() => Context.ConnectionId;
 
-        public async Task GetPivotData(string Date, string Column, string GroupName, string SubGroup, string CKTNAME = "", string ConditionOperator = "", string dynamicminValue = "", string dynamicmaxValue = "",int IsWatchList=0)
+        public async Task GetPivotData(string Date, string Column, string GroupName, string SubGroup, string CKTNAME = "", string ConditionOperator = "", string dynamicminValue = "", string dynamicmaxValue = "", int IsWatchList = 0)
         {
             if (string.IsNullOrEmpty(Date))
             {
@@ -28,7 +28,7 @@ namespace STM_API.Hubs
             {
                 Column = "last";
             }
-            var results = _stockTicker.GetPivotData(Date, Column, GroupName, SubGroup, CKTNAME, ConditionOperator, dynamicminValue, dynamicmaxValue, IsWatchList==1);
+            var results = _stockTicker.GetPivotData(Date, Column, GroupName, SubGroup, CKTNAME, ConditionOperator, dynamicminValue, dynamicmaxValue, IsWatchList == 1);
             await Clients.Caller.SendAsync("SendPivotData", results);
             // return _stockTicker.GetAllStocks();
         }
@@ -73,20 +73,25 @@ namespace STM_API.Hubs
             // return _stockTicker.GetAllStocks();
         }
 
-        public async Task GetStocksList(bool isfavorite =false)
+        public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false)
         {
 
             var results = _stockTicker.GetStocksList(isfavorite);// ''.Where(x => x.open <= 300).ToList();
+            if (isUpperCircuit)
+                results = results.Where(x => x.IsUpperCircuite == true).ToList();
+            if (islowerCircuit)
+                results = results.Where(x => x.IsLowerCircuite == true).ToList();
+
 
             await Clients.Caller.SendAsync("SendStocksList", results);
             // return _stockTicker.GetAllStocks();
         }
 
-        public async Task AddOrModifyFavorite(string mscid,int action)
+        public async Task AddOrModifyFavorite(string mscid, int action)
         {
             var results = _stockTicker.AddOrModifyFavorite(mscid, action);// ''.Where(x => x.open <= 300).ToList();
 
-            await Clients.Caller.SendAsync("SendAddOrModifyFavorite","Success");
+            await Clients.Caller.SendAsync("SendAddOrModifyFavorite", "Success");
         }
 
         public async Task SaveWatchList(string onDate, string id)
@@ -230,8 +235,8 @@ namespace STM_API.Hubs
             {
                 try
                 {
-                    string link=string.Empty;
-                    var txxt = ": DAYS :" + (_stockTicker.GetJsonFileIndex(items.symbol, Convert.ToDouble(items.Last),out link)) + " BACK ";
+                    string link = string.Empty;
+                    var txxt = ": DAYS :" + (_stockTicker.GetJsonFileIndex(items.symbol, Convert.ToDouble(items.Last), out link)) + " BACK ";
 
                     items.STOCKName += txxt;
                     items.STOCKName += " " + link;
@@ -268,14 +273,14 @@ namespace STM_API.Hubs
 
 
         }
-        
+
 
         public async Task GetAllStocksForLoad(int Id)
         {
 
             if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks")))
             {
-                var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks",Id));
+                var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id));
                 var equities = System.Text.Json.JsonSerializer.Deserialize<List<Equities>>(text).ToList();
                 await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
                 //var results = _stockTicker.SendAllStocksForLoad().ToList();

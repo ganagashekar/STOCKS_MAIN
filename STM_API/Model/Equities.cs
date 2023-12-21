@@ -73,16 +73,31 @@
         public int min { set; get; }
         public int max { set;get; }
 
+        public double return1d { set; get; }
         public double return1w { set; get; }
         public double return1m { set; get; }
         public double return3m { set; get; }
+        public double return6m { set; get; }
+        public double return1Year { set; get; }
+        public double returnYTD { set; get; }
+
         public string recmdtn { get; set; }
         public double noofrec { set; get; }
         public string beta { get; set; }
         public string eps { get; set; }
         public string target { get; set; }
         public bool isfavorite { get; set; }
-        
+        public double priceChange_Day { set; get; }
+        public double priceChange_1w { set; get; }
+        public double priceChange_1m { set; get; }
+        public double priceChange_3m { set; get; }
+        public double priceChange_6m { set; get; }
+        public double priceChange_1year { set; get; }
+        public double priceChange_YTD { set; get; }
+        public double price52Weekslow { set; get; }
+        public double price52Weekshigh { set; get; }
+        public bool IsLowerCircuite { get; set; }
+        public bool IsUpperCircuite { get;set; }
     }
 
     public class StockBuy

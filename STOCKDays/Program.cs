@@ -1,5 +1,4 @@
 ﻿
-using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Diagnostics;
