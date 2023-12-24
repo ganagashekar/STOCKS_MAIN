@@ -741,7 +741,7 @@ namespace STM_API.Services
 
 
 
-        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false)
+        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false,bool isAutoTrade=false, bool isNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0)
         {
 
             try
@@ -757,6 +757,10 @@ namespace STM_API.Services
                     SqlCommand sqlComm = new SqlCommand("SP_GET_LIVE_STOCKS_BY_STOCK", conn);
                     sqlComm.Parameters.AddWithValue("@Code", DBNull.Value);
                     sqlComm.Parameters.AddWithValue("@isfavorite", isfavorite);
+                    sqlComm.Parameters.AddWithValue("@isAutoTrade", isAutoTrade);
+                    sqlComm.Parameters.AddWithValue("@ShowNotification", isNotifications);
+                    sqlComm.Parameters.AddWithValue("@minvalue", dynamicminValue);
+                    sqlComm.Parameters.AddWithValue("@maxvalue", dynamicmaxValue);
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;
@@ -824,6 +828,7 @@ namespace STM_API.Services
 
                             _stokc.price52Weekshigh = Convert.ToDouble(r[55] ?? 0);
                             _stokc.price52Weekslow = Convert.ToDouble(r[56] ?? 0);
+                            _stokc.isenabledforautoTrade= Convert.ToBoolean(r[57] ?? false);
 
                             _stokc.IsLowerCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.lowerCktLm;
                             _stokc.IsUpperCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.upperCktLm;
@@ -1919,6 +1924,31 @@ namespace STM_API.Services
                 sqlComm.ExecuteNonQuery();
                 conn.Close();
                 return true;
+            }
+        }
+
+        internal object AddOrModifyAutoTrade(string mscid, int action)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+
+                    //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                    SqlCommand sqlComm = new SqlCommand("AddOrUpdateAutoTrade", conn);
+                    sqlComm.Parameters.AddWithValue("@msnId", mscid);
+                    sqlComm.Parameters.AddWithValue("@isAutoTrade", action == 1 ? true : false);
+                    conn.Open();
+                    sqlComm.CommandType = CommandType.StoredProcedure;
+                    sqlComm.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
     }

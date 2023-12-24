@@ -73,14 +73,17 @@ namespace STM_API.Hubs
             // return _stockTicker.GetAllStocks();
         }
 
-        public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false)
+        public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
+            bool isEnabledForAutoTrade=false ,bool IsNotifications=false, int dynamicminValue = 0, int dynamicmaxValue = 0)
         {
 
-            var results = _stockTicker.GetStocksList(isfavorite);// ''.Where(x => x.open <= 300).ToList();
+            var results = _stockTicker.GetStocksList(isfavorite, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue);// ''.Where(x => x.open <= 300).ToList();
             if (isUpperCircuit)
                 results = results.Where(x => x.IsUpperCircuite == true).ToList();
             if (islowerCircuit)
                 results = results.Where(x => x.IsLowerCircuite == true).ToList();
+            if(isEnabledForAutoTrade)
+                results = results.Where(x => x.isenabledforautoTrade == true).ToList();
 
 
             await Clients.Caller.SendAsync("SendStocksList", results);
@@ -92,6 +95,13 @@ namespace STM_API.Hubs
             var results = _stockTicker.AddOrModifyFavorite(mscid, action);// ''.Where(x => x.open <= 300).ToList();
 
             await Clients.Caller.SendAsync("SendAddOrModifyFavorite", "Success");
+        }
+
+        public async Task AddOrModifyAutoTrade(string mscid, int action)
+        {
+            var results = _stockTicker.AddOrModifyAutoTrade(mscid, action);// ''.Where(x => x.open <= 300).ToList();
+
+            await Clients.Caller.SendAsync("SendAddOrModifyAutoTrade", "Success");
         }
 
         public async Task SaveWatchList(string onDate, string id)

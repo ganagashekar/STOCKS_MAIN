@@ -101,6 +101,8 @@
         public double price52Weekshigh { set; get; }
         public bool IsLowerCircuite { get; set; }
         public bool IsUpperCircuite { get;set; }
+
+        public bool isenabledforautoTrade { get; set; }
     }
 
     public class StockBuy

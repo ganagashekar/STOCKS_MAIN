@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MSNStocks.Models;
 using MSNStocks.Query;
@@ -113,11 +114,41 @@ namespace MSNStocks
                         try
                         {
                             var stockresult = await getstockDetails(equity.MSN_SECID);
+                            string PreviousRecommondation = equity.Recommondations;
+                            string CurrentRecommondation = string.Empty;
                             if (stockresult.equity != null)
                             {
                                 equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? null;
+                                CurrentRecommondation= equity.Recommondations;
                                 equity.JsonData = JsonConvert.SerializeObject(stockresult);
                                 Console.WriteLine(equity.MSN_SECID);
+                            }
+                            if (PreviousRecommondation != CurrentRecommondation)
+                            {
+                                bool isFavoriteAdded = PreviousRecommondation.Contains("buy");
+                                bool isFavoriteRemoved = !isFavoriteAdded;
+
+                                SqlParameter MSN_SECID = new SqlParameter();
+
+                                MSN_SECID.ParameterName = "@MSN_SECID";
+                                MSN_SECID.Value = equity.MSN_SECID;
+                                MSN_SECID.DbType = System.Data.DbType.String;
+
+                                SqlParameter FavoriteAdded = new SqlParameter();
+                                FavoriteAdded.ParameterName = "@IsFavoriteAdded";
+                                FavoriteAdded.Value = isFavoriteAdded;
+                                FavoriteAdded.DbType = System.Data.DbType.Boolean;
+
+                                SqlParameter FavoriteRemoved = new SqlParameter();
+                                FavoriteRemoved.ParameterName = "@IsFavoriteRemoved";
+                                FavoriteRemoved.Value = isFavoriteRemoved;
+                                FavoriteRemoved.DbType = System.Data.DbType.Boolean;
+
+
+                                db.Database.ExecuteSqlRaw("InsertOrUpdateMSN_Notification {0}, {1}, {2} ", MSN_SECID, FavoriteAdded, FavoriteRemoved);
+
+
+  
                             }
                             // System.Threading.Thread.Sleep(1000);
                         }

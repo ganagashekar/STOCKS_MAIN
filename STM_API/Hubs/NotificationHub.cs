@@ -28,10 +28,73 @@ namespace STM_API.Hubs
         public async Task SetBuyPriceAlter(string symbol ,double price)
         {
             _breezapiServices.SetBuyPriceAlter(symbol,price);
-            await Clients.Caller.SendAsync("SendSetBuyPriceAlter", "Success For " + symbol + "at Price" + price );
+            await Clients.All.SendAsync("SendSetBuyPriceAlter", "Success For " + symbol + "at Price" + price );
 
         }
 
-        
+        public async Task GetBuyStockTriggers()
+        {
+           var result= _breezapiServices.GetBuyStockTriggers().ToList();
+            await Clients.All.SendAsync("SendGetBuyStockTriggers", result);
+
+        }
+
+        public async Task BuyOrSellEquity(string Symbol, int Quanity, string exchange, string marketor_Limit, string buyprice, string stoploss, string stockcode,
+             string buysell)
+        {
+            _breezapiServices.BuyOrSellEquity(Symbol, Quanity, exchange, marketor_Limit, Convert.ToDecimal(buyprice), Convert.ToDecimal(stoploss), stockcode, buysell);
+            await Clients.All.SendAsync("SendBuyOrSellEquity", "Success For " + Symbol + "at Price" + buyprice);
+
+        }
+
+        public async Task CaptureLiveData(string data)
+        {
+            try
+            {
+                Equities livedata = System.Text.Json.JsonSerializer.Deserialize<Equities>(data);
+
+                string orginaltext = livedata.ttv;
+                try
+                {
+                    double volume;
+                    switch (livedata.ttv)
+                    {
+                        case var s when livedata.ttv.Contains("C"):
+                            volume = (Convert.ToDouble(livedata.ttv.Replace("C", "")) * 10000000);
+                            break;
+                        case var s when livedata.ttv.Contains("L"):
+                            volume = Convert.ToDouble(livedata.ttv.Replace("L", "")) * 100000;
+                            break;
+                        default:
+                            double.TryParse(livedata.ttv, out volume);
+                            break;
+
+                    }
+                    try
+                    {
+                        data = data.Replace(orginaltext, volume.ToString("F"));
+                        data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
+                        await Clients.AllExcept(Context.ConnectionId).SendAsync("SendLiveData", data);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+
     }
 }
