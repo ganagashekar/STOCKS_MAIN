@@ -38,13 +38,18 @@ class Program
         }
 
         await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
-        connection.KeepAliveInterval = TimeSpan.Zero;
+        connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
         await connection.StartAsync();
 
         connection.On<string>("SendLiveData", async param => {
 
            await  RunFileSave(param);
         });
+
+        connection.Closed += async (exception) =>
+        {
+            await connection.StartAsync();
+        };
 
 
         string s = "";

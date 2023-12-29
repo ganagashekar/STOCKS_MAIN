@@ -9,6 +9,7 @@
        
         public decimal buyATPrice { get; set; }
        
+        public decimal? buyATChange { get; set; }
         public decimal sellATPrice { get; set; }
        
         public decimal currentPrice { get; set; }

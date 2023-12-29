@@ -74,10 +74,11 @@ namespace STM_API.Hubs
         }
 
         public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
-            bool isEnabledForAutoTrade=false ,bool IsNotifications=false, int dynamicminValue = 0, int dynamicmaxValue = 0)
+            bool isEnabledForAutoTrade=false ,bool IsNotifications=false, int dynamicminValue = 0, int dynamicmaxValue = 0,
+            string TDays = "", string WatchList = "")
         {
 
-            var results = _stockTicker.GetStocksList(isfavorite, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue);// ''.Where(x => x.open <= 300).ToList();
+            var results = _stockTicker.GetStocksList(isfavorite, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList);// ''.Where(x => x.open <= 300).ToList();
             if (isUpperCircuit)
                 results = results.Where(x => x.IsUpperCircuite == true).ToList();
             if (islowerCircuit)
@@ -234,6 +235,22 @@ namespace STM_API.Hubs
         {
             _stockTicker.StockDays();
 
+        }
+
+        public async Task GetAllStocksForLoadAll()
+        {
+
+            if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks")))
+            {
+                var text = System.IO.File.ReadAllText(string.Format("{0}{1}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks"));
+                var equities = System.Text.Json.JsonSerializer.Deserialize<List<Equities>>(text).ToList();
+                await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+                //var results = _stockTicker.SendAllStocksForLoad().ToList();
+                //await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+            }
+            //var results = _stockTicker.SendAllStocksForLoad().ToList();
+            //await Clients.Caller.SendAsync("SendAllStocksForLoad", results);
+            // return _stockTicker.GetAllStocks();
         }
 
         public async Task SendAlertsUpperCKT()

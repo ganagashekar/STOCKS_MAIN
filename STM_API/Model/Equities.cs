@@ -64,9 +64,12 @@
         public double? close { get; set; }
         public string exchange { get; set; }
         public string stock_name { get; set; }
+        public string securityId { get; set; }
         public string VolumeC { set; get; }
 
         public List<double> Data { get; set; }
+
+        public object DataPoint { get; set; }
 
         public string href { get; set; }
         public string stockdetailshref { get; set; }
@@ -102,7 +105,19 @@
         public bool IsLowerCircuite { get; set; }
         public bool IsUpperCircuite { get;set; }
 
+        public double buyat { set; get; }
+        public string? buyatChange { set; get; }
         public bool isenabledforautoTrade { get; set; }
+
+        public string tdays { set; get; } 
+        public string WacthList { set; get; }   
+
+        public string pr_change { set; get; }   
+        public string pr_close { set; get; }
+        public string pr_open { set; get;}  
+
+        public string pr_volume { set; get;}
+        public string pr_date { set; get; }
     }
 
     public class StockBuy

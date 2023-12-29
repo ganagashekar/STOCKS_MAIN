@@ -34,8 +34,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ANG", "ANG", "{BDB4F9AC-AC5F-4A38-9F5E-EB098D97F465}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{09C0B3DD-9609-44C1-AE3E-2DA6BCD6170F}"
+	ProjectSection(SolutionItems) = preProject
+		LiveDataFeed\LiveDataFeed\bin\Debug\net6.0\BreezeConnect.dll = LiveDataFeed\LiveDataFeed\bin\Debug\net6.0\BreezeConnect.dll
+		LiveDataFeed\LiveDataFeed\bin\Debug\net6.0\BreezeConnect.pdb = LiveDataFeed\LiveDataFeed\bin\Debug\net6.0\BreezeConnect.pdb
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockUI", "StockUI\StockUI.csproj", "{620FC631-170C-4F0E-8250-8AFBFE09E86F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation_LiveFeed", "Automation_LiveFeed\Automation_LiveFeed.csproj", "{F703F088-5BB4-4D3A-8277-97DFDFB51777}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +111,10 @@ Global
 		{620FC631-170C-4F0E-8250-8AFBFE09E86F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{620FC631-170C-4F0E-8250-8AFBFE09E86F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{620FC631-170C-4F0E-8250-8AFBFE09E86F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F703F088-5BB4-4D3A-8277-97DFDFB51777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F703F088-5BB4-4D3A-8277-97DFDFB51777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F703F088-5BB4-4D3A-8277-97DFDFB51777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F703F088-5BB4-4D3A-8277-97DFDFB51777}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

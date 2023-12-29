@@ -1,0 +1,13 @@
+{
+  "appSettings": {
+    "url": "http://localhost:90/BreezeOperation"
+  },
+  "cors": {
+    "rules": [
+      {
+        "origin": "https://contoso.com",
+        "allow": true
+      }
+    ]
+  }
+}

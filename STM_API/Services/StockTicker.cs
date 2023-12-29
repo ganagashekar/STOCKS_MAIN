@@ -741,7 +741,8 @@ namespace STM_API.Services
 
 
 
-        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false,bool isAutoTrade=false, bool isNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0)
+        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false,bool isAutoTrade=false, bool isNotifications = false, 
+            int dynamicminValue = 0, int dynamicmaxValue = 0,string Tdays="",string WatchList="")
         {
 
             try
@@ -761,6 +762,9 @@ namespace STM_API.Services
                     sqlComm.Parameters.AddWithValue("@ShowNotification", isNotifications);
                     sqlComm.Parameters.AddWithValue("@minvalue", dynamicminValue);
                     sqlComm.Parameters.AddWithValue("@maxvalue", dynamicmaxValue);
+
+                    sqlComm.Parameters.AddWithValue("@Tdays", Tdays);
+                    sqlComm.Parameters.AddWithValue("@WatchList", WatchList);
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;
@@ -794,24 +798,26 @@ namespace STM_API.Services
                             _stokc.close = Convert.ToDouble(r[21].ToString());
                             _stokc.stock_name = r[23].ToString();
                             _stokc.Data = GetJsonFileHistryData(r[0].ToString(), Convert.ToDouble(r[21].ToString()));
-                            _stokc.min = _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x));
-                            _stokc.max = _stokc.Data.Where(x => x > 0).Max(x => Convert.ToInt32(x));
+                            _stokc.buyat = Convert.ToDouble(r[60] ?? 0);
+                            _stokc.DataPoint= GetJsonFileHistryDataPoint(r[0].ToString(), Convert.ToDouble(r[21].ToString()), _stokc.buyat);
+                            _stokc.min = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x)) :0;
+                            _stokc.max = _stokc.Data.Any() ?_stokc.Data.Where(x => x > 0).Max(x => Convert.ToInt32(x)):0;
                             _stokc.href = string.Format("https://www.msn.com/en-in/money/stockdetails/fi-{0}?duration=5D>", r[34].ToString());
                             _stokc.stockdetailshref = string.Format("/StockDetails?id={0}", r[34].ToString());
                             _stokc.return1w = Convert.ToDouble(r[35] ?? 0);
                             _stokc.return1m = Convert.ToDouble(r[36] ?? 0);
                             _stokc.return3m = Convert.ToDouble(r[37] ?? 0);
                             _stokc.return1d = Convert.ToDouble(r[48] ?? 0);
-
+                            _stokc.securityId = r[61].ToString();
                             _stokc.SECId = r[34].ToString();
                             _stokc.msn_secid = r[34].ToString();
                             _stokc.recmdtn = (r[38] ?? "").ToString();
                             _stokc.noofrec = Convert.ToDouble(r[39] ?? 0);
                             _stokc.beta = (r[40] ?? "").ToString();
                             _stokc.eps = (r[41] ?? "").ToString();
-
+                           
                             _stokc.target = (r[42] ?? "").ToString();
-                            _stokc.isfavorite = Convert.ToBoolean(r[44] ?? false);
+                            _stokc.isfavorite = !string.IsNullOrEmpty(r[44].ToString()) ? Convert.ToBoolean(r[44] ?? false): false;
                             _stokc.VolumeC = (r[33] ?? "").ToString();
                             _stokc.return6m= Convert.ToDouble(r[45] ?? 0);
                             _stokc.return1Year = Convert.ToDouble(r[46] ?? 0);
@@ -825,14 +831,20 @@ namespace STM_API.Services
                             _stokc.priceChange_6m = Convert.ToDouble(r[52] ?? 0);
                             _stokc.priceChange_1year = Convert.ToDouble(r[53] ?? 0);
                             _stokc.priceChange_YTD = Convert.ToDouble(r[54] ?? 0);
-
+                            
                             _stokc.price52Weekshigh = Convert.ToDouble(r[55] ?? 0);
                             _stokc.price52Weekslow = Convert.ToDouble(r[56] ?? 0);
                             _stokc.isenabledforautoTrade= Convert.ToBoolean(r[57] ?? false);
-
+                            _stokc.buyatChange= (r[62] ?? "").ToString();
                             _stokc.IsLowerCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.lowerCktLm;
                             _stokc.IsUpperCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.upperCktLm;
-
+                            _stokc.tdays = Convert.ToString(r[63] ?? 0);
+                            _stokc.WacthList = Convert.ToString(r[64] ?? "");
+                            _stokc.pr_change= Convert.ToString(r[65] ?? "");
+                            _stokc.pr_close = Convert.ToString(r[66] ?? "");
+                            _stokc.pr_open = Convert.ToString(r[67] ?? "");
+                            _stokc.pr_volume = Convert.ToString(r[68] ?? "");
+                            _stokc.pr_date = Convert.ToString(r[69] ?? "");
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
@@ -1752,7 +1764,7 @@ namespace STM_API.Services
         }
 
 
-        internal List<double> GetJsonFileHistryData(string Symvbol, double Last)
+        public List<double> GetJsonFileHistryData(string Symvbol, double Last)
         {
 
             if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol)))
@@ -1785,6 +1797,41 @@ namespace STM_API.Services
             }
         }
 
+        public List<ChartData> GetJsonFileHistryDataPoint(string Symvbol, double Last,double buyat)
+        {
+
+            if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol)))
+            {
+                try
+                {
+                    var text = System.IO.File.ReadAllText(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol));
+                    var data = JsonConvert.DeserializeObject<List<Equities>>(text).OrderBy(x => Convert.ToDateTime(x.ltt));
+
+                    var sortlist = data.Select(x => new ChartData { value = x.close.Value, extremum = null }).ToList();
+                    sortlist.Add(new ChartData { value=Last});
+                    sortlist.Where(x=>x.value==buyat).ToList().ForEach(x=>x.extremum="Buy");
+
+                    return sortlist;
+                    //Arraysortlist = sortlist.Select(x => Convert.ToDecimal(x)).ToList();
+                    //var nearest = sortlist.OrderBy(x => Math.Abs((long)x - Last)).First();
+
+                    //var index = sortlist.ToArray().IndexOf(nearest);
+
+                    //return data.Count() - index;
+                    //return index;
+                }
+                catch (Exception)
+                {
+
+                    return new List<ChartData>();
+                }
+            }
+            else
+            {
+                return new List<ChartData>();
+            }
+        }
+
         internal void DownloadNSEData()
         {
             try
@@ -1814,7 +1861,7 @@ namespace STM_API.Services
             try
             {
                 var results = SendAllStocksForLoad();
-
+                ExportAllLiveStocksToJson(results.ToList());
 
                 var chubnkresulst = results.Chunk<Equities>(1000);
                 int i = 0;
@@ -1834,6 +1881,30 @@ namespace STM_API.Services
             }
         }
 
+        internal void ExportAllLiveStocksToJson(List<Equities> list)
+        {
+            try
+            {
+                var results = list.ToList();
+
+
+                var chubnkresulst = results;
+                int i = 0;
+                //foreach (var item in chubnkresulst)
+                //{
+                    var json = JsonConvert.SerializeObject(chubnkresulst);
+                    System.IO.File.WriteAllText(string.Format("{0}{1}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks"), json);
+                    i++;
+                //}
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         internal void UpdateNotificationSend(string ids)
         {

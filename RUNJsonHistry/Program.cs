@@ -10,7 +10,7 @@ class Program
     static async Task Main(string[] args)
     {
 
-       // string HUbUrl = "http://192.168.0.106:90/livefeedhub";
+      //  string HUbUrl = "https://localhost:7189/livefeedhub";
         string HUbUrl = "https://localhost:90/livefeedhub";
         try
         {
