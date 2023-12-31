@@ -88,9 +88,9 @@ StringSplitOptions.None
 
             // breeze.subscribeFeedsAsync("NFO", "CNXBAN", "FUTURE", "29-Feb-24","0", "call",true,true);
 
-            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().WithKeepAliveInterval(TimeSpan.FromSeconds(30)).Build();
-            connection.KeepAliveInterval = TimeSpan.Zero;
-            // connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
+            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().WithKeepAliveInterval(TimeSpan.FromMinutes(30)).Build();
+            connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
+            connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
 
             Random r = new Random();
             await connection.StartAsync();
@@ -105,7 +105,7 @@ StringSplitOptions.None
                 Console.WriteLine("Count" + param.Count);
                 foreach (var item in param)
                 {
-                    Console.WriteLine(JsonSerializer.Serialize(breeze.subscribeFeedsAsync("4.1!35042")));
+                    Console.WriteLine(JsonSerializer.Serialize(breeze.subscribeFeedsAsync(item.ToString())));
                 }
 
                 // Callback to receive ticks.
@@ -123,19 +123,19 @@ StringSplitOptions.None
                 try
                 {
 
-                       //if (connection.State == HubConnectionState.Connected)
-                       // {
-                       //     // Console.WriteLine(JsonSerializer.Serialize(data));
-                       //     // Console.WriteLine("Ticker Data:" + JsonSerializer.Serialize(data));
-                       //     await connection.InvokeAsync("CaptureLiveDataForAutomation", JsonSerializer.Serialize(data));
+                    if (connection.State == HubConnectionState.Connected)
+                    {
+                        // Console.WriteLine(JsonSerializer.Serialize(data));
+                        // Console.WriteLine("Ticker Data:" + JsonSerializer.Serialize(data));
+                        await connection.InvokeAsync("CaptureLiveDataForAutomation", JsonSerializer.Serialize(data));
 
-                       // }
-                       // else
-                       // {
-                       //     await connection.StartAsync();
-                       // }
-                        
-                    
+                    }
+                    else
+                    {
+                        await connection.StartAsync();
+                    }
+
+
 
                 }
                 catch (Exception)
