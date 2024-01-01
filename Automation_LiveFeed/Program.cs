@@ -20,7 +20,7 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var url = "http://localhost:90/BreezeOperation";// config.GetSection("appSettings:url").Value;
+        var url =config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(url);
 
@@ -32,9 +32,20 @@ StringSplitOptions.None
 );
 
         string HUbUrl = url;
+
+
         // string HUbUrl = "http://localhost/StockSignalRServer/livefeedhub";
         try
         {
+            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().WithKeepAliveInterval(TimeSpan.FromMinutes(30)).Build();
+            connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
+            connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
+
+            Random r = new Random();
+            await connection.StartAsync();
+
+            Console.WriteLine(connection.ConnectionId);
+
             string APIKEY = "6N4Hj74vE@668970816zP9K307YZ58Ff";
             string APISecret = "iz1F27815220!290Ie8Ha459997J8376";
             string token = lines[0].ToString();
@@ -88,12 +99,7 @@ StringSplitOptions.None
 
             // breeze.subscribeFeedsAsync("NFO", "CNXBAN", "FUTURE", "29-Feb-24","0", "call",true,true);
 
-            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().WithKeepAliveInterval(TimeSpan.FromMinutes(30)).Build();
-            connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
-            connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
-
-            Random r = new Random();
-            await connection.StartAsync();
+           
 
             connection.Closed += async (exception) =>
             {

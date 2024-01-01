@@ -1887,7 +1887,7 @@ namespace STM_API.Services
             {
                 var results = list.ToList();
 
-
+                
                 var chubnkresulst = results;
                 int i = 0;
                 //foreach (var item in chubnkresulst)
