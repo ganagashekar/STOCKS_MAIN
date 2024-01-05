@@ -27,7 +27,7 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var HUbUrl = config.GetSection("appSettings:url").Value;
+        var HUbUrl =  config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(HUbUrl);
 
@@ -38,8 +38,11 @@ class Program
         }
 
         await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
-        connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
+        connection.KeepAliveInterval=TimeSpan.FromSeconds(60);
+
         await connection.StartAsync();
+
+        Console.WriteLine(connection.ConnectionId);
 
         connection.On<string>("SendLiveData", async param => {
 
@@ -48,7 +51,7 @@ class Program
 
         connection.Closed += async (exception) =>
         {
-            await connection.StartAsync();
+            Console.WriteLine(exception);
         };
 
 
@@ -83,7 +86,7 @@ class Program
                     File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
                     stringBuilder.Length = 0;
                     stringBuilder.Capacity = 0;
-                    Thread.Sleep(5000);
+                    //Thread.Sleep(1000);
                     //System.IO.File.WriteAllText(filename, "");
                 }
                 //File.AppendAllLines(filename, new[] { livedata.ToString() });

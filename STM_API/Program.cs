@@ -56,9 +56,9 @@ builder.Services.AddSignalR(hubOptions =>
     hubOptions.EnableDetailedErrors = true;
     hubOptions.MaximumParallelInvocationsPerClient = 1000000;
     hubOptions.StreamBufferCapacity = 1024000000;
-    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(30);
-    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(10);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(180);
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(180);
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(180);
     hubOptions.MaximumReceiveMessageSize = 1024000000;
 
 

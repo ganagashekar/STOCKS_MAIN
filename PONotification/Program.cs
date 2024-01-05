@@ -11,7 +11,7 @@ class Program
     {
 
        // string HUbUrl = "http://192.168.0.106:90/livefeedhub";
-        string HUbUrl = "http://localhost:90/livefeedhub";
+        string HUbUrl = "http://localhost:45/livefeedhub";
         try
         {
           

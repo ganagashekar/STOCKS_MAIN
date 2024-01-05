@@ -20,7 +20,7 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var url =config.GetSection("appSettings:url").Value;
+        var url = "http://localhost:45/breezeOperation";// "http://localhost:5000/BreezeOperation";// config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(url);
 
@@ -37,9 +37,9 @@ StringSplitOptions.None
         // string HUbUrl = "http://localhost/StockSignalRServer/livefeedhub";
         try
         {
-            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().WithKeepAliveInterval(TimeSpan.FromMinutes(30)).Build();
-            connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
-            connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
+            await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
+            //connection.KeepAliveInterval = TimeSpan.FromMinutes(30);
+           // connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
 
             Random r = new Random();
             await connection.StartAsync();
@@ -103,14 +103,16 @@ StringSplitOptions.None
 
             connection.Closed += async (exception) =>
             {
-                await connection.StartAsync();
+                Console.WriteLine(exception);
             };
 
             connection.On<List<string>>("SendGetAllStocksForLoadAutomation", async param =>
             {
                 Console.WriteLine("Count" + param.Count);
-                foreach (var item in param)
+                foreach (var item in param.Distinct().ToList())
                 {
+                    Console.WriteLine(item);
+                    Thread.Sleep(TimeSpan.FromSeconds(1)); 
                     Console.WriteLine(JsonSerializer.Serialize(breeze.subscribeFeedsAsync(item.ToString())));
                 }
 
@@ -136,10 +138,7 @@ StringSplitOptions.None
                         await connection.InvokeAsync("CaptureLiveDataForAutomation", JsonSerializer.Serialize(data));
 
                     }
-                    else
-                    {
-                        await connection.StartAsync();
-                    }
+                   
 
 
 

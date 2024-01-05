@@ -305,13 +305,21 @@ namespace STM_API.Hubs
         public async Task GetAllStocksForLoad(int Id)
         {
 
-            if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks")))
+            try
             {
-                var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id));
-                var equities = System.Text.Json.JsonSerializer.Deserialize<List<Equities>>(text).ToList();
-                await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
-                //var results = _stockTicker.SendAllStocksForLoad().ToList();
-                //await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+                if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id)))
+                {
+                    var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id));
+                    var equities = System.Text.Json.JsonSerializer.Deserialize<List<Equities>>(text).ToList();
+                    await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+                    //var results = _stockTicker.SendAllStocksForLoad().ToList();
+                    //await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                await Clients.Caller.SendAsync("SendAllStocksForLoad", ex);
             }
             //var results = _stockTicker.SendAllStocksForLoad().ToList();
             //await Clients.Caller.SendAsync("SendAllStocksForLoad", results);
@@ -345,7 +353,7 @@ namespace STM_API.Hubs
                     {
                         data = data.Replace(orginaltext, volume.ToString("F"));
                         data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
-                        await Clients.AllExcept(Context.ConnectionId).SendAsync("SendLiveData", data);
+                        await Clients.All.SendAsync("SendLiveData", data);
                     }
                     catch (Exception ex)
                     {

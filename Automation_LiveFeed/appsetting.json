@@ -1,6 +1,6 @@
 {
   "appSettings": {
-    "url": "http://localhost:90/BreezeOperation"
+    "url": "http://localhost:5000/BreezeOperation"
   },
   "cors": {
     "rules": [
