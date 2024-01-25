@@ -13,11 +13,11 @@ using Microsoft.Extensions.Configuration;
 
 class Program
 {
-    
+
 
     //https://localhost:5001
-   static StringBuilder stringBuilder = new StringBuilder();
-  
+    static StringBuilder stringBuilder = new StringBuilder();
+
     static async Task Main(string[] args)
     {
 
@@ -27,7 +27,7 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var HUbUrl =  config.GetSection("appSettings:url").Value;
+        var HUbUrl = config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(HUbUrl);
 
@@ -38,15 +38,17 @@ class Program
         }
 
         await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
-        connection.KeepAliveInterval=TimeSpan.FromSeconds(60);
+        connection.KeepAliveInterval = TimeSpan.FromSeconds(60);
 
         await connection.StartAsync();
 
         Console.WriteLine(connection.ConnectionId);
 
-        connection.On<string>("SendLiveData", async param => {
+        connection.On<string>("SendLiveData", async param =>
+        {
 
-           await  RunFileSave(param);
+            Console.WriteLine($"{param}");
+            await RunFileSave(param);
         });
 
         connection.Closed += async (exception) =>
@@ -68,36 +70,37 @@ class Program
             //Initialize SDK
 
 
-         
+
             // connection.ServerTimeout.Add(TimeSpan.FromMinutes(120));
 
-            
-          
-
-           
-                Equities livedata = JsonSerializer.Deserialize<Equities>(param);
-
-                string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
-                var count = Regex.Matches(stringBuilder.ToString(), Environment.NewLine).Count();
-                stringBuilder.AppendLine(livedata.ToString());
-
-                if (count >= 600)
-                {
-                    File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
-                    stringBuilder.Length = 0;
-                    stringBuilder.Capacity = 0;
-                    //Thread.Sleep(1000);
-                    //System.IO.File.WriteAllText(filename, "");
-                }
-                //File.AppendAllLines(filename, new[] { livedata.ToString() });
-                //dynamic livedata = JsonSerializer.Deserialize<dynamic>(param);
 
 
-                // Callback to receive ticks.
 
-            
 
-            
+            Equities livedata = JsonSerializer.Deserialize<Equities>(param);
+
+            string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
+            var count = Regex.Matches(stringBuilder.ToString(), Environment.NewLine).Count();
+            stringBuilder.AppendLine(livedata.ToString());
+
+            if (count > 500)
+            {
+                File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
+                stringBuilder = new StringBuilder();
+                Console.Clear();
+            }
+            //Thread.Sleep(1000);
+            //System.IO.File.WriteAllText(filename, "");
+
+            //File.AppendAllLines(filename, new[] { livedata.ToString() });
+            //dynamic livedata = JsonSerializer.Deserialize<dynamic>(param);
+
+
+            // Callback to receive ticks.
+
+
+
+
 
         }
         catch (Exception ex)
@@ -111,7 +114,7 @@ class Program
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-           
+
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -166,7 +169,7 @@ class Program
             string[] test = this.ltt.Split(' ');
             string dateformat = string.Format("{0}-{1}-{2} {3}", test.Last(), test[1].ToString(), test[2].ToString(), test[3].ToString());
             var result = DateTime.TryParse(dateformat, out var dt);
-            return String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}", this.symbol, this.open, this.last, this.high, this.low, this.change, this.bPrice, this.bQty, this.sPrice, this.sQty, this.ltq, this.avgPrice, this.quotes, this.ttq, this.totalBuyQt, this.totalSellQ, this.ttv, this.trend, this.lowerCktLm, this.upperCktLm, dateformat, this.close, this.exchange, this.stock_name,this.volumeC);
+            return String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}", this.symbol, this.open, this.last, this.high, this.low, this.change, this.bPrice, this.bQty, this.sPrice, this.sQty, this.ltq, this.avgPrice, this.quotes, this.ttq, this.totalBuyQt, this.totalSellQ, this.ttv, this.trend, this.lowerCktLm, this.upperCktLm, dateformat, this.close, this.exchange, this.stock_name, this.volumeC);
         }
     }
 }

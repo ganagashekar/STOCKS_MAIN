@@ -1,11 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using STM_API.AutomationModel;
+using STM_API.AutomationModels;
+using STM_API.Extention;
 using STM_API.Model;
 using STM_API.Model.BreezeAPIModel;
 using STM_API.Services;
+using STMAPI.AutomationModels;
 using System;
+using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -102,6 +108,70 @@ namespace STM_API.Hubs
             _breezapiServices.ExportAutomationLiveStocksToJson();
             ExecuteBuyOrSell();
             await Clients.All.SendAsync("SendExportAutomationFeedFile", "Success");
+        }
+
+        public async Task ExportBuyStockAlterFromAPP (string data)
+        {
+            if (!string.IsNullOrEmpty(data))
+            {
+                var livedata = System.Text.Json.JsonSerializer.Deserialize<List<EquityModelAutomation>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }).ToList().
+                    Select(x => new Ticker_Stocks_Histry_Extended_Mdl {
+                        symbol = x.symbol,
+                        Ltt = x.lttDateTime < DateTime.Now.AddDays(-1).Date ? DateTime.Now : x.lttDateTime,
+                        //Createdon = DateTime.Now,
+                        BearishCount = x.bearishCount,
+                        BulishCount = x.bullishCount,
+                        Match=x.match
+
+                    }).ToList()
+
+                 
+                    
+                    
+                    .ToDataTable();
+                CopyToSQL(livedata);
+
+            }
+        }
+
+        private void CopyToSQL(DataTable dt)
+        {
+
+
+
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+                    var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.KeepIdentity,null)
+                    {
+                        DestinationTableName = "dbo.Ticker_Stocks_Histry_Extended",
+                        BatchSize = dt.Rows.Count
+                    };
+
+                    //bc.ColumnMappings.Add("symbol", "symbol");
+                    //bc.ColumnMappings.Add("ltt", "ltt");
+                    //bc.ColumnMappings.Add("Createdon", "Createdon");
+                    //bc.ColumnMappings.Add("BearishCount", "BearishCount");
+                    //bc.ColumnMappings.Add("BulishCount", "lttBulishCount");
+                 //   bc.ColumnMappings.Add("Match", "Match");
+                    conn.Open();
+                    bc.WriteToServer(dt);
+                    conn.Close();
+                    bc.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
         }
         public async Task CaptureLiveDataForAutomation(string data)
         {

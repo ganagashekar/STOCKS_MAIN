@@ -5,24 +5,35 @@ namespace STM_API.Extention
 {
     public static class helpers
     {
-        public static DataTable ToDataTable<T>(this IList<T> data)
+        public static DataTable ToDataTable<T>(this List<T> iList)
         {
-            PropertyDescriptorCollection properties =
+            DataTable dataTable = new DataTable();
+            PropertyDescriptorCollection propertyDescriptorCollection =
                 TypeDescriptor.GetProperties(typeof(T));
-            DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            foreach (T item in data)
+            for (int i = 0; i < propertyDescriptorCollection.Count; i++)
             {
-                DataRow row = table.NewRow();
-                foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                table.Rows.Add(row);
+                PropertyDescriptor propertyDescriptor = propertyDescriptorCollection[i];
+                Type type = propertyDescriptor.PropertyType;
+
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    type = Nullable.GetUnderlyingType(type);
+
+
+                dataTable.Columns.Add(propertyDescriptor.Name, type);
             }
-            return table;
+            object[] values = new object[propertyDescriptorCollection.Count];
+            foreach (T iListItem in iList)
+            {
+                for (int i = 0; i < values.Length; i++)
+                {
+                    values[i] = propertyDescriptorCollection[i].GetValue(iListItem);
+                }
+                dataTable.Rows.Add(values);
+            }
+            return dataTable;
         }
 
-       
+
     }
     public static class ListExtensions
     {

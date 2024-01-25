@@ -6,6 +6,7 @@
 
         public  async Task SendPushServicesAsync(string tittle,string token,string user,string priority,string message,string retry,string expire,string sound )
         {
+            var iphonelis= new  List<string>() { "BSE_NEW_IP","SELL_STOCK_OWN" };
             var parameters = new Dictionary<string, string>
             {
                 ["token"] = token,
@@ -16,8 +17,10 @@
                 ["retry"] = retry,
                 ["expire"] = expire,
                 ["html"] = "1",
-                ["sound"] = sound
+                ["sound"] = sound,
+                ["device"] = iphonelis.Contains(tittle.ToString()) ? "iphone" : "ipad"
             };
+           
             using var client = new HttpClient();
             var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
             FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();

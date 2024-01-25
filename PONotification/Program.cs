@@ -11,19 +11,19 @@ class Program
     {
 
        // string HUbUrl = "http://192.168.0.106:90/livefeedhub";
-        string HUbUrl = "http://localhost:45/livefeedhub";
+        string HUbUrl = "https://localhost:7189/livefeedhub";
         try
         {
-          
+          Console.WriteLine(HUbUrl);
 
             await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
             connection.KeepAliveInterval = TimeSpan.FromMinutes(1);
 
 
             await connection.StartAsync();
-            Console.WriteLine(connection.ToString());
+            Console.WriteLine(connection.ConnectionId.ToString());
             await connection.SendAsync("SendAlertsUpperCKT");
-            Thread.Sleep(10000);
+            Task.WaitAll();
             
 
         }
