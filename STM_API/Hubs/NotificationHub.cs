@@ -110,6 +110,35 @@ namespace STM_API.Hubs
             await Clients.All.SendAsync("SendExportAutomationFeedFile", "Success");
         }
 
+
+        public async Task ExportBuyStockAlterFromAPP_IND(string data)
+        {
+            if (!string.IsNullOrEmpty(data))
+            {
+                var livedata = System.Text.Json.JsonSerializer.Deserialize<List<EquityModelAutomation>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }).ToList().
+                    Select(x => new Ticker_Stocks_Histry_Extended_Mdl
+                    {
+                        symbol = x.symbol,
+                        Ltt = x.lttDateTime < DateTime.Now.AddDays(-1).Date ? DateTime.Now : x.lttDateTime,
+                        //Createdon = DateTime.Now,
+                        BearishCount = x.bearishCount,
+                        BulishCount = x.bullishCount,
+                        Match = x.match
+
+                    }).ToList()
+
+
+
+
+                    .ToDataTable();
+                CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended_Ticks");
+
+            }
+        }
+
         public async Task ExportBuyStockAlterFromAPP (string data)
         {
             if (!string.IsNullOrEmpty(data))
@@ -132,12 +161,12 @@ namespace STM_API.Hubs
                     
                     
                     .ToDataTable();
-                CopyToSQL(livedata);
+                CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended");
 
             }
         }
 
-        private void CopyToSQL(DataTable dt)
+        private void CopyToSQL(DataTable dt, string tablename)
         {
 
 
@@ -149,7 +178,7 @@ namespace STM_API.Hubs
                 {
                     var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.KeepIdentity,null)
                     {
-                        DestinationTableName = "dbo.Ticker_Stocks_Histry_Extended",
+                        DestinationTableName = tablename,
                         BatchSize = dt.Rows.Count
                     };
 

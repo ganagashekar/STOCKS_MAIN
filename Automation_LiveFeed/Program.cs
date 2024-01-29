@@ -112,7 +112,7 @@ StringSplitOptions.None
                 foreach (var item in param.Distinct().ToList())
                 {
                     Console.WriteLine(item);
-                    Thread.Sleep(TimeSpan.FromSeconds(1)); 
+                   // Thread.Sleep(TimeSpan.FromSeconds(1)); 
                     Console.WriteLine(JsonSerializer.Serialize(breeze.subscribeFeedsAsync(item.ToString())));
                 }
 

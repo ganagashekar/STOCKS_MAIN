@@ -56,7 +56,7 @@
         public int ttq { get; set; }
         public int totalBuyQt { get; set; }
         public int totalSellQ { get; set; }
-        public string ttv { get; set; }
+        public double ttv { get; set; }
         public string trend { get; set; }
         public double? lowerCktLm { get; set; }
         public double? upperCktLm { get; set; }
@@ -118,6 +118,12 @@
 
         public string pr_volume { set; get;}
         public string pr_date { set; get; }
+
+        public int BearishCount { set; get; }
+        public int BullishCount { set; get; }
+        public string Match { set; get; }   
+       
+        
     }
 
     public class StockBuy

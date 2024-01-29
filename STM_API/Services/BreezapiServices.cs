@@ -184,9 +184,9 @@ namespace STM_API.Services
             {
 
                 //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
-                SqlCommand sqlComm = new SqlCommand("Select Symbol from StockPriceConfig", conn);
+                SqlCommand sqlComm = new SqlCommand("GetBuyStockTriggers", conn);
 
-                sqlComm.CommandType = CommandType.Text;
+                sqlComm.CommandType = CommandType.StoredProcedure;
                 SqlDataAdapter da = new SqlDataAdapter();
                 da.SelectCommand = sqlComm;
 

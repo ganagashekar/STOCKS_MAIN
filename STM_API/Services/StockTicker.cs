@@ -771,6 +771,22 @@ namespace STM_API.Services
 
                     da.Fill(ds);
                 }
+
+                //List<EquitiesHsitry> people = ((IEnumerable)ds.Tables[0].Rows).Cast<DataRow>().Select(r => 
+                
+                
+                //new EquitiesHsitry { 
+                    
+                //    //ID = (int)r["ID"], Name = (string)r["Name"]
+                
+                
+                
+                //}
+                
+                
+                
+                //).ToList();
+
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
@@ -791,7 +807,7 @@ namespace STM_API.Services
                             _stokc.sPrice = Convert.ToDouble(r[8].ToString());
                             _stokc.totalSellQ = Convert.ToInt32(r[9]);
                             _stokc.avgPrice = Convert.ToDouble(r[11].ToString());
-                            _stokc.ttv = (r[16].ToString());//.Replace("L", "100000").Replace("C", "1000000"));
+                            _stokc.ttv = Convert.ToDouble(r[16] ?? 0);//.Replace("L", "100000").Replace("C", "1000000"));
                             _stokc.lowerCktLm = Convert.ToDouble(r[18].ToString());
                             _stokc.upperCktLm = Convert.ToDouble(r[19].ToString());
                             _stokc.ltt = r[20].ToString();
@@ -845,6 +861,10 @@ namespace STM_API.Services
                             _stokc.pr_open = Convert.ToString(r[67] ?? "");
                             _stokc.pr_volume = Convert.ToString(r[68] ?? "");
                             _stokc.pr_date = Convert.ToString(r[69] ?? "");
+
+                            _stokc.Match = Convert.ToString(r[72] ?? "");
+                            _stokc.BullishCount = Convert.ToInt16(r[71] ?? 0);
+                            _stokc.BearishCount = Convert.ToInt16(r[70] ?? 0);
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
