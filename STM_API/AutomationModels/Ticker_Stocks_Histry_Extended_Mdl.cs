@@ -31,5 +31,7 @@
         public int BulishCount { get; set; }
         public DateTime Ltt { get; set; }
         public string Match { get; set; }
+
+        public string Data { get; set; }
     }
 }

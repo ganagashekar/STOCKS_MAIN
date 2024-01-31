@@ -133,40 +133,42 @@ public class Program
 
 
 
-
-        var CR_Resp_obj = JsonConvert.DeserializeObject<List<ipo_current_issue>>(cr_htmlString);
-
-        foreach (var r in CR_Resp_obj)
+        if (cr_htmlString != null)
         {
-            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            var CR_Resp_obj = JsonConvert.DeserializeObject<List<ipo_current_issue>>(cr_htmlString);
+
+            foreach (var r in CR_Resp_obj)
             {
-
-                try
-                {
-                    SqlCommand sqlComm = new SqlCommand("Insertipo_Current", conn);
-                    sqlComm.Parameters.AddWithValue("@symbol", r.symbol.ToString() ?? "");
-                    sqlComm.Parameters.AddWithValue("@companyName", r.companyName.ToString() ?? "");
-                    sqlComm.Parameters.AddWithValue("@series", r.series.ToString() ?? "");
-                    sqlComm.Parameters.AddWithValue("@issueStartDate ", r.issueStartDate ?? "");
-                    sqlComm.Parameters.AddWithValue("@issueEndDate", r.issueEndDate ?? "");
-                    sqlComm.Parameters.AddWithValue("@status", r.status ?? "");
-                    sqlComm.Parameters.AddWithValue("@issueSize", r.issueSize ?? 0);
-                    sqlComm.Parameters.AddWithValue("@issuePrice", r.issuePrice ?? "");
-                    sqlComm.Parameters.AddWithValue("@sr_no",r.srNo ?? "");
-                    sqlComm.Parameters.AddWithValue("@isBse", r.isBse == "1" ? true : false);
-                    sqlComm.Parameters.AddWithValue("@lotSize",  0);
-                    sqlComm.Parameters.AddWithValue("@priceBand", "");
-
-                    sqlComm.Parameters.AddWithValue("@filename", "");
-                    sqlComm.CommandType = CommandType.StoredProcedure;
-                    conn.Open();
-                    sqlComm.ExecuteNonQuery();
-                    conn.Close();
-                }
-                catch (Exception ex)
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
                 {
 
-                    throw;
+                    try
+                    {
+                        SqlCommand sqlComm = new SqlCommand("Insertipo_Current", conn);
+                        sqlComm.Parameters.AddWithValue("@symbol", r.symbol.ToString() ?? "");
+                        sqlComm.Parameters.AddWithValue("@companyName", r.companyName.ToString() ?? "");
+                        sqlComm.Parameters.AddWithValue("@series", r.series.ToString() ?? "");
+                        sqlComm.Parameters.AddWithValue("@issueStartDate ", r.issueStartDate ?? "");
+                        sqlComm.Parameters.AddWithValue("@issueEndDate", r.issueEndDate ?? "");
+                        sqlComm.Parameters.AddWithValue("@status", r.status ?? "");
+                        sqlComm.Parameters.AddWithValue("@issueSize", r.issueSize ?? 0);
+                        sqlComm.Parameters.AddWithValue("@issuePrice", r.issuePrice ?? "");
+                        sqlComm.Parameters.AddWithValue("@sr_no", r.srNo ?? "");
+                        sqlComm.Parameters.AddWithValue("@isBse", r.isBse == "1" ? true : false);
+                        sqlComm.Parameters.AddWithValue("@lotSize", 0);
+                        sqlComm.Parameters.AddWithValue("@priceBand", "");
+
+                        sqlComm.Parameters.AddWithValue("@filename", "");
+                        sqlComm.CommandType = CommandType.StoredProcedure;
+                        conn.Open();
+                        sqlComm.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
                 }
             }
         }

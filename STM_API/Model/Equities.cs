@@ -123,7 +123,9 @@
         public int BullishCount { set; get; }
         public string Match { set; get; }   
        
-        
+  
+
+
     }
 
     public class StockBuy

@@ -45,5 +45,7 @@
 
         
         public DateTime lttDateTime { set; get; }
+
+        public string data { set; get; }
     }
 }

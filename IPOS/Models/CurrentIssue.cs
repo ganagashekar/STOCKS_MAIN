@@ -30,9 +30,9 @@ namespace IPOS.Models
 
         public string category { get; set; }
 
-        public int noOfSharesOffered { get; set; }
+        public string noOfSharesOffered { get; set; }
 
-        public int noOfsharesBid { get; set; }
+        public string noOfsharesBid { get; set; }
 
         public decimal noOfTime { get; set; }
 

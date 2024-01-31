@@ -126,7 +126,8 @@ namespace STM_API.Hubs
                         //Createdon = DateTime.Now,
                         BearishCount = x.bearishCount,
                         BulishCount = x.bullishCount,
-                        Match = x.match
+                        Match = x.match,
+                        Data = x.data
 
                     }).ToList()
 
@@ -134,6 +135,7 @@ namespace STM_API.Hubs
 
 
                     .ToDataTable();
+               
                 CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended_Ticks");
 
             }
