@@ -26,26 +26,26 @@ namespace STM_API.Hubs
         private readonly BreezapiServices _breezapiServices;
         public string GetConnectionId() => Context.ConnectionId;
 
-        public async Task GetPortfolioPosition ()
+        public async Task GetPortfolioPosition()
         {
-           PortfolioPositions results = _breezapiServices.GetPositions();
+            PortfolioPositions results = _breezapiServices.GetPositions();
             await Clients.Caller.SendAsync("SendPortfolioPosition", results);
         }
 
-        public async Task SetBuyPriceAlter(string symbol ,double price)
+        public async Task SetBuyPriceAlter(string symbol, double price)
         {
-            _breezapiServices.SetBuyPriceAlter(symbol,price);
-            await Clients.All.SendAsync("SendSetBuyPriceAlter", "Success For " + symbol + "at Price " + price );
+            _breezapiServices.SetBuyPriceAlter(symbol, price);
+            await Clients.All.SendAsync("SendSetBuyPriceAlter", "Success For " + symbol + "at Price " + price);
         }
         public async Task SetBuyChangeAlter(string symbol, string Change)
         {
-            _breezapiServices.SetBuyChangeAlter(symbol,(Change));
+            _breezapiServices.SetBuyChangeAlter(symbol, (Change));
             await Clients.All.SendAsync("SendSetBuyChangeAlterNew", "Success For " + symbol + "at Change " + Change);
         }
 
         public async Task SetForT3(string symbol, string Change)
         {
-            _breezapiServices.SetForT3(symbol,Change);
+            _breezapiServices.SetForT3(symbol, Change);
             await Clients.All.SendAsync("SendSetForT3", "Success For " + symbol + "at T3 " + Change);
         }
 
@@ -59,7 +59,7 @@ namespace STM_API.Hubs
 
         public async Task GetBuyStockTriggers()
         {
-           var result= _breezapiServices.GetBuyStockTriggers().ToList();
+            var result = _breezapiServices.GetBuyStockTriggers().ToList();
             await Clients.All.SendAsync("SendGetBuyStockTriggers", result);
 
         }
@@ -75,22 +75,22 @@ namespace STM_API.Hubs
         public async Task GetAllStocksForLoadAutomation(int Id)
         {
 
-            if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation",Id)))
+            if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id)))
             {
 
                 FileInfo fileInfo = new FileInfo(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id));
                 var created = fileInfo.CreationTime; //File Creation
                 var lastmodified = fileInfo.LastWriteTime;//File Modification
 
-                if(lastmodified.Date != DateTime.Now.Date)
+                if (lastmodified.Date != DateTime.Now.Date)
                 {
                     _breezapiServices.ExportAutomationLiveStocksToJson();
                 }
-               
-                
+
+
                 var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id));
                 var equities = System.Text.Json.JsonSerializer.Deserialize<List<Equities>>(text).ToList();
-                await Clients.All.SendAsync("SendGetAllStocksForLoadAutomation", equities.Select(x=>x.symbol).ToList());
+                await Clients.All.SendAsync("SendGetAllStocksForLoadAutomation", equities.Select(x => x.symbol).ToList());
                 //var results = _stockTicker.SendAllStocksForLoad().ToList();
                 //await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
             }
@@ -111,8 +111,18 @@ namespace STM_API.Hubs
         }
 
 
+        public async Task GetTopStockforBuyAutomation()
+        {
+
+            List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation().ToList();
+            await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", (result));
+        }
+
+
         public async Task ExportBuyStockAlterFromAPP_IND(string data)
         {
+
+
             if (!string.IsNullOrEmpty(data))
             {
                 var livedata = System.Text.Json.JsonSerializer.Deserialize<List<EquityModelAutomation>>(data, new JsonSerializerOptions
@@ -129,19 +139,20 @@ namespace STM_API.Hubs
                         Match = x.match,
                         Data = x.data
 
-                    }).ToList()
+                    }).ToList().ToDataTable();
 
 
 
 
-                    .ToDataTable();
-               
+
+
+
                 CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended_Ticks");
 
             }
         }
 
-        public async Task ExportBuyStockAlterFromAPP (string data)
+        public async Task ExportBuyStockAlterFromAPP(string data)
         {
             if (!string.IsNullOrEmpty(data))
             {
@@ -149,19 +160,16 @@ namespace STM_API.Hubs
                 {
                     PropertyNameCaseInsensitive = true
                 }).ToList().
-                    Select(x => new Ticker_Stocks_Histry_Extended_Mdl {
+                    Select(x => new Ticker_Stocks_Histry_Extended_Mdl
+                    {
                         symbol = x.symbol,
                         Ltt = x.lttDateTime < DateTime.Now.AddDays(-1).Date ? DateTime.Now : x.lttDateTime,
                         //Createdon = DateTime.Now,
                         BearishCount = x.bearishCount,
                         BulishCount = x.bullishCount,
-                        Match=x.match
+                        Match = x.match
 
                     }).ToList()
-
-                 
-                    
-                    
                     .ToDataTable();
                 CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended");
 
@@ -178,7 +186,7 @@ namespace STM_API.Hubs
             {
                 using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
                 {
-                    var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.KeepIdentity,null)
+                    var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.KeepIdentity, null)
                     {
                         DestinationTableName = tablename,
                         BatchSize = dt.Rows.Count
@@ -189,7 +197,7 @@ namespace STM_API.Hubs
                     //bc.ColumnMappings.Add("Createdon", "Createdon");
                     //bc.ColumnMappings.Add("BearishCount", "BearishCount");
                     //bc.ColumnMappings.Add("BulishCount", "lttBulishCount");
-                 //   bc.ColumnMappings.Add("Match", "Match");
+                    //   bc.ColumnMappings.Add("Match", "Match");
                     conn.Open();
                     bc.WriteToServer(dt);
                     conn.Close();
@@ -290,7 +298,7 @@ namespace STM_API.Hubs
 
         public async Task GetListOfSymbols()
         {
-            var results=_breezapiServices.SendAllStocksForLoad();
+            var results = _breezapiServices.SendAllStocksForLoad();
             await Clients.All.SendAsync("SendGetListOfSymbols", results.ToList());
         }
 

@@ -4,6 +4,7 @@ using System.Data;
 using STM_API.Model.BreezeAPIModel;
 using Newtonsoft.Json;
 using STM_API.AutomationModel;
+using STM_API.AutomationModels;
 
 namespace STM_API.Services
 {
@@ -304,6 +305,91 @@ namespace STM_API.Services
                 sqlComm.ExecuteNonQuery();
                 conn.Close();
             }
+        }
+
+      public  List<PredictedStocksAutomation> GetTopStockforBuyAutomation()
+        {
+            try
+            {
+
+
+
+                //  var NewStock = db.Live_Stocks.FromSql("Execute dbo.SP_GET_LIVE_STOCKS_BY_STOCK {0}", stock.Symbol).ToList(); //.FirstOrDefault(x => x.symbol == stock.Symbol);
+                List<PredictedStocksAutomation> stocks = new List<PredictedStocksAutomation>();
+                DataSet ds = new DataSet();
+
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+
+                    //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                    SqlCommand sqlComm = new SqlCommand("GetTopStockforBuyAutomation", conn);
+                //    sqlComm.Parameters.AddWithValue("@Code", DBNull.Value);
+                    sqlComm.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter da = new SqlDataAdapter();
+                    da.SelectCommand = sqlComm;
+
+                    da.Fill(ds);
+                }
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+
+                    foreach (var r in NewStock)
+                    {
+                        try
+                        {
+                            var _stokc = new PredictedStocksAutomation();
+                            _stokc.Symbol = r["Symbol"].ToString();
+                            _stokc.candleResult_Price = Convert.ToDouble(r["candleResult_Price"].ToString());
+                            _stokc.candleResult_Match = Convert.ToDouble(r["candleResult_Match"].ToString());
+                            _stokc.candleResult_Size = Convert.ToDouble(r["candleResult_Size"].ToString());
+                            _stokc.candleResult_Body = Convert.ToDouble(r["candleResult_Body"].ToString());
+                            _stokc.candleResult_UpperWick = Convert.ToDouble(r["candleResult_UpperWick"].ToString());
+                            _stokc.candleResult_LowerWick = Convert.ToDouble(r["candleResult_LowerWick"].ToString());
+                            _stokc.candleResult_BodyPct = Convert.ToDouble(r["candleResult_BodyPct"]);
+                            _stokc.candleResult_Match = Convert.ToDouble(r["candleResult_Match"].ToString());
+                            _stokc.candleResult_LowerWickPct = Convert.ToDouble(r["candleResult_LowerWickPct"]);
+                            _stokc.candleResult_IsBullish = Convert.ToBoolean(r["candleResult_IsBullish"].ToString());
+                            _stokc.candleResult_IsBearish = Convert.ToBoolean(r["candleResult_IsBearish"].ToString());//.Replace("L", "100000").Replace("C", "1000000"));
+                            _stokc.candleResult_Volume = Convert.ToDouble(r["candleResult_Volume"].ToString());
+                            _stokc.macdresult_Macd = Convert.ToDouble(r["macdresult_Macd"].ToString());
+                            _stokc.macdresult_Signal = Convert.ToDouble(r["macdresult_Signal"].ToString());
+
+                            _stokc.macdresult_FastEma = Convert.ToDouble(r["macdresult_FastEma"].ToString());
+                            _stokc.macdresult_SlowEma = Convert.ToDouble(r["macdresult_SlowEma"]);
+                            _stokc.macdresult_Rsi = Convert.ToDouble(r["macdresult_Rsi"].ToString());
+                            _stokc.Volatilityresults_Sar = Convert.ToDouble(r["Volatilityresults_Sar"]);
+                            _stokc.Volatilityresults_UpperBand = Convert.ToDouble(r["Volatilityresults_UpperBand"].ToString());
+                            _stokc.Volatilityresults_LowerBand = Convert.ToDouble(r["Volatilityresults_LowerBand"].ToString());//.Replace("L", "100000").Replace("C", "1000000"));
+                            //_stokc.candleResult_Volume = Convert.ToDouble(r["candleResult_Volume"].ToString());
+                            //_stokc.macdresult_Macd = Convert.ToDouble(r["macdresult_Macd"].ToString());
+                            //_stokc.macdresult_Signal = Convert.ToDouble(r["macdresult_Signal"].ToString());
+
+
+                            //_stokc.close = Convert.ToDouble(r[21].ToString());
+                            //_stokc.stock_name = r[23].ToString();
+                           
+                            stocks.Add(_stokc);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw;
+                        }
+                    }
+
+                    return stocks;//.Where(X => X.Open <= 120);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+
+            }
+            return Enumerable.Empty<PredictedStocksAutomation>().ToList();
         }
     }
 }
