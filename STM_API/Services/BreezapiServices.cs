@@ -339,7 +339,7 @@ namespace STM_API.Services
                         try
                         {
                             var _stokc = new PredictedStocksAutomation();
-                            _stokc.Symbol = r["Symbol"].ToString();
+                            _stokc.symbol = r["Symbol"].ToString();
                             _stokc.candleResult_Price = Convert.ToDouble(r["candleResult_Price"].ToString());
                             _stokc.candleResult_Match = Convert.ToDouble(r["candleResult_Match"].ToString());
                             _stokc.candleResult_Size = Convert.ToDouble(r["candleResult_Size"].ToString());
@@ -361,6 +361,11 @@ namespace STM_API.Services
                             _stokc.Volatilityresults_Sar = Convert.ToDouble(r["Volatilityresults_Sar"]);
                             _stokc.Volatilityresults_UpperBand = Convert.ToDouble(r["Volatilityresults_UpperBand"].ToString());
                             _stokc.Volatilityresults_LowerBand = Convert.ToDouble(r["Volatilityresults_LowerBand"].ToString());//.Replace("L", "100000").Replace("C", "1000000"));
+
+
+                            _stokc.bulishCount = Convert.ToInt16(r["BulishCount"]);
+                            _stokc.bearishCount = Convert.ToInt16(r["BearishCount"]);
+                            _stokc.ltt = Convert.ToDateTime(r["ltt"]);
                             //_stokc.candleResult_Volume = Convert.ToDouble(r["candleResult_Volume"].ToString());
                             //_stokc.macdresult_Macd = Convert.ToDouble(r["macdresult_Macd"].ToString());
                             //_stokc.macdresult_Signal = Convert.ToDouble(r["macdresult_Signal"].ToString());
@@ -368,7 +373,7 @@ namespace STM_API.Services
 
                             //_stokc.close = Convert.ToDouble(r[21].ToString());
                             //_stokc.stock_name = r[23].ToString();
-                           
+
                             stocks.Add(_stokc);
                         }
                         catch (Exception ex)

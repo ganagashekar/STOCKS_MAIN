@@ -115,7 +115,7 @@ namespace STM_API.Hubs
         {
 
             List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation().ToList();
-            await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", (result));
+            await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", result);
         }
 
 
