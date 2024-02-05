@@ -122,7 +122,7 @@
         public int BearishCount { set; get; }
         public int BullishCount { set; get; }
         public string Match { set; get; }   
-       
+       public int? AwardCount { set; get; }
   
 
 

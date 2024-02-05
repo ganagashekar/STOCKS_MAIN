@@ -75,7 +75,7 @@ namespace STM_API.Hubs
 
         public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
             bool isEnabledForAutoTrade=false ,bool IsNotifications=false, int dynamicminValue = 0, int dynamicmaxValue = 0,
-            string TDays = "", string WatchList = "",bool isTarget=false, bool isBullish = false, bool isbearish = false, bool IsOrderbyVolume=false)
+            string TDays = "", string WatchList = "",bool isTarget=false, bool isBullish = false, bool isbearish = false, bool IsOrderbyVolume=false ,bool IsAward=false)
         {
 
             var results = _stockTicker.GetStocksList(isfavorite, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList);// ''.Where(x => x.open <= 300).ToList();
@@ -94,7 +94,8 @@ namespace STM_API.Hubs
                 results = results.Where(x => Convert.ToInt16(x.BearishCount) > 0).OrderByDescending(x => Convert.ToInt16(x.BearishCount)).ToList();
             if(IsOrderbyVolume)
                 results = results.OrderByDescending(x => (x.ttv)).ToList();
-
+            if(IsAward)
+                results = results.Where(x=>x.AwardCount > 0).OrderByDescending(x => (x.AwardCount)).ToList();
             await Clients.Caller.SendAsync("SendStocksList", results);
             // return _stockTicker.GetAllStocks();
         }

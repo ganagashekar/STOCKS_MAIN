@@ -742,7 +742,7 @@ namespace STM_API.Services
 
 
         public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false,bool isAutoTrade=false, bool isNotifications = false, 
-            int dynamicminValue = 0, int dynamicmaxValue = 0,string Tdays="",string WatchList="")
+            int dynamicminValue = 0, int dynamicmaxValue = 0,string Tdays="",string WatchList="", bool IsAward = false)
         {
 
             try
@@ -865,6 +865,8 @@ namespace STM_API.Services
                             _stokc.Match = Convert.ToString(r[72] ?? "");
                             _stokc.BullishCount = Convert.ToInt16(r[71] ?? 0);
                             _stokc.BearishCount = Convert.ToInt16(r[70] ?? 0);
+
+                            _stokc.AwardCount = Convert.ToInt32(r[73] ?? 0);
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
