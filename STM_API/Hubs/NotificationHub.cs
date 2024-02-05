@@ -111,12 +111,14 @@ namespace STM_API.Hubs
         }
 
 
-        public async Task GetTopStockforBuyAutomation()
+        public async Task GetTopStockforBuyAutomation(bool Isorderbysize = true)
         {
 
-            List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation().ToList();
+            List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation(Isorderbysize).ToList();
             await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", result);
         }
+
+
 
 
         public async Task ExportBuyStockAlterFromAPP_IND(string data)
@@ -137,7 +139,9 @@ namespace STM_API.Hubs
                         BearishCount = x.bearishCount,
                         BulishCount = x.bullishCount,
                         Match = x.match,
-                        Data = x.data
+                        Data = x.data,
+                        Stock_Name = x.stockName,
+                        StockCode = x.stockCode
 
                     }).ToList().ToDataTable();
 

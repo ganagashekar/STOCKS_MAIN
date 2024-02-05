@@ -307,7 +307,7 @@ namespace STM_API.Services
             }
         }
 
-      public  List<PredictedStocksAutomation> GetTopStockforBuyAutomation()
+      public  List<PredictedStocksAutomation> GetTopStockforBuyAutomation(bool isorderbysize)
         {
             try
             {
@@ -323,7 +323,7 @@ namespace STM_API.Services
 
                     //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
                     SqlCommand sqlComm = new SqlCommand("GetTopStockforBuyAutomation", conn);
-                //    sqlComm.Parameters.AddWithValue("@Code", DBNull.Value);
+                    sqlComm.Parameters.AddWithValue("@isorderbysize", isorderbysize);
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;
@@ -366,6 +366,9 @@ namespace STM_API.Services
                             _stokc.bulishCount = Convert.ToInt16(r["BulishCount"]);
                             _stokc.bearishCount = Convert.ToInt16(r["BearishCount"]);
                             _stokc.ltt = Convert.ToDateTime(r["ltt"]);
+
+                            _stokc.StockCode = r["StockCode"].ToString();
+                            _stokc.Stock_Name = r["Stock_Name"].ToString();
                             //_stokc.candleResult_Volume = Convert.ToDouble(r["candleResult_Volume"].ToString());
                             //_stokc.macdresult_Macd = Convert.ToDouble(r["macdresult_Macd"].ToString());
                             //_stokc.macdresult_Signal = Convert.ToDouble(r["macdresult_Signal"].ToString());

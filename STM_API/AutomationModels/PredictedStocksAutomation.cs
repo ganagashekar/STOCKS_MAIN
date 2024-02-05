@@ -49,6 +49,8 @@
         public double? Volatilityresults_LowerBand { get; set; }
 
         public string Volatilityresults_IsStop { get; set; }
+        public string Stock_Name { get; set; }
+        public string StockCode { get; set; }
 
     }
 
