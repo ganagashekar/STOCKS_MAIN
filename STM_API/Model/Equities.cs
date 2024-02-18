@@ -77,7 +77,7 @@
         public string SECId { get; set; }
 
         public int min { set; get; }
-        public int max { set;get; }
+        public int max { set; get; }
 
         public double return1d { set; get; }
         public double return1w { set; get; }
@@ -103,28 +103,45 @@
         public double price52Weekslow { set; get; }
         public double price52Weekshigh { set; get; }
         public bool IsLowerCircuite { get; set; }
-        public bool IsUpperCircuite { get;set; }
+        public bool IsUpperCircuite { get; set; }
 
         public double buyat { set; get; }
         public string? buyatChange { set; get; }
         public bool isenabledforautoTrade { get; set; }
 
-        public string tdays { set; get; } 
-        public string WacthList { set; get; }   
+        public string tdays { set; get; }
+        public string WacthList { set; get; }
 
-        public string pr_change { set; get; }   
+        public string pr_change { set; get; }
         public string pr_close { set; get; }
-        public string pr_open { set; get;}  
+        public string pr_open { set; get; }
 
-        public string pr_volume { set; get;}
+        public string pr_volume { set; get; }
         public string pr_date { set; get; }
 
         public int BearishCount { set; get; }
         public int BullishCount { set; get; }
-        public string Match { set; get; }   
-       public int? AwardCount { set; get; }
-  
+        public string Match { set; get; }
+        public int? AwardCount { set; get; }
 
+
+        public string pr_Macresult { set; get; }
+        public string pr_RSI { set; get; }
+
+        public string pr_Match { set; get; }
+        public string pr_SuperTrend { set; get; }
+
+        public string last7DaysChange { set; get; }
+
+
+        public double? fn_eps { set; get; }
+        public double? oPM_Percentage { set; get; }
+        public double? nPM_Percentage { set; get; }
+        public double? profit_Increase { set; get; }
+        public double? revenueIncrease { set; get; }
+        public double? profitDifference { set; get; }
+        public double? revenueDifference { set; get; }
+        public DateTime? quarterEnd { set; get; }
 
     }
 
@@ -140,8 +157,8 @@
 
         public string ltt { get; set; }
         public double avgPrice { get; set; }
-        
-        public double   ttv { get; set; }
+
+        public double ttv { get; set; }
         public double prev { get; set; }
         public double Ratio { get; set; }
 

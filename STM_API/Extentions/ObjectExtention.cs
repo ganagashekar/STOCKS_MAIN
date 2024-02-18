@@ -1,11 +1,39 @@
-﻿using System.Data;
+﻿using STM_API.Model;
+using System.Data;
 using System.Reflection;
 
 namespace STM_API.Extentions
 {
     public static class ObjectExtention
     {
+        public static  List<EquitiesHsitry> CustomSort<T>( List<EquitiesHsitry> input, string property,string Customorderby)
+        {
+            if (Customorderby == "asc")
+            {
+                var type = typeof(T);
+                var sortProperty = type.GetProperty(property);
+                return input.OrderBy(p => sortProperty.GetValue(p, null)).ToList();
 
+            }
+            else
+            {
+                var type = typeof(T);
+                var sortProperty = type.GetProperty(property);
+                return input.OrderByDescending(p => sortProperty.GetValue(p, null)).ToList();
+            }
+        }
+        public static List<EquitiesHsitry> CustomSort<T>(this List<EquitiesHsitry> input, string property)
+        {
+            var type = typeof(T);
+            var sortProperty = type.GetProperty(property);
+            return input.OrderBy(p => sortProperty.GetValue(p, null)).ToList();
+        }
+
+        public static List<double> AddValue(this List<double> equities, double value)
+        {
+            equities.Add(value);
+            return equities.ToList();
+        }
         public static DataTable ToDataTable<T>(List<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);

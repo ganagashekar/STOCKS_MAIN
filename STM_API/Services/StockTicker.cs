@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Skender.Stock.Indicators;
 using STM_API.Extention;
+using STM_API.Extentions;
 using STM_API.Model;
 using System;
 using System.Collections;
@@ -14,6 +16,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -745,6 +748,7 @@ namespace STM_API.Services
             int dynamicminValue = 0, int dynamicmaxValue = 0,string Tdays="",string WatchList="", bool IsAward = false)
         {
 
+          
             try
             {
                 //  var NewStock = db.Live_Stocks.FromSql("Execute dbo.SP_GET_LIVE_STOCKS_BY_STOCK {0}", stock.Symbol).ToList(); //.FirstOrDefault(x => x.symbol == stock.Symbol);
@@ -795,6 +799,28 @@ namespace STM_API.Services
                     {
                         try
                         {
+                            var quotelist=GetJsonFileHistryData(r[0].ToString());
+
+                            var quotelistasc = quotelist.OrderBy(x => x.ltt);
+                            List<Quote> quotesList = quotelist.Select(x => new Quote
+                            {
+                                Close = Convert.ToDecimal(x.last),
+                                Open = Convert.ToDecimal(x.open),
+                                Date = Convert.ToDateTime(x.ltt),
+                                High = Convert.ToDecimal(x.high),
+                                Low = Convert.ToDecimal(x.low),
+                                Volume = Convert.ToDecimal(x.ttv)
+                            }).OrderBy(x => x.Date).ToList();
+
+                           
+                            IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12, 26, 9);
+                            IEnumerable<WmaResult> wmaResults  = quotesList.GetWma(5);
+                            IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(7, 3);
+                            IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(7);
+
+                            IEnumerable<SuperTrendResult> Strend =quotesList.GetSuperTrend(10, 3);
+                            var candleResult = quotesList.GetMarubozu(85);
+
                             var _stokc = new EquitiesHsitry();
                             _stokc.symbol = r[0].ToString();
                             _stokc.open = Convert.ToDouble(r[1].ToString());
@@ -813,7 +839,8 @@ namespace STM_API.Services
                             _stokc.ltt = r[20].ToString();
                             _stokc.close = Convert.ToDouble(r[21].ToString());
                             _stokc.stock_name = r[23].ToString();
-                            _stokc.Data = GetJsonFileHistryData(r[0].ToString(), Convert.ToDouble(r[21].ToString()));
+                            _stokc.Data = quotelist.Select(x => x.close.Value).ToList().AddValue(Convert.ToDouble(r[21].ToString())).ToList();
+                                                                                                  
                             _stokc.buyat = Convert.ToDouble(r[60] ?? 0);
                             _stokc.DataPoint= GetJsonFileHistryDataPoint(r[0].ToString(), Convert.ToDouble(r[21].ToString()), _stokc.buyat);
                             _stokc.min = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x)) :0;
@@ -856,17 +883,34 @@ namespace STM_API.Services
                             _stokc.IsUpperCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.upperCktLm;
                             _stokc.tdays = Convert.ToString(r[63] ?? 0);
                             _stokc.WacthList = Convert.ToString(r[64] ?? "");
-                            _stokc.pr_change= Convert.ToString(r[65] ?? "");
-                            _stokc.pr_close = Convert.ToString(r[66] ?? "");
-                            _stokc.pr_open = Convert.ToString(r[67] ?? "");
-                            _stokc.pr_volume = Convert.ToString(r[68] ?? "");
-                            _stokc.pr_date = Convert.ToString(r[69] ?? "");
 
-                            _stokc.Match = Convert.ToString(r[72] ?? "");
-                            _stokc.BullishCount = Convert.ToInt16(r[71] ?? 0);
-                            _stokc.BearishCount = Convert.ToInt16(r[70] ?? 0);
+                            _stokc.pr_change = string.Join(',', quotelist.Skip(quotelist.Count-30).Take(30).Select(x => x.change)); //// Convert.ToString(r[65] ?? "");
+                            _stokc.pr_close = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.close)); //Convert.ToString(r[66] ?? "");
+                            _stokc.pr_open = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.open)); //Convert.ToString(r[67] ?? "");
+                            _stokc.pr_volume = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.VolumeC));// Convert.ToString(r[68] ?? "");
+                            _stokc.pr_date = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => Convert.ToDateTime(x.ltt).ToShortDateString()));// Convert.ToString(r[69] ?? "");
 
-                            _stokc.AwardCount = Convert.ToInt32(r[73] ?? 0);
+                            _stokc.pr_Macresult = string.Join(",", macdresult.Skip(quotelist.Count - 30).Take(30).Select(x => x.Macd.HasValue ? Convert.ToDouble(x.Macd).ToString("F2") : ""));
+                            _stokc.pr_RSI = string.Join(",", rsiResults.Skip(quotelist.Count - 30).Take(30).Select(x => x.Rsi.HasValue ? Convert.ToDouble(x.Rsi).ToString("F2") : ""));
+                            _stokc.pr_Match = string.Join(",", candleResult.Skip(quotelist.Count - 30).Take(30).Select(x=>x.Match.ToString().Replace("Signal","")));
+                            _stokc.pr_SuperTrend = string.Join(",", Strend.Skip(quotelist.Count - 30).Take(30).Select(x => x.SuperTrend.HasValue ? Convert.ToDouble(x.SuperTrend).ToString("F2") : ""));
+                            
+                            _stokc.Match = Convert.ToString(r[67] ?? "");
+                            _stokc.BullishCount = Convert.ToInt16(r[66] ?? 0);
+                            _stokc.BearishCount = Convert.ToInt16(r[65] ?? 0);
+
+                            _stokc.AwardCount = Convert.ToInt32(r[68] ?? 0);
+
+                            _stokc.last7DaysChange = string.Join(',', quotelist.Skip(quotelist.Count - 7).Take(7).Select(x => x.change));
+
+                            _stokc.fn_eps = Convert.ToDouble(r["fn_eps"] ?? 0);
+                            _stokc.oPM_Percentage = Convert.ToDouble(r["OPM_Percentage"] ?? 0);
+                            _stokc.nPM_Percentage = Convert.ToDouble(r["NPM_Percentage"] ?? 0);
+                            _stokc.profit_Increase = Convert.ToDouble(r["Profit_Increase"] ?? 0);
+                            _stokc.revenueIncrease = Convert.ToDouble(r["RevenueIncrease"] ?? 0);
+                            _stokc.profitDifference = Convert.ToDouble(r["ProfitDifference"] ?? 0);
+                            _stokc.revenueDifference = Convert.ToDouble(r["RevenueDifference"] ?? 0);
+                            _stokc.quarterEnd = Convert.ToDateTime(r["QuarterEnd"].ToString() !="" ? Convert.ToDateTime(r["QuarterEnd"]).ToShortDateString(): null);
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
@@ -1228,6 +1272,7 @@ namespace STM_API.Services
         public List<Equities> GetHistryData()
         {
 
+           
             try
             {
                 //  var NewStock = db.Live_Stocks.FromSql("Execute dbo.SP_GET_LIVE_STOCKS_BY_STOCK {0}", stock.Symbol).ToList(); //.FirstOrDefault(x => x.symbol == stock.Symbol);
@@ -1786,7 +1831,8 @@ namespace STM_API.Services
         }
 
 
-        public List<double> GetJsonFileHistryData(string Symvbol, double Last)
+   
+        public List<Equities> GetJsonFileHistryData(string Symvbol)
         {
 
             if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol)))
@@ -1794,11 +1840,14 @@ namespace STM_API.Services
                 try
                 {
                     var text = System.IO.File.ReadAllText(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol));
-                    var data = JsonConvert.DeserializeObject<List<Equities>>(text).OrderBy(x => Convert.ToDateTime(x.ltt));
+                   return JsonConvert.DeserializeObject<List<Equities>>(text).OrderByDescending(x => Convert.ToDateTime(x.ltt)).Take(60).OrderBy(x => Convert.ToDateTime(x.ltt)).ToList();
 
-                    var sortlist = data.Select(x => x.close.Value).ToList();
-                    sortlist.Add(Last);
-                    return sortlist;
+                    //var sortlist = data.Select(x => x.close.Value).ToList();
+                    //sortlist.Add(Last);
+                    //return sortlist;
+
+
+
                     //Arraysortlist = sortlist.Select(x => Convert.ToDecimal(x)).ToList();
                     //var nearest = sortlist.OrderBy(x => Math.Abs((long)x - Last)).First();
 
@@ -1810,12 +1859,12 @@ namespace STM_API.Services
                 catch (Exception)
                 {
 
-                    return new List<double>();
+                    return new List<Equities>();
                 }
             }
             else
             {
-                return new List<double>();
+                return new List<Equities>();
             }
         }
 
@@ -1827,7 +1876,7 @@ namespace STM_API.Services
                 try
                 {
                     var text = System.IO.File.ReadAllText(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol));
-                    var data = JsonConvert.DeserializeObject<List<Equities>>(text).OrderBy(x => Convert.ToDateTime(x.ltt));
+                    var data = JsonConvert.DeserializeObject<List<Equities>>(text).ToList().OrderByDescending(x => Convert.ToDateTime(x.ltt)).Take(60).OrderBy(x => Convert.ToDateTime(x.ltt));
 
                     var sortlist = data.Select(x => new ChartData { value = x.close.Value, extremum = null }).ToList();
                     sortlist.Add(new ChartData { value=Last});

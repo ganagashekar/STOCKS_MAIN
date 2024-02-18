@@ -26,7 +26,10 @@ namespace MSNStocks.Models
         public string? Recommondations { get; set; }
         public string? MSN_SECID { get; set; }
 
-        public string ? JsonData { get; set; }  
+        public string? JsonData { get; set; }
         public DateTime? UpdatedOn { get; set; }
+
+        public bool? IsLatestQuaterUpdated { get; set; }
+        public DateTime? FinancialUpdatedOn { get; set; }
     }
 }

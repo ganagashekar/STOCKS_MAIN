@@ -2,20 +2,26 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MSNStocks.Models;
+using MSNStocks.Models.results;
 using MSNStocks.Query;
 using MSNStocks.Result;
 using MSNStocks.WebApp;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
 namespace MSNStocks
 {
-    internal static class API_MSN_Library
+    public static class API_MSN_Library
     {
 
 
@@ -87,6 +93,378 @@ namespace MSNStocks
             }
         }
 
+        public static string ExecuteCurl(string curlCommand, int timeoutInSeconds = 60)
+        {
+
+
+
+            using (var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "curl.exe",
+                    Arguments = curlCommand.ToString(),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = Environment.SystemDirectory
+                }
+            })
+            {
+                proc.Start();
+
+                //proc.WaitForExit(timeoutInSeconds * 1000);
+
+                return proc.StandardOutput.ReadToEnd();
+            }
+        }
+
+        public static int GetFinancialYearStart(DateTime input)
+        {
+            return input.Month < 9 ? input.Year - 1 : input.Year;
+        }
+        public static async Task getInitStocksFromSECIDForBSEResults()
+        {
+            string quatername = "DEC-23";
+            List<Stock_Financial_Results> stock_Financial_Resultslistdata_failed = new List<Stock_Financial_Results>();
+            try
+            {
+                using (var db = new STOCKContext())
+                {
+                    Console.WriteLine("Database Connected");
+                    Console.WriteLine();
+                    Console.WriteLine("Listing Category Sales For 1997s");
+                    var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null)
+                       // .Where(x=>x.Symbol== "1.1!500189")
+                        //.Where(x=>x.FinancialUpdatedOn ==null).
+                        .Where(x => x.IsLatestQuaterUpdated == false);
+                       // Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
+                    //db.Database.ExecuteSqlRaw("TRUNCATE TABLE dbo.[Stock_Financial_Results]");
+                    foreach (var item in equites)
+                    {
+
+                        try
+                        {
+                            var Stock_Financial_Results_obj = db.Stock_Financial_Results.Where(x => x.Symbol == item.Symbol).ToList();
+
+
+                            List<Stock_Financial_Results> stock_Financial_Resultslistdata = new List<Stock_Financial_Results>();
+
+                            var cmd = @"curl ""https://api.bseindia.com/BseIndiaAPI/api/TabResults_PAR/w?scripcode={0}&tabtype=RESULTS"" ^
+  -H ""authority: api.bseindia.com"" ^
+  -H ""accept: application/json, text/plain, */*"" ^
+  -H ""accept-language: en-US,en;q=0.9"" ^
+  -H ""origin: https://www.bseindia.com"" ^
+  -H ""referer: https://www.bseindia.com/"" ^
+  -H ""sec-ch-ua: ^\^""Not A(Brand^\^"";v=^\^""99^\^"", ^\^""Microsoft Edge^\^"";v=^\^""121^\^"", ^\^""Chromium^\^"";v=^\^""121^\^"""" ^
+  -H ""sec-ch-ua-mobile: ?0"" ^
+  -H ""sec-ch-ua-platform: ^\^""Windows^\^"""" ^
+  -H ""sec-fetch-dest: empty"" ^
+  -H ""sec-fetch-mode: cors"" ^
+  -H ""sec-fetch-site: same-site"" ^
+  -H ""user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0"" ^";
+
+
+                            //var output = ExecuteCurl(string.Format(cmd,1, 20231026, 20231026));
+
+                            string output = ExecuteCurl(string.Format(cmd, item.Symbol.Replace("1.1!", "")));
+                            if (!string.IsNullOrEmpty(output))
+                            {
+
+                                var data = JsonConvert.DeserializeObject<string>(output.ToString());
+                                var Resp_obj = JsonConvert.DeserializeObject<FinancialResults>(data);
+
+
+                                for (int i = 0; i < 6; i++)
+                                {
+                                    Stock_Financial_Results obj_v1 = new Stock_Financial_Results();
+
+                                    obj_v1.Symbol = item.Symbol;
+                                    if (i == 0 || i == 3)
+                                    {
+                                        obj_v1.VType = "V1";
+                                        obj_v1.QuarterEnd = DateTime.ParseExact(Resp_obj.col2, "MMM-yy", CultureInfo.InvariantCulture).AddMonths(+1).AddDays(-1);
+                                        obj_v1.CREATED_ON = DateTime.Now;
+
+                                        obj_v1.Stock_Name = item.SecurityName;
+                                        obj_v1.URL = Resp_obj.resultinS.FirstOrDefault().LQ;
+                                    }
+                                    if (!string.IsNullOrEmpty(Resp_obj.col3) && ( i == 1 || i == 4))
+                                    {
+                                        obj_v1.VType = "V2";
+                                        obj_v1.QuarterEnd = DateTime.ParseExact(Resp_obj.col3, "MMM-yy", CultureInfo.InvariantCulture).AddMonths(+1).AddDays(-1);
+                                        obj_v1.CREATED_ON = DateTime.Now;
+
+                                        obj_v1.Stock_Name = item.SecurityName;
+                                        obj_v1.URL = Resp_obj.resultinS.FirstOrDefault().LLQ;
+                                    }
+                                    if (i == 2 || i == 5)
+                                    {
+                                        obj_v1.VType = "V3";
+
+
+
+                                        if (Resp_obj.col4.Contains("FY"))
+                                        {
+                                            var year = GetFinancialYearStart(DateTime.Now);
+                                            obj_v1.QuarterEnd = DateTime.ParseExact("03-" + year, "MM-yyyy", CultureInfo.InvariantCulture).AddMonths(+1).AddDays(-1);
+                                            obj_v1.CREATED_ON = DateTime.Now;
+
+                                            obj_v1.Stock_Name = item.SecurityName;
+                                            obj_v1.URL = Resp_obj.resultinS.FirstOrDefault().FY;
+                                        }
+                                    }
+
+                                    stock_Financial_Resultslistdata.Add(obj_v1);
+
+
+
+                                }
+                                {
+                                    int k = 0;
+                                    foreach (var res_item in Resp_obj.resultinCr)
+                                    {
+
+                                        if (k == 0)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].Revenue = Revenue_v1;
+                                            stock_Financial_Resultslistdata[0].CurrencyIn = "CR";
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].Revenue = Revenue_v2;
+                                            stock_Financial_Resultslistdata[1].CurrencyIn = "CR";
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].Revenue = Revenue_v3;
+                                            stock_Financial_Resultslistdata[2].CurrencyIn = "CR";
+
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[0].RevenueIncrease = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            stock_Financial_Resultslistdata[0].RevenueDifference = ((Revenue_v1 - Revenue_v2));
+                                            //stock_Financial_Resultslistdata[1].RevenueIncrease = ((Revenue_v2 - Revenue_v3) / Revenue_v3) * 100;
+                                        }
+                                        if (k == 1)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].NET_PROFIT = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].NET_PROFIT = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].NET_PROFIT = Revenue_v3;
+
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[0].Profit_Increase = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            stock_Financial_Resultslistdata[0].ProfitDifference = ((Revenue_v1 - Revenue_v2));
+                                            //stock_Financial_Resultslistdata[1].Profit_Increase = ((Revenue_v2 - Revenue_v3) / Revenue_v3) * 100;
+                                        }
+
+                                        if (k == 2)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].EPS = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].EPS = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].EPS = Revenue_v3;
+
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[0].EPS_INcrease = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            stock_Financial_Resultslistdata[0].EPSDifference = ((Revenue_v1 - Revenue_v2));
+                                            //stock_Financial_Resultslistdata[1].EPS_INcrease = ((Revenue_v2 - Revenue_v3) / Revenue_v3) * 100;
+                                        }
+
+
+
+                                        if (k == 3)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].Cash_EPS = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].Cash_EPS = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].Cash_EPS = Revenue_v3;
+                                        }
+                                        if (k == 4)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].OPM_Percentage = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].OPM_Percentage = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].OPM_Percentage = Revenue_v3;
+                                        }
+                                        if (k == 5)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[0].NPM_Percentage = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[1].NPM_Percentage = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[2].NPM_Percentage = Revenue_v3;
+                                        }
+                                        k = k + 1;
+                                    }
+                                }
+
+                                {
+
+                                    int k = 0;
+                                    foreach (var res_item in Resp_obj.resultinM)
+                                    {
+                                        if (k == 0)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].Revenue = Revenue_v1;
+                                            stock_Financial_Resultslistdata[3].CurrencyIn = "Millions";
+
+
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].Revenue = Revenue_v2;
+                                            stock_Financial_Resultslistdata[4].CurrencyIn = "Millions";
+
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].Revenue = Revenue_v3;
+                                            stock_Financial_Resultslistdata[5].CurrencyIn = "Millions";
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[3].RevenueIncrease = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            
+                                            stock_Financial_Resultslistdata[3].RevenueDifference = ((Revenue_v1 - Revenue_v2));
+
+                                        }
+                                        if (k == 1)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].NET_PROFIT = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].NET_PROFIT = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].NET_PROFIT = Revenue_v3;
+
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[3].Profit_Increase = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            stock_Financial_Resultslistdata[3].ProfitDifference = ((Revenue_v1 - Revenue_v2));
+                                        }
+
+                                        if (k == 2)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].EPS = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].EPS = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].EPS = Revenue_v3;
+                                            if (Revenue_v2 > 0)
+                                                stock_Financial_Resultslistdata[3].EPS_INcrease = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
+                                            stock_Financial_Resultslistdata[3].EPSDifference = ((Revenue_v1 - Revenue_v2));
+                                            // stock_Financial_Resultslistdata[4].EPS = ((Revenue_v2 - Revenue_v3) / Revenue_v3) * 100;
+                                        }
+
+
+
+                                        if (k == 3)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].Cash_EPS = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].Cash_EPS = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].Cash_EPS = Revenue_v3;
+                                        }
+                                        if (k == 4)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].OPM_Percentage = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].OPM_Percentage = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].OPM_Percentage = Revenue_v3;
+                                        }
+                                        if (k == 5)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].NPM_Percentage = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].NPM_Percentage = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].NPM_Percentage = Revenue_v3;
+                                        }
+                                        if (k == 6)
+                                        {
+                                            decimal.TryParse(res_item.v1, out var Revenue_v1);
+                                            stock_Financial_Resultslistdata[3].PE_Ratio = Revenue_v1;
+
+                                            decimal.TryParse(res_item.v2, out var Revenue_v2);
+                                            stock_Financial_Resultslistdata[4].PE_Ratio = Revenue_v2;
+
+                                            decimal.TryParse(res_item.v3, out var Revenue_v3);
+                                            stock_Financial_Resultslistdata[5].PE_Ratio = Revenue_v3;
+                                        }
+                                        k = k + 1;
+                                    }
+                                }
+
+                                var resultss = stock_Financial_Resultslistdata.Where(x => !Stock_Financial_Results_obj.Any(y => y.QuarterEnd.ToString() == x.QuarterEnd.ToString()));
+                                if (resultss.Any())
+                                {
+                                    resultss.ToList().ForEach(x => x.UPDATED_ON = DateTime.Now);
+                                    db.Stock_Financial_Results.AddRange(resultss);
+
+                                    item.IsLatestQuaterUpdated = Resp_obj.col2.ToLower().ToString()== quatername.ToLower().ToString() ?  true :false;
+                                    item.FinancialUpdatedOn = DateTime.Now;
+
+                                    db.SaveChanges();
+                                } 
+                            }
+
+
+
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                            stock_Financial_Resultslistdata_failed.Add(new Stock_Financial_Results { Symbol = item.Symbol });
+                        }
+
+                        //    )  "" )
+
+                        
+
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
 
         public static async Task getInitStocksFromSECID()
         {
@@ -99,7 +477,7 @@ namespace MSNStocks
                 Console.WriteLine("Database Connected");
                 Console.WriteLine();
                 Console.WriteLine("Listing Category Sales For 1997s");
-                var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null).Where(x=>Convert.ToDateTime(x.UpdatedOn)!=Convert.ToDateTime(DateTime.Now));
+                var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null).Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
 
 
                 int count = 0;
@@ -119,7 +497,7 @@ namespace MSNStocks
                             if (stockresult.equity != null)
                             {
                                 equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? null;
-                                CurrentRecommondation= equity.Recommondations;
+                                CurrentRecommondation = equity.Recommondations;
                                 equity.JsonData = JsonConvert.SerializeObject(stockresult);
                                 Console.WriteLine(equity.MSN_SECID);
                             }
@@ -148,7 +526,7 @@ namespace MSNStocks
                                 db.Database.ExecuteSqlRaw("InsertOrUpdateMSN_Notification {0}, {1}, {2} ", MSN_SECID, FavoriteAdded, FavoriteRemoved);
 
 
-  
+
                             }
                             // System.Threading.Thread.Sleep(1000);
                         }
