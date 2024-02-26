@@ -42,7 +42,7 @@ namespace MSNStocks
 
                 foreach (var equity in equites)
                 {
-
+                    
                     try
                     {
                         var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=BSE&count=1", equity.SecurityCode));
@@ -143,7 +143,7 @@ namespace MSNStocks
                     //db.Database.ExecuteSqlRaw("TRUNCATE TABLE dbo.[Stock_Financial_Results]");
                     foreach (var item in equites)
                     {
-
+                        Console.WriteLine(item.Symbol);
                         try
                         {
                             var Stock_Financial_Results_obj = db.Stock_Financial_Results.Where(x => x.Symbol == item.Symbol).ToList();

@@ -901,7 +901,7 @@ namespace STM_API.Services
 
                             _stokc.AwardCount = Convert.ToInt32(r[68] ?? 0);
 
-                            _stokc.last7DaysChange = string.Join(',', quotelist.Skip(quotelist.Count - 7).Take(7).Select(x => x.change));
+                            _stokc.last7DaysChange = string.Join(',', quotelist.Skip(quotelist.Count - 10).Take(10).Select(x => Convert.ToDouble(x.change).ToString("N2")));
 
                             _stokc.fn_eps = Convert.ToDouble(r["fn_eps"] ?? 0);
                             _stokc.oPM_Percentage = Convert.ToDouble(r["OPM_Percentage"] ?? 0);
@@ -1990,6 +1990,7 @@ namespace STM_API.Services
 
             }
         }
+
 
         internal object GetStockDetailsBySymbol(string symbol)
         {
