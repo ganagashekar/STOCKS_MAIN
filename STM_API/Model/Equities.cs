@@ -143,6 +143,10 @@
         public double? revenueDifference { set; get; }
         public DateTime? quarterEnd { set; get; }
 
+        public DateTime? FnUpdatedon { set; get; }
+
+
+
     }
 
     public class StockBuy

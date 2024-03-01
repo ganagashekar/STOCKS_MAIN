@@ -901,7 +901,8 @@ namespace STM_API.Services
 
                             _stokc.AwardCount = Convert.ToInt32(r[68] ?? 0);
 
-                            _stokc.last7DaysChange = string.Join(',', quotelist.Skip(quotelist.Count - 10).Take(10).Select(x => Convert.ToDouble(x.change).ToString("N2")));
+                           var resverse= quotelist.Skip(quotelist.Count - 10).Take(10).Select(x => Convert.ToDouble(x.change).ToString("N2")).Reverse();
+                            _stokc.last7DaysChange = string.Join(',', resverse);
 
                             _stokc.fn_eps = Convert.ToDouble(r["fn_eps"] ?? 0);
                             _stokc.oPM_Percentage = Convert.ToDouble(r["OPM_Percentage"] ?? 0);
@@ -911,6 +912,8 @@ namespace STM_API.Services
                             _stokc.profitDifference = Convert.ToDouble(r["ProfitDifference"] ?? 0);
                             _stokc.revenueDifference = Convert.ToDouble(r["RevenueDifference"] ?? 0);
                             _stokc.quarterEnd = Convert.ToDateTime(r["QuarterEnd"].ToString() !="" ? Convert.ToDateTime(r["QuarterEnd"]).ToShortDateString(): null);
+                            _stokc.FnUpdatedon = Convert.ToDateTime(r["FnUpdatedon"].ToString() !="" ? Convert.ToDateTime(r["FnUpdatedon"]).ToShortDateString(): null);
+
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
