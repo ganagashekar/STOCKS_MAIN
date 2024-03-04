@@ -744,8 +744,10 @@ namespace STM_API.Services
 
 
 
-        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false,bool isAutoTrade=false, bool isNotifications = false, 
-            int dynamicminValue = 0, int dynamicmaxValue = 0,string Tdays="",string WatchList="", bool IsAward = false)
+        public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
+            bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
+            string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
+            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250)
         {
 
           
@@ -762,13 +764,29 @@ namespace STM_API.Services
                     SqlCommand sqlComm = new SqlCommand("SP_GET_LIVE_STOCKS_BY_STOCK", conn);
                     sqlComm.Parameters.AddWithValue("@Code", DBNull.Value);
                     sqlComm.Parameters.AddWithValue("@isfavorite", isfavorite);
-                    sqlComm.Parameters.AddWithValue("@isAutoTrade", isAutoTrade);
-                    sqlComm.Parameters.AddWithValue("@ShowNotification", isNotifications);
+                    sqlComm.Parameters.AddWithValue("@isAutoTrade", isEnabledForAutoTrade);
+                    sqlComm.Parameters.AddWithValue("@ShowNotification", IsNotifications);
                     sqlComm.Parameters.AddWithValue("@minvalue", dynamicminValue);
                     sqlComm.Parameters.AddWithValue("@maxvalue", dynamicmaxValue);
-
-                    sqlComm.Parameters.AddWithValue("@Tdays", Tdays);
+                    sqlComm.Parameters.AddWithValue("@Tdays", TDays);
                     sqlComm.Parameters.AddWithValue("@WatchList", WatchList);
+                    sqlComm.Parameters.AddWithValue("@isUpperCircuit", isUpperCircuit);
+                    sqlComm.Parameters.AddWithValue("@islowerCircuit", islowerCircuit);
+                    sqlComm.Parameters.AddWithValue("@skip", skip);
+                    sqlComm.Parameters.AddWithValue("@take", take);
+
+                    sqlComm.Parameters.AddWithValue("@IsOrderbyVolume", IsOrderbyVolume);
+                    sqlComm.Parameters.AddWithValue("@orderby_obj", orderby_obj);
+                    sqlComm.Parameters.AddWithValue("@sortorder", order);
+
+
+                    sqlComm.Parameters.AddWithValue("@isBullish", isBullish);
+                    sqlComm.Parameters.AddWithValue("@isbearish", isbearish);
+                    sqlComm.Parameters.AddWithValue("@IsAward", IsAward);
+
+                    sqlComm.Parameters.AddWithValue("@isTarget", isTarget);
+
+
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;
@@ -913,6 +931,9 @@ namespace STM_API.Services
                             _stokc.revenueDifference = Convert.ToDouble(r["RevenueDifference"] ?? 0);
                             _stokc.quarterEnd = Convert.ToDateTime(r["QuarterEnd"].ToString() !="" ? Convert.ToDateTime(r["QuarterEnd"]).ToShortDateString(): null);
                             _stokc.FnUpdatedon = Convert.ToDateTime(r["FnUpdatedon"].ToString() !="" ? Convert.ToDateTime(r["FnUpdatedon"]).ToShortDateString(): null);
+                            _stokc.last7DaysChange = Convert.ToString(r["Last7DaysChange"].ToString() ?? "");
+                            _stokc.change = Convert.ToDouble(r["quote_priceChangePercent"].ToString());
+                            _stokc.rowcount = Convert.ToInt32(r["counts"].ToString());
 
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);

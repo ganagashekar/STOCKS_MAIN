@@ -145,6 +145,8 @@
 
         public DateTime? FnUpdatedon { set; get; }
 
+        public int rowcount { set; get; }
+
 
 
     }
