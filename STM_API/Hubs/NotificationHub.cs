@@ -111,10 +111,13 @@ namespace STM_API.Hubs
         }
 
 
-        public async Task GetTopStockforBuyAutomation(bool Isorderbysize = true)
+        public async Task GetTopStockforBuyAutomation(bool Isorderbysize = true,string Date="")
         {
-
-            List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation(Isorderbysize).ToList();
+            if (string.IsNullOrEmpty(Date))
+            {
+                Date=DateTime.Now.Date.ToShortDateString();
+            }
+            List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation(Isorderbysize, Date).ToList();
             await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", result);
         }
 

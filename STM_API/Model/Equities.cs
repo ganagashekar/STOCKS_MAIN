@@ -146,6 +146,8 @@
         public DateTime? FnUpdatedon { set; get; }
 
         public int rowcount { set; get; }
+        public double? futurePercentage { set; get; }
+        public string quaterlyResults { set; get; }
 
 
 

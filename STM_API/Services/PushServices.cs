@@ -6,7 +6,7 @@
 
         public  async Task SendPushServicesAsync(string tittle,string token,string user,string priority,string message,string retry,string expire,string sound )
         {
-            var iphonelis= new  List<string>() { "BSE_NEW_IP","SELL_STOCK", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
+            var iphonelis= new  List<string>() { "SELL_STOCK_DOWN", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
             var parameters = new Dictionary<string, string>
             {
                 ["token"] = token,

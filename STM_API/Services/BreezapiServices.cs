@@ -307,7 +307,7 @@ namespace STM_API.Services
             }
         }
 
-      public  List<PredictedStocksAutomation> GetTopStockforBuyAutomation(bool isorderbysize)
+      public  List<PredictedStocksAutomation> GetTopStockforBuyAutomation(bool isorderbysize, string date)
         {
             try
             {
@@ -324,6 +324,7 @@ namespace STM_API.Services
                     //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
                     SqlCommand sqlComm = new SqlCommand("GetTopStockforBuyAutomation", conn);
                     sqlComm.Parameters.AddWithValue("@isorderbysize", isorderbysize);
+                    sqlComm.Parameters.AddWithValue("@Date", Convert.ToDateTime(date));
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;

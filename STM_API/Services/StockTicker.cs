@@ -934,7 +934,8 @@ namespace STM_API.Services
                             _stokc.last7DaysChange = Convert.ToString(r["Last7DaysChange"].ToString() ?? "");
                             _stokc.change = Convert.ToDouble(r["quote_priceChangePercent"].ToString());
                             _stokc.rowcount = Convert.ToInt32(r["counts"].ToString());
-
+                            _stokc.futurePercentage = Convert.ToDouble(r["FuturePercentage"] ?? 0);
+                            _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "");
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
