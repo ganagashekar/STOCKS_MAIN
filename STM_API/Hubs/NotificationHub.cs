@@ -111,11 +111,11 @@ namespace STM_API.Hubs
         }
 
 
-        public async Task GetTopStockforBuyAutomation(bool Isorderbysize = true,string Date="")
+        public async Task GetTopStockforBuyAutomation(bool Isorderbysize = true, string Date = "")
         {
             if (string.IsNullOrEmpty(Date))
             {
-                Date=DateTime.Now.Date.ToShortDateString();
+                Date = DateTime.Now.Date.ToShortDateString();
             }
             List<PredictedStocksAutomation> result = _breezapiServices.GetTopStockforBuyAutomation(Isorderbysize, Date).ToList();
             await Clients.All.SendAsync("SendExportBuyStockAlterFromAPP_IND", result);
@@ -144,8 +144,12 @@ namespace STM_API.Hubs
                         Match = x.match,
                         Data = x.data,
                         Stock_Name = x.stockName,
-                        StockCode = x.stockCode
-
+                        StockCode = x.stockCode,
+                        BulishCount_100 = x.bullishCount_100,
+                        BulishCount_95 = x.bullishCount_95,
+                        Volumedifference = x.volumeDifferecne,
+                        TriggredPrice = x.triggredPrice,
+                        TriggredLtt = x.triggredLtt.ToString() == "01-01-0001 12:00:00 AM" ? null : x.triggredLtt
                     }).ToList().ToDataTable();
 
 
@@ -198,7 +202,10 @@ namespace STM_API.Hubs
                         DestinationTableName = tablename,
                         BatchSize = dt.Rows.Count
                     };
-
+                    //foreach (DataColumn dataColumn in dt.Columns)
+                    //{
+                    //    bc.ColumnMappings.Add(dataColumn.ColumnName, dataColumn.ColumnName);
+                    //}
                     //bc.ColumnMappings.Add("symbol", "symbol");
                     //bc.ColumnMappings.Add("ltt", "ltt");
                     //bc.ColumnMappings.Add("Createdon", "Createdon");
@@ -218,6 +225,12 @@ namespace STM_API.Hubs
             }
 
 
+        }
+
+        public async Task SendBullish100(string stockName, string volume, string price)
+        {
+            PushServices pushServices = new PushServices();
+            await pushServices.SendPushServicesAsyncASAP(stockName, volume, price);
         }
         public async Task CaptureLiveDataForAutomation(string data)
         {

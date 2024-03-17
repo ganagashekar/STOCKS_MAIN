@@ -149,7 +149,8 @@
         public double? futurePercentage { set; get; }
         public string quaterlyResults { set; get; }
 
-
+        public bool isIncludeDeleted { get; set; }
+        
 
     }
 

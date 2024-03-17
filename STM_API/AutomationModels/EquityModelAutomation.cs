@@ -40,12 +40,22 @@
         
         public int bullishCount { set; get; }
 
-        
+      
+
         public int bearishCount { set; get; }
 
         
         public DateTime lttDateTime { set; get; }
 
         public string data { set; get; }
+
+        public int bullishCount_100 { set; get; }
+
+        public int bullishCount_95 { set; get; }
+        
+        public decimal volumeDifferecne { get; set; }
+
+        public decimal? triggredPrice { set; get; }
+        public DateTime triggredLtt { set; get; }
     }
 }

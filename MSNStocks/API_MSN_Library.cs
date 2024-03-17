@@ -36,7 +36,7 @@ namespace MSNStocks
                 Console.WriteLine("Database Connected");
                 Console.WriteLine();
                 Console.WriteLine("Listing Category Sales For 1997s");
-                var equites = db.Equitys.ToList().Where(x => x.MSN_SECID == null);
+                var equites = db.Equitys.ToList();
 
 
 
@@ -45,13 +45,14 @@ namespace MSNStocks
                     
                     try
                     {
-                        var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=BSE&count=1", equity.SecurityCode));
+                        var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=BSE&count=1", equity.SecurityId));
                         if (result.data.stocks.Count > 0)
                         {
 
-
+                           
 
                             var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
+                            Console.WriteLine(findresult.SecId);
                             //System.Threading.Thread.Sleep(1000);
                             try
                             {
@@ -86,10 +87,13 @@ namespace MSNStocks
                         equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? "Null";
                     }
                     db.Entry(equity).State = EntityState.Modified;
-                    db.SaveChanges();
-
+                   
+                   
+                    Console.WriteLine(equity.SecurityName);
+                    Console.WriteLine(equity.Id);
 
                 }
+                db.SaveChanges();
             }
         }
 

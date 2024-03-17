@@ -747,7 +747,8 @@ namespace STM_API.Services
         public IEnumerable<EquitiesHsitry> GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
-            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250)
+            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
+            bool IsIncludeDeleted = false)
         {
 
           
@@ -785,7 +786,8 @@ namespace STM_API.Services
                     sqlComm.Parameters.AddWithValue("@IsAward", IsAward);
 
                     sqlComm.Parameters.AddWithValue("@isTarget", isTarget);
-
+                    sqlComm.Parameters.AddWithValue("@IsIncludeDeleted", IsIncludeDeleted);
+                    
 
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
@@ -936,6 +938,7 @@ namespace STM_API.Services
                             _stokc.rowcount = Convert.ToInt32(r["counts"].ToString());
                             _stokc.futurePercentage = Convert.ToDouble(r["FuturePercentage"] ?? 0);
                             _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "");
+                            _stokc.isIncludeDeleted = Convert.ToBoolean(r["IsExclude"] ?? false);
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
@@ -2106,6 +2109,31 @@ namespace STM_API.Services
                     SqlCommand sqlComm = new SqlCommand("AddOrUpdateAutoTrade", conn);
                     sqlComm.Parameters.AddWithValue("@msnId", mscid);
                     sqlComm.Parameters.AddWithValue("@isAutoTrade", action == 1 ? true : false);
+                    conn.Open();
+                    sqlComm.CommandType = CommandType.StoredProcedure;
+                    sqlComm.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        internal object AddOrModifyIsExclude(string mscid, int action)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+
+                    //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                    SqlCommand sqlComm = new SqlCommand("AddOrUpdateIsExclude", conn);
+                    sqlComm.Parameters.AddWithValue("@msnId", mscid);
+                    sqlComm.Parameters.AddWithValue("@IsExclude", action == 1 ? true : false);
                     conn.Open();
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     sqlComm.ExecuteNonQuery();

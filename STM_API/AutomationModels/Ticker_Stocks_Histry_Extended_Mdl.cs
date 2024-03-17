@@ -6,7 +6,10 @@
         
 
         public string symbol { get; set; }
+
         
+        public int BulishCount_95 { get; set; }
+        public int BulishCount_100 { get; set; }
 
 
         //public bool? IsBearish { get; set; }
@@ -27,8 +30,12 @@
 
         // public DateTime Createdon { get; set; }
 
-        public int BearishCount { get; set; }
+
+
+
+
         public int BulishCount { get; set; }
+        public int BearishCount { get; set; }
         public DateTime Ltt { get; set; }
         public string Match { get; set; }
 
@@ -36,5 +43,10 @@
 
         public string Stock_Name { get; set; }
         public string StockCode { get;set; }
+        public decimal Volumedifference { get; set; }
+
+        public decimal? TriggredPrice { set; get; }
+        public DateTime? TriggredLtt { set; get; }
+
     }
 }
