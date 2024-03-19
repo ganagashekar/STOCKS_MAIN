@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
+
 class Program
 {
 
@@ -27,12 +28,12 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var HUbUrl = config.GetSection("appSettings:url").Value;
+        var HUbUrl =  config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(HUbUrl);
 
         string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
-        if (!File.Exists(filename))
+        if (!System.IO.File.Exists(filename))
         {
             System.IO.File.WriteAllText(filename, Environment.NewLine);
         }
@@ -85,7 +86,7 @@ class Program
 
             if (count > 500)
             {
-                File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
+                System.IO.File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
                 stringBuilder = new StringBuilder();
                 Console.Clear();
             }
@@ -156,7 +157,12 @@ class Program
 
         public string volumeC { get; set; }
 
-
+        public string OI { get; set; }
+        public string CHNGOI { get; set; }
+        public string product_type { get; set; }
+        public string expiry_date { get; set; }
+        public string strike_price { get; set; }
+        public string right { get; set; }
 
 
         public override string ToString()
@@ -169,7 +175,8 @@ class Program
             string[] test = this.ltt.Split(' ');
             string dateformat = string.Format("{0}-{1}-{2} {3}", test.Last(), test[1].ToString(), test[2].ToString(), test[3].ToString());
             var result = DateTime.TryParse(dateformat, out var dt);
-            return String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}", this.symbol, this.open, this.last, this.high, this.low, this.change, this.bPrice, this.bQty, this.sPrice, this.sQty, this.ltq, this.avgPrice, this.quotes, this.ttq, this.totalBuyQt, this.totalSellQ, this.ttv, this.trend, this.lowerCktLm, this.upperCktLm, dateformat, this.close, this.exchange, this.stock_name, this.volumeC);
+            return String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29}", this.symbol, this.open, this.last, this.high, this.low, this.change, this.bPrice, this.bQty, this.sPrice, this.sQty, this.ltq, this.avgPrice, this.quotes, this.ttq, this.totalBuyQt, this.totalSellQ, this.ttv, this.trend, this.lowerCktLm, this.upperCktLm, dateformat, this.close, this.exchange,
+                this.stock_name, this.volumeC, this.OI,    this.CHNGOI ,this. product_type   ,this. expiry_date,this. strike_price);
         }
     }
 }

@@ -52,7 +52,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.kernel", "itext.kerne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSE_Financilas", "BSE_Financilas\BSE_Financilas.csproj", "{A336E191-DD83-45E7-A3BD-D4B0C37660F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFO_LIVE_FEED", "NFO_LIVE_FEED\NFO_LIVE_FEED.csproj", "{AD0B8134-8E67-4105-9832-4549F1DAAB23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFO_LIVE_FEED", "NFO_LIVE_FEED\NFO_LIVE_FEED.csproj", "{AD0B8134-8E67-4105-9832-4549F1DAAB23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportCSVFromICICI", "ImportCSVFromICICI\ImportCSVFromICICI.csproj", "{DBF0FB9E-564E-4358-920E-4DA3F22F302A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +144,10 @@ Global
 		{AD0B8134-8E67-4105-9832-4549F1DAAB23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD0B8134-8E67-4105-9832-4549F1DAAB23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD0B8134-8E67-4105-9832-4549F1DAAB23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBF0FB9E-564E-4358-920E-4DA3F22F302A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF0FB9E-564E-4358-920E-4DA3F22F302A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBF0FB9E-564E-4358-920E-4DA3F22F302A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF0FB9E-564E-4358-920E-4DA3F22F302A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -75,7 +75,7 @@ namespace DemoReadFileTrailerCS
             }
             var dt = new DataTable();
 
-            for (int index = 0; index < 25; index++)
+            for (int index = 0; index < 30; index++)
                 dt.Columns.Add(new DataColumn());
 
             foreach (var line in lines.Split(new[] { "\r\n" }, StringSplitOptions.None))
@@ -87,7 +87,7 @@ namespace DemoReadFileTrailerCS
                         var cols = line.Split(',');
 
                         DataRow dr = dt.NewRow();
-                        for (int cIndex = 0; cIndex < 25; cIndex++)
+                        for (int cIndex = 0; cIndex < 30; cIndex++)
                         {
                             dr[cIndex] = cols[cIndex];
                         }

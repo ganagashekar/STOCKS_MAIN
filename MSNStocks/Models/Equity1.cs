@@ -6,7 +6,7 @@ namespace MSNStocks.Models
     public partial class Equity
     {
         public long Id { get; set; }
-        public double? SecurityCode { get; set; }
+        public string SecurityCode { get; set; }
         public string? IssuerName { get; set; }
         public string? SecurityId { get; set; }
         public string? SecurityName { get; set; }

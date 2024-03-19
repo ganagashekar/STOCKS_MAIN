@@ -78,14 +78,14 @@ namespace STM_API.Hubs
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250, bool IsExcludedeleted = false)
         {
-           
+
 
             var results = _stockTicker.GetStocksList(isfavorite, isUpperCircuit, islowerCircuit, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList, isTarget, isBullish, isbearish, IsOrderbyVolume
                 , IsAward, orderby_obj, order, skip, take, IsExcludedeleted).ToList();
             //int counts =  results.FirstOrDefault().rowcount- results.Count() ;
-           
 
-            
+
+
 
 
 
@@ -283,7 +283,7 @@ namespace STM_API.Hubs
             // return _stockTicker.GetAllStocks();
         }
 
-        public async Task SendAlertsUpperCKT()  
+        public async Task SendAlertsUpperCKT()
         {
             PushServices pushServices = new PushServices();
             var results = _stockTicker.GetNotification(true, false);
@@ -381,7 +381,8 @@ namespace STM_API.Hubs
                     }
                     try
                     {
-                        data = data.Replace(orginaltext, volume.ToString("F"));
+                        if (!string.IsNullOrEmpty(orginaltext)) { data = data.Replace(orginaltext, volume.ToString("F")); }
+
                         data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
                         await Clients.All.SendAsync("SendLiveData", data);
                     }

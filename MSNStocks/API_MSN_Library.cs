@@ -36,20 +36,20 @@ namespace MSNStocks
                 Console.WriteLine("Database Connected");
                 Console.WriteLine();
                 Console.WriteLine("Listing Category Sales For 1997s");
-                var equites = db.Equitys.ToList();
+                var equites = db.Equitys.ToList().Where(x => x.Symbol.Contains("1.1!")).Where(x => x.MSN_SECID == null);
 
 
 
                 foreach (var equity in equites)
                 {
-                    
+
                     try
                     {
                         var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=BSE&count=1", equity.SecurityId));
                         if (result.data.stocks.Count > 0)
                         {
 
-                           
+
 
                             var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
                             Console.WriteLine(findresult.SecId);
@@ -87,13 +87,13 @@ namespace MSNStocks
                         equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? "Null";
                     }
                     db.Entry(equity).State = EntityState.Modified;
-                   
-                   
+                    db.SaveChanges();
+
                     Console.WriteLine(equity.SecurityName);
                     Console.WriteLine(equity.Id);
 
                 }
-                db.SaveChanges();
+                
             }
         }
 
@@ -140,10 +140,10 @@ namespace MSNStocks
                     Console.WriteLine();
                     Console.WriteLine("Listing Category Sales For 1997s");
                     var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null)
-                       // .Where(x=>x.Symbol== "1.1!500189")
+                        // .Where(x=>x.Symbol== "1.1!500189")
                         //.Where(x=>x.FinancialUpdatedOn ==null).
                         .Where(x => x.IsLatestQuaterUpdated == false);
-                       // Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
+                    // Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
                     //db.Database.ExecuteSqlRaw("TRUNCATE TABLE dbo.[Stock_Financial_Results]");
                     foreach (var item in equites)
                     {
@@ -194,7 +194,7 @@ namespace MSNStocks
                                         obj_v1.Stock_Name = item.SecurityName;
                                         obj_v1.URL = Resp_obj.resultinS.FirstOrDefault().LQ;
                                     }
-                                    if (!string.IsNullOrEmpty(Resp_obj.col3) && ( i == 1 || i == 4))
+                                    if (!string.IsNullOrEmpty(Resp_obj.col3) && (i == 1 || i == 4))
                                     {
                                         obj_v1.VType = "V2";
                                         obj_v1.QuarterEnd = DateTime.ParseExact(Resp_obj.col3, "MMM-yy", CultureInfo.InvariantCulture).AddMonths(+1).AddDays(-1);
@@ -345,7 +345,7 @@ namespace MSNStocks
                                             stock_Financial_Resultslistdata[5].CurrencyIn = "Millions";
                                             if (Revenue_v2 > 0)
                                                 stock_Financial_Resultslistdata[3].RevenueIncrease = ((Revenue_v1 - Revenue_v2) / Revenue_v2) * 100;
-                                            
+
                                             stock_Financial_Resultslistdata[3].RevenueDifference = ((Revenue_v1 - Revenue_v2));
 
                                         }
@@ -437,11 +437,11 @@ namespace MSNStocks
                                     resultss.ToList().ForEach(x => x.UPDATED_ON = DateTime.Now);
                                     db.Stock_Financial_Results.AddRange(resultss);
 
-                                    item.IsLatestQuaterUpdated = Resp_obj.col2.ToLower().ToString()== quatername.ToLower().ToString() ?  true :false;
+                                    item.IsLatestQuaterUpdated = Resp_obj.col2.ToLower().ToString() == quatername.ToLower().ToString() ? true : false;
                                     item.FinancialUpdatedOn = DateTime.Now;
 
                                     db.SaveChanges();
-                                } 
+                                }
                             }
 
 
@@ -456,7 +456,7 @@ namespace MSNStocks
 
                         //    )  "" )
 
-                        
+
 
                     }
 
