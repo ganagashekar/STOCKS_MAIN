@@ -1,9 +1,59 @@
 USE [STOCK]
 GO
-/****** Object:  User [HAADVISRI\ganga]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  User [HAADVISRI\ganga]    Script Date: 19-03-2024 05:15:31 PM ******/
 CREATE USER [HAADVISRI\ganga] FOR LOGIN [HAADVISRI\ganga] WITH DEFAULT_SCHEMA=[dbo]
 GO
-/****** Object:  UserDefinedFunction [dbo].[GetPerCentageOfTotalValue]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[GetLASTChange]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[GetLASTChange](
+    @Symbol varchar(100)
+   
+)
+RETURNS varchar(1000)
+AS 
+BEGIN
+	DECLARE @listStr VARCHAR(MAX)
+	
+--	Select  @listStr =COALESCE(@listStr+',' ,'') +  SUBSTRING(quote_priceChangePercent ,1,5) 
+--FROM  MMSN_Companies_TOP7 where symbol='1.1!500470' order by Created_On desc
+--return @listStr
+
+
+select  @listStr= STRING_AGG(cast(SUBSTRING(A.quote_priceChangePercent ,1,5) as Decimal(10,2)) , ', ') 
+FROM (select top 11 * from MMSN_Companies_TOP7 where symbol=@Symbol order by Created_On desc )A 
+return @listStr
+END;
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetNetProfit]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[GetNetProfit](
+    @Symbol varchar(100)
+   
+)
+RETURNS varchar(max)
+AS 
+BEGIN
+	DECLARE @listStr VARCHAR(MAX)
+	
+--	Select  @listStr =COALESCE(@listStr+',' ,'') +  SUBSTRING(quote_priceChangePercent ,1,5) 
+--FROM  MMSN_Companies_TOP7 where symbol='1.1!500470' order by Created_On desc
+--return @listStr
+
+
+select  @listStr= STRING_AGG(cast(A.NET_PROFIT  as Decimal(10,2)) , ', ') 
+FROM (select top 4 * from [STOCK].[dbo].Stock_Financial_Results where symbol=@Symbol and CurrencyIn='CR'  order by QuarterEnd desc )A 
+return @listStr
+END;
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetPerCentageOfTotalValue]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -22,7 +72,7 @@ set @Value=  @percenate % (@Sum)/100*@Sum+(@Sum)
     RETURN @Value
 END;
 GO
-/****** Object:  UserDefinedFunction [dbo].[GETStockPreviousData]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[GETStockPreviousData]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -43,7 +93,7 @@ BEGIN
      RETURN
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[GetThreshold_Min]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[GetThreshold_Min]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -60,7 +110,7 @@ set @Value= (select top 1 [low] from Ticker_Stocks_Histry where symbol=@Symbol o
     RETURN @Value
 END;
 GO
-/****** Object:  UserDefinedFunction [dbo].[split_string]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[split_string]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -80,7 +130,7 @@ BEGIN
   RETURN
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[ufnSplit]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[ufnSplit]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -103,7 +153,7 @@ BEGIN
      RETURN
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[UnwrapJson]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[UnwrapJson]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -191,7 +241,7 @@ consistent either in their name or value. */
   return
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[OpenJSONExpressions]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  UserDefinedFunction [dbo].[OpenJSONExpressions]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -251,7 +301,7 @@ WITH ('  + String_Agg(
     GROUP BY path
 	)
 GO
-/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -276,7 +326,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_OLD]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_OLD]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -301,7 +351,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_Old2]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_Old2]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -326,7 +376,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_oldnew]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES_oldnew]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -351,7 +401,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES2]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[AUTO_BUY_EQUTIES2]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -376,7 +426,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BSE_NEWS]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[BSE_NEWS]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -418,7 +468,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[bustockback]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[bustockback]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -442,7 +492,7 @@ CREATE TABLE [dbo].[bustockback](
 	[volumeC] [varchar](50) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BuyStock]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[BuyStock]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -466,7 +516,7 @@ CREATE TABLE [dbo].[BuyStock](
 	[volumeC] [varchar](25) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Company_Ratings_Only_DIVI]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Company_Ratings_Only_DIVI]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -500,7 +550,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Equity$]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Equity$]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -527,7 +577,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Equitys]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Equitys]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -561,13 +611,16 @@ CREATE TABLE [dbo].[Equitys](
 	[IsEnabledForAutoTrade] [bit] NULL,
 	[Tdays] [varchar](10) NULL,
 	[WatchList] [varchar](10) NULL,
+	[IsLatestQuaterUpdated] [bit] NULL,
+	[FinancialUpdatedOn] [datetime] NULL,
+	[IsExclude] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Equitys_Histry]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Equitys_Histry]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -601,7 +654,49 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ipo_current_issue]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Equitys_old]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Equitys_old](
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[SecurityCode] [float] NULL,
+	[IssuerName] [nvarchar](255) NULL,
+	[SecurityId] [nvarchar](255) NULL,
+	[SecurityName] [nvarchar](255) NULL,
+	[Status] [nvarchar](255) NULL,
+	[Group] [nvarchar](255) NULL,
+	[FaceValue] [float] NULL,
+	[ISINNo] [nvarchar](255) NULL,
+	[Industry] [nvarchar](255) NULL,
+	[Instrument] [nvarchar](255) NULL,
+	[SectorName] [nvarchar](255) NULL,
+	[IndustryNewName] [nvarchar](255) NULL,
+	[IgroupName] [nvarchar](255) NULL,
+	[ISubgroupName] [nvarchar](255) NULL,
+	[Symbol] [varchar](50) NULL,
+	[IsActive] [bit] NULL,
+	[Rating] [int] NULL,
+	[recommondations] [varchar](500) NULL,
+	[JsonData] [varchar](max) NULL,
+	[MSN_SECID] [varchar](25) NULL,
+	[UpdatedOn] [datetime] NULL,
+	[ISPSU] [bit] NULL,
+	[IsNonPSU] [bit] NULL,
+	[IsPrime] [bit] NULL,
+	[IsEnabledForAutoTrade] [bit] NULL,
+	[Tdays] [varchar](10) NULL,
+	[WatchList] [varchar](10) NULL,
+	[IsLatestQuaterUpdated] [bit] NULL,
+	[FinancialUpdatedOn] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ipo_current_issue]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -628,7 +723,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ipo_Upcomming]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[ipo_Upcomming]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -654,7 +749,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Live_Stocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Live_Stocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -700,7 +795,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MMSN_Companies]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[MMSN_Companies]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -868,7 +963,177 @@ CREATE TABLE [dbo].[MMSN_Companies](
 	[Created_On] [datetime] NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MSN_Equities_Notification]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[MMSN_Companies_TOP7]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MMSN_Companies_TOP7](
+	[MSN_SECID] [nvarchar](4000) NULL,
+	[estimate_numberOfAnalysts] [nvarchar](4000) NULL,
+	[estimate_recommendationRate] [nvarchar](4000) NULL,
+	[estimate_recommendation] [nvarchar](4000) NULL,
+	[estimate_currency] [nvarchar](4000) NULL,
+	[estimate_numberOfPriceTargets] [nvarchar](4000) NULL,
+	[estimate_meanPriceTarget] [nvarchar](4000) NULL,
+	[estimate_highPriceTarget] [nvarchar](4000) NULL,
+	[estimate_lowPriceTarget] [nvarchar](4000) NULL,
+	[estimate_medianPriceTarget] [nvarchar](4000) NULL,
+	[estimate_medianEpsTarget] [nvarchar](4000) NULL,
+	[estimate_analystRecommendation] [nvarchar](4000) NULL,
+	[estimate_dateLastUpdated] [nvarchar](4000) NULL,
+	[beta] [nvarchar](4000) NULL,
+	[CompanyMetrics_pE5YearHighRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_pE5YearLowRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_revenueYTDYTD] [nvarchar](4000) NULL,
+	[CompanyMetrics_revenueQQLastYearGrowthRate] [nvarchar](4000) NULL,
+	[CompanyMetrics_netIncomeYTDYTDGrowthRate] [nvarchar](4000) NULL,
+	[CompanyMetrics_netIncomeQQLastYearGrowthRate] [nvarchar](4000) NULL,
+	[CompanyMetrics_revenue5YearAverageGrowthRate] [nvarchar](4000) NULL,
+	[CompanyMetrics_interestCoverage] [nvarchar](4000) NULL,
+	[CompanyMetrics_priceCashFlowRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_revenue3YearAverage] [nvarchar](4000) NULL,
+	[CompanyMetrics_trailingAnnualDividendYield] [nvarchar](4000) NULL,
+	[CompanyMetrics_priceBookRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_priceSalesRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_bookValueShareRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_ratingCashFlow] [nvarchar](4000) NULL,
+	[CompanyMetrics_payoutRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_quickRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_current] [nvarchar](4000) NULL,
+	[CompanyMetrics_debtEquityRatio] [nvarchar](4000) NULL,
+	[CompanyMetrics_grossMargin] [nvarchar](4000) NULL,
+	[CompanyMetrics_preTaxMargin] [nvarchar](4000) NULL,
+	[CompanyMetrics_netProfitMargin] [nvarchar](4000) NULL,
+	[CompanyMetrics_averageGrossMargin5Year] [nvarchar](4000) NULL,
+	[CompanyMetrics_averagePreTaxMargin5Year] [nvarchar](4000) NULL,
+	[CompanyMetrics_averageNetProfitMargin5Year] [nvarchar](4000) NULL,
+	[CompanyMetrics_operatingMargin] [nvarchar](4000) NULL,
+	[CompanyMetrics_netMarginPercent] [nvarchar](4000) NULL,
+	[CompanyMetrics_returnOnAssetCurrent] [nvarchar](4000) NULL,
+	[CompanyMetrics_returnOnAsset5YearAverage] [nvarchar](4000) NULL,
+	[CompanyMetrics_returnOnCapitalCurrent] [nvarchar](4000) NULL,
+	[CompanyMetrics_assetTurnover] [nvarchar](4000) NULL,
+	[CompanyMetrics_inventoryTurnover] [nvarchar](4000) NULL,
+	[CompanyMetrics_receivableTurnover] [nvarchar](4000) NULL,
+	[shareStatistics_lastSplitFactor] [nvarchar](4000) NULL,
+	[shareStatistics_lastSplitDate] [nvarchar](4000) NULL,
+	[shareStatistics_dividendYield] [nvarchar](4000) NULL,
+	[shareStatistics_exDividendAmount] [nvarchar](4000) NULL,
+	[shareStatistics_sharesOutstanding] [nvarchar](4000) NULL,
+	[shareStatistics_enterpriseValue] [nvarchar](4000) NULL,
+	[industryMetrics_assetTurnover] [nvarchar](4000) NULL,
+	[industryMetrics_averageGrossMargin5Year] [nvarchar](4000) NULL,
+	[industryMetrics_averageNetProfitMargin5Year] [nvarchar](4000) NULL,
+	[industryMetrics_averagePreTaxMargin5Year] [nvarchar](4000) NULL,
+	[industryMetrics_bookValueShareRatio] [nvarchar](4000) NULL,
+	[industryMetrics_currentRatio] [nvarchar](4000) NULL,
+	[industryMetrics_debtEquityRatio] [nvarchar](4000) NULL,
+	[industryMetrics_dividendYield] [nvarchar](4000) NULL,
+	[industryMetrics_dividendYield5YearAverage] [nvarchar](4000) NULL,
+	[industryMetrics_grossMargin] [nvarchar](4000) NULL,
+	[industryMetrics_incomeEmployee] [nvarchar](4000) NULL,
+	[industryMetrics_interestCoverage] [nvarchar](4000) NULL,
+	[industryMetrics_inventoryTurnover] [nvarchar](4000) NULL,
+	[industryMetrics_netIncomeQQLastYearGrowthRate] [nvarchar](4000) NULL,
+	[industryMetrics_netIncomeYTDYTDGrowthRate] [nvarchar](4000) NULL,
+	[industryMetrics_netProfitMargin] [nvarchar](4000) NULL,
+	[industryMetrics_pEGrowthRatio] [nvarchar](4000) NULL,
+	[industryMetrics_preTaxMargin] [nvarchar](4000) NULL,
+	[industryMetrics_priceBookRatio] [nvarchar](4000) NULL,
+	[industryMetrics_priceCashFlowRatio] [nvarchar](4000) NULL,
+	[industryMetrics_priceSalesRatio] [nvarchar](4000) NULL,
+	[industryMetrics_quickRatio] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnAsset5YearAverage] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnAssetCurrent] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnCapital5YearAverage] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnCapitalCurrent] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnEquity5YearAverage] [nvarchar](4000) NULL,
+	[industryMetrics_returnOnEquityCurrent] [nvarchar](4000) NULL,
+	[industryMetrics_revenueEmployee] [nvarchar](4000) NULL,
+	[industryMetrics_revenueQQLastYearGrowthRate] [nvarchar](4000) NULL,
+	[industryMetrics_revenueYTDYTD] [nvarchar](4000) NULL,
+	[industryMetrics_receivableTurnover] [nvarchar](4000) NULL,
+	[industryMetrics_leverageRatio] [nvarchar](4000) NULL,
+	[keyMetrics_debtToEquityRatio] [nvarchar](4000) NULL,
+	[keyMetrics_eps] [nvarchar](4000) NULL,
+	[keyMetrics_forwardPriceToEPS] [nvarchar](4000) NULL,
+	[keyMetrics_payoutRatio] [nvarchar](4000) NULL,
+	[keyMetrics_priceToBookRatio] [nvarchar](4000) NULL,
+	[keyMetrics_profitability] [nvarchar](4000) NULL,
+	[keyMetrics_stockGrowth] [nvarchar](4000) NULL,
+	[keyMetrics_latestRevenue] [nvarchar](4000) NULL,
+	[keyMetrics_latestIncome] [nvarchar](4000) NULL,
+	[keyMetrics_latestNetProfitMargin] [nvarchar](4000) NULL,
+	[keyMetrics_latestRevenuePerShare] [nvarchar](4000) NULL,
+	[quote_price] [nvarchar](4000) NULL,
+	[quote_priceChange] [nvarchar](4000) NULL,
+	[quote_priceDayHigh] [nvarchar](4000) NULL,
+	[quote_priceDayLow] [nvarchar](4000) NULL,
+	[quote_timeLastTraded] [nvarchar](4000) NULL,
+	[quote_priceDayOpen] [nvarchar](4000) NULL,
+	[quote_pricePreviousClose] [nvarchar](4000) NULL,
+	[quote_datePreviousClose] [nvarchar](4000) NULL,
+	[quote_priceAsk] [nvarchar](4000) NULL,
+	[quote_askSize] [nvarchar](4000) NULL,
+	[quote_priceBid] [nvarchar](4000) NULL,
+	[quote_bidSize] [nvarchar](4000) NULL,
+	[quote_accumulatedVolume] [nvarchar](4000) NULL,
+	[quote_averageVolume] [nvarchar](4000) NULL,
+	[quote_peRatio] [nvarchar](4000) NULL,
+	[quote_priceChangePercent] [nvarchar](4000) NULL,
+	[quote_price52wHigh] [nvarchar](4000) NULL,
+	[quote_price52wLow] [nvarchar](4000) NULL,
+	[quote_priceClose] [nvarchar](4000) NULL,
+	[quote_yieldPercent] [nvarchar](4000) NULL,
+	[quote_priceChange1Week] [nvarchar](4000) NULL,
+	[quote_priceChange1Month] [nvarchar](4000) NULL,
+	[quote_priceChange3Month] [nvarchar](4000) NULL,
+	[quote_priceChange6Month] [nvarchar](4000) NULL,
+	[quote_priceChangeYTD] [nvarchar](4000) NULL,
+	[quote_priceChange1Year] [nvarchar](4000) NULL,
+	[quote_return1Week] [nvarchar](4000) NULL,
+	[quote_return1Month] [nvarchar](4000) NULL,
+	[quote_return3Month] [nvarchar](4000) NULL,
+	[quote_return6Month] [nvarchar](4000) NULL,
+	[quote_returnYTD] [nvarchar](4000) NULL,
+	[quote_return1Year] [nvarchar](4000) NULL,
+	[quote_sourceExchangeCode] [nvarchar](4000) NULL,
+	[quote_sourceExchangeName] [nvarchar](4000) NULL,
+	[quote_marketCap] [nvarchar](4000) NULL,
+	[quote_marketCapCurrency] [nvarchar](4000) NULL,
+	[quote_exchangeId] [nvarchar](4000) NULL,
+	[quote_exchangeCode] [nvarchar](4000) NULL,
+	[quote_exchangeName] [nvarchar](4000) NULL,
+	[quote_offeringStatus] [nvarchar](4000) NULL,
+	[quote_displayName] [nvarchar](4000) NULL,
+	[quote_shortName] [nvarchar](4000) NULL,
+	[quote_securityType] [nvarchar](4000) NULL,
+	[quote_instrumentId] [nvarchar](4000) NULL,
+	[quote_symbol] [nvarchar](4000) NULL,
+	[quote_country] [nvarchar](4000) NULL,
+	[quote_market] [nvarchar](4000) NULL,
+	[quote_timeLastUpdated] [nvarchar](4000) NULL,
+	[quote_currency] [nvarchar](4000) NULL,
+	[quote__p] [nvarchar](4000) NULL,
+	[quote_id] [nvarchar](4000) NULL,
+	[quote__t] [nvarchar](4000) NULL,
+	[address_street] [nvarchar](4000) NULL,
+	[address_city] [nvarchar](4000) NULL,
+	[address_state] [nvarchar](4000) NULL,
+	[address_zip] [nvarchar](4000) NULL,
+	[address_country] [nvarchar](4000) NULL,
+	[address_countryCode] [nvarchar](4000) NULL,
+	[address_phone] [nvarchar](4000) NULL,
+	[address_fax] [nvarchar](4000) NULL,
+	[Symbol] [varchar](50) NULL,
+	[WebSite] [varchar](500) NULL,
+	[Created_On] [datetime] NULL,
+	[RnAsc_C] [bigint] NULL,
+	[RnDesc_C] [bigint] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MSN_Equities_Notification]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -890,7 +1155,7 @@ CREATE TABLE [dbo].[MSN_Equities_Notification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MSNDownStocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[MSNDownStocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -919,7 +1184,7 @@ CREATE TABLE [dbo].[MSNDownStocks](
 	[estimate_dateLastUpdated] [datetime] NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MSNSTCOKS]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[MSNSTCOKS]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -973,7 +1238,7 @@ CREATE TABLE [dbo].[MSNSTCOKS](
 	[website] [nvarchar](4000) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[MSNUPStocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[MSNUPStocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1002,7 +1267,7 @@ CREATE TABLE [dbo].[MSNUPStocks](
 	[estimate_dateLastUpdated] [datetime] NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[NSEAnnouncement]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[NSEAnnouncement]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1020,7 +1285,7 @@ CREATE TABLE [dbo].[NSEAnnouncement](
 	[CreatedOn] [date] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PO_CONFIG]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[PO_CONFIG]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1041,7 +1306,7 @@ CREATE TABLE [dbo].[PO_CONFIG](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PO_CONFIG_2]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[PO_CONFIG_2]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1062,7 +1327,7 @@ CREATE TABLE [dbo].[PO_CONFIG_2](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PO_CONFIG_olds]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[PO_CONFIG_olds]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1080,7 +1345,7 @@ CREATE TABLE [dbo].[PO_CONFIG_olds](
 	[sound] [varchar](50) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Portfolio_Holdings_Details]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Portfolio_Holdings_Details]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1112,39 +1377,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Portfolio_Holdings_Details_old]    Script Date: 05-02-2024 21:23:23 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Portfolio_Holdings_Details_old](
-	[Id] [bigint] IDENTITY(1,1) NOT NULL,
-	[stock_code] [varchar](60) NOT NULL,
-	[exchange_code] [varchar](30) NOT NULL,
-	[quantity] [int] NOT NULL,
-	[average_price] [decimal](7, 2) NOT NULL,
-	[booked_profit_loss] [decimal](9, 2) NOT NULL,
-	[current_market_price] [decimal](7, 2) NOT NULL,
-	[change_percentage] [decimal](18, 16) NOT NULL,
-	[answer_flag] [varchar](10) NOT NULL,
-	[product_type] [varchar](30) NULL,
-	[expiry_date] [varchar](50) NULL,
-	[strike_price] [varchar](50) NULL,
-	[right] [varchar](50) NULL,
-	[category_index_per_stock] [varchar](50) NULL,
-	[action] [varchar](50) NULL,
-	[realized_profit] [varchar](50) NULL,
-	[unrealized_profit] [varchar](50) NULL,
-	[open_position_value] [varchar](50) NULL,
-	[portfolio_charges] [varchar](50) NULL,
-	[Date] [datetime] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Portfolio_Positions_Details]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Portfolio_Positions_Details]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1189,19 +1422,19 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Stock_Award]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Stock_Award]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Stock_Award](
-	[Code] [varchar](50) NULL,
 	[Symbol] [varchar](50) NULL,
 	[SecurityName] [nvarchar](255) NULL,
-	[OrderCount] [int] NULL
+	[OrderCount] [int] NULL,
+	[Date] [datetime] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Stock_Days]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Stock_Days]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1215,7 +1448,36 @@ CREATE TABLE [dbo].[Stock_Days](
 	[Updated_on] [datetime] NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[STOCK_NTFCTN]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Stock_Financial_Results]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Stock_Financial_Results](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[Symbol] [varchar](100) NULL,
+	[Revenue] [decimal](10, 3) NULL,
+	[PE_Ratio] [decimal](10, 2) NULL,
+	[NET_PROFIT] [decimal](10, 3) NULL,
+	[EPS] [decimal](10, 3) NULL,
+	[Cash_EPS] [decimal](10, 3) NULL,
+	[OPM_Percentage] [decimal](10, 2) NULL,
+	[NPM_Percentage] [decimal](10, 2) NULL,
+	[URL] [varchar](500) NULL,
+	[QuarterEnd] [datetime] NULL,
+	[CurrencyIn] [varchar](10) NULL,
+	[CREATED_ON] [datetime] NULL,
+	[UPDATED_ON] [datetime] NULL,
+	[RevenueIncrease] [decimal](10, 2) NULL,
+	[Profit_Increase] [decimal](10, 2) NULL,
+	[EPS_INcrease] [decimal](10, 2) NULL,
+	[RevenueDifference] [decimal](10, 2) NULL,
+	[ProfitDifference] [decimal](10, 2) NULL,
+	[EPSDifference] [decimal](10, 2) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[STOCK_NTFCTN]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1235,7 +1497,7 @@ CREATE TABLE [dbo].[STOCK_NTFCTN](
 	[Priority] [int] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[STOCK_NTFCTN_OLD]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[STOCK_NTFCTN_OLD]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1254,7 +1516,7 @@ CREATE TABLE [dbo].[STOCK_NTFCTN_OLD](
 	[last] [decimal](10, 2) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[StockAlerts_Automatic]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[StockAlerts_Automatic]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1279,7 +1541,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[StockPriceConfig]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[StockPriceConfig]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1297,7 +1559,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[STOCKPriceLock]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[STOCKPriceLock]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1307,7 +1569,75 @@ CREATE TABLE [dbo].[STOCKPriceLock](
 	[PriceLock] [nchar](10) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TempPivot]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[StockScriptNew]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[StockScriptNew](
+	[SC] [varchar](50) NULL,
+	[SN] [varchar](50) NULL,
+	[EC] [varchar](50) NULL,
+	[SM] [varchar](50) NULL,
+	[SG] [varchar](50) NULL,
+	[TK] [varchar](50) NULL,
+	[LS] [varchar](50) NULL,
+	[CD] [varchar](50) NULL,
+	[NS] [varchar](50) NULL,
+	[TS] [varchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[StockScriptNew_CPY]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[StockScriptNew_CPY](
+	[SC] [varchar](50) NULL,
+	[SN] [varchar](50) NULL,
+	[EC] [varchar](50) NULL,
+	[SM] [varchar](50) NULL,
+	[SG] [varchar](50) NULL,
+	[TK] [varchar](50) NULL,
+	[LS] [varchar](50) NULL,
+	[CD] [varchar](50) NULL,
+	[NS] [varchar](50) NULL,
+	[TS] [varchar](50) NULL,
+	[IsActive] [int] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tempfinancials]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tempfinancials](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[Symbol] [varchar](100) NULL,
+	[Revenue] [decimal](10, 3) NULL,
+	[PE_Ratio] [decimal](10, 2) NULL,
+	[NET_PROFIT] [decimal](10, 3) NULL,
+	[EPS] [decimal](10, 3) NULL,
+	[Cash_EPS] [decimal](10, 3) NULL,
+	[OPM_Percentage] [decimal](10, 2) NULL,
+	[NPM_Percentage] [decimal](10, 2) NULL,
+	[URL] [varchar](500) NULL,
+	[QuarterEnd] [datetime] NULL,
+	[CurrencyIn] [varchar](10) NULL,
+	[CREATED_ON] [datetime] NULL,
+	[UPDATED_ON] [datetime] NULL,
+	[RevenueIncrease] [decimal](10, 2) NULL,
+	[Profit_Increase] [decimal](10, 2) NULL,
+	[EPS_INcrease] [decimal](10, 2) NULL,
+	[RevenueDifference] [decimal](10, 2) NULL,
+	[ProfitDifference] [decimal](10, 2) NULL,
+	[EPSDifference] [decimal](10, 2) NULL,
+	[RnAsc_C] [bigint] NULL,
+	[RnDesc_C] [bigint] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TempPivot]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1319,7 +1649,7 @@ CREATE TABLE [dbo].[TempPivot](
 	[Date] [datetime] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TempPivotCompany]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[TempPivotCompany]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1371,18 +1701,17 @@ CREATE TABLE [dbo].[TempPivotCompany](
 	[website] [nvarchar](4000) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TempPivotResults]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[TempPivottest]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[TempPivotResults](
-	[symbol] [varchar](50) NULL,
-	[STOCK_name] [varchar](max) NULL,
-	[12-12-2023] [decimal](38, 2) NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+CREATE TABLE [dbo].[TempPivottest](
+	[Date] [smalldatetime] NULL,
+	[Value] [decimal](38, 6) NULL
+) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1413,10 +1742,15 @@ CREATE TABLE [dbo].[Ticker_Stocks](
 	[exchange] [varchar](50) NULL,
 	[stock_name] [varchar](max) NULL,
 	[VolumeC] [varchar](20) NULL,
+	[OI] [varchar](100) NULL,
+	[CHNGOI] [varchar](100) NULL,
+	[product_type] [varchar](250) NULL,
+	[expiry_date] [varchar](100) NULL,
+	[strike_price] [varchar](100) NULL,
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_01_02_24]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_01_02_24]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1450,7 +1784,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_01_02_24](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_02]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_02]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1484,7 +1818,381 @@ CREATE TABLE [dbo].[Ticker_Stocks_02](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_18_01_24]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_02_12]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_02_12](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_02_29]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_02_29](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_03_04_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_03_04_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_03_05_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_03_05_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_05_02_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_05_02_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_07_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_07_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_08_02_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_08_02_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_09_02]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_09_02](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_12_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_12_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_14_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_14_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_15_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_15_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_18_01_24]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1518,7 +2226,41 @@ CREATE TABLE [dbo].[Ticker_Stocks_18_01_24](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_19]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_18_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_18_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_19]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1552,7 +2294,41 @@ CREATE TABLE [dbo].[Ticker_Stocks_19](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_20]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_19_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_19_03_24](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_20]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1586,7 +2362,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_20](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_23]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_23]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1620,7 +2396,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_23](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_24]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_24]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1654,7 +2430,41 @@ CREATE TABLE [dbo].[Ticker_Stocks_24](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_30_01_24]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_26_02]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_26_02](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_30_01_24]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1688,7 +2498,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_30_01_24](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_31_01_24]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_31_01_24]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1722,7 +2532,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_31_01_24](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Days]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Days]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1756,7 +2566,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_Days](
 	[RnDesc] [bigint] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Histry]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1788,13 +2598,18 @@ CREATE TABLE [dbo].[Ticker_Stocks_Histry](
 	[stock_name] [varchar](max) NULL,
 	[VolumeC] [varchar](25) NULL,
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[OI] [varchar](100) NULL,
+	[CHNGOI] [varchar](100) NULL,
+	[product_type] [varchar](250) NULL,
+	[expiry_date] [varchar](100) NULL,
+	[strike_price] [varchar](100) NULL,
 PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1812,12 +2627,38 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks](
+	[symbol] [varchar](50) NOT NULL,
+	[BullishCount_95] [int] NULL,
+	[BullishCount_100] [int] NULL,
+	[BulishCount] [int] NULL,
+	[BearishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Volumedifference] [decimal](10, 2) NULL,
+	[TriggredPrice] [decimal](10, 2) NULL,
+	[TriggredLtt] [datetime] NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_05_02]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_05_02](
 	[symbol] [varchar](50) NOT NULL,
 	[BearishCount] [int] NULL,
 	[BulishCount] [int] NULL,
@@ -1833,7 +2674,71 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_OLD]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_052_28]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_052_28](
+	[symbol] [varchar](50) NOT NULL,
+	[BearishCount] [int] NULL,
+	[BulishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_19_03_24]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_19_03_24](
+	[symbol] [varchar](50) NOT NULL,
+	[BullishCount_95] [int] NULL,
+	[BullishCount_100] [int] NULL,
+	[BulishCount] [int] NULL,
+	[BearishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Volumedifference] [decimal](10, 2) NULL,
+	[TriggredPrice] [decimal](10, 2) NULL,
+	[TriggredLtt] [datetime] NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_Histry]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_Histry](
+	[symbol] [varchar](50) NOT NULL,
+	[BearishCount] [int] NULL,
+	[BulishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Id] [bigint] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_OLD]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1852,7 +2757,49 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old2]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old_2]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old_2](
+	[symbol] [varchar](50) NOT NULL,
+	[BearishCount] [int] NULL,
+	[BulishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old_new]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old_new](
+	[symbol] [varchar](50) NOT NULL,
+	[BearishCount] [int] NULL,
+	[BulishCount] [int] NULL,
+	[Ltt] [datetime] NULL,
+	[Match] [varchar](50) NULL,
+	[Data] [varchar](max) NULL,
+	[Stock_Name] [varchar](500) NULL,
+	[StockCode] [varchar](100) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Ticker_Stocks_Histry_Extended_Ticks_old2]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1871,7 +2818,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_temp]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_temp]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1905,7 +2852,7 @@ CREATE TABLE [dbo].[Ticker_Stocks_temp](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Yesterday]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks_Yesterday]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1940,12 +2887,12 @@ CREATE TABLE [dbo].[Ticker_Stocks_Yesterday](
 	[VolumeC] [varchar](25) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Ticker_Stocks_Yesterday_old]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks02_28]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Ticker_Stocks_Yesterday_old](
+CREATE TABLE [dbo].[Ticker_Stocks02_28](
 	[symbol] [varchar](50) NULL,
 	[open] [decimal](20, 4) NULL,
 	[last] [decimal](20, 4) NULL,
@@ -1970,12 +2917,45 @@ CREATE TABLE [dbo].[Ticker_Stocks_Yesterday_old](
 	[close] [decimal](20, 4) NULL,
 	[exchange] [varchar](50) NULL,
 	[stock_name] [varchar](max) NULL,
-	[RnAsc] [bigint] NULL,
-	[RnDesc] [bigint] NULL,
-	[VolumeC] [varchar](25) NULL
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TodaysRatios]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[Ticker_Stocks06_02]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ticker_Stocks06_02](
+	[symbol] [varchar](50) NULL,
+	[open] [decimal](20, 4) NULL,
+	[last] [decimal](20, 4) NULL,
+	[high] [decimal](20, 4) NULL,
+	[low] [decimal](20, 4) NULL,
+	[change] [decimal](20, 4) NULL,
+	[bPrice] [decimal](20, 4) NULL,
+	[bQty] [decimal](20, 4) NULL,
+	[sPrice] [decimal](20, 4) NULL,
+	[sQty] [decimal](20, 4) NULL,
+	[ltq] [decimal](20, 4) NULL,
+	[avgPrice] [decimal](20, 4) NULL,
+	[quotes] [varchar](50) NULL,
+	[ttq] [decimal](20, 4) NULL,
+	[totalBuyQt] [bigint] NULL,
+	[totalSellQ] [bigint] NULL,
+	[ttv] [varchar](50) NULL,
+	[trend] [varchar](50) NULL,
+	[lowerCktLm] [decimal](20, 4) NULL,
+	[upperCktLm] [decimal](20, 4) NULL,
+	[ltt] [datetime] NULL,
+	[close] [decimal](20, 4) NULL,
+	[exchange] [varchar](50) NULL,
+	[stock_name] [varchar](max) NULL,
+	[VolumeC] [varchar](20) NULL,
+	[Id] [bigint] IDENTITY(1,1) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TodaysRatios]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1994,7 +2974,7 @@ CREATE TABLE [dbo].[TodaysRatios](
 	[volumeC] [varchar](25) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[WatchList]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[WatchList]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2007,7 +2987,7 @@ CREATE TABLE [dbo].[WatchList](
 	[Created_On] [datetime] NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[WatchList_NEW]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[WatchList_NEW]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2017,7 +2997,7 @@ CREATE TABLE [dbo].[WatchList_NEW](
 	[Comments] [varchar](500) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[yourTable]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  Table [dbo].[yourTable]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2036,13 +3016,36 @@ ALTER TABLE [dbo].[Equitys] ADD  DEFAULT ((0)) FOR [IsEnabledForAutoTrade]
 GO
 ALTER TABLE [dbo].[Equitys] ADD  DEFAULT (NULL) FOR [Tdays]
 GO
+ALTER TABLE [dbo].[Equitys] ADD  DEFAULT ((0)) FOR [IsExclude]
+GO
+ALTER TABLE [dbo].[Equitys_old] ADD  DEFAULT ((0)) FOR [IsEnabledForAutoTrade]
+GO
+ALTER TABLE [dbo].[Equitys_old] ADD  DEFAULT (NULL) FOR [Tdays]
+GO
 ALTER TABLE [dbo].[NSEAnnouncement] ADD  CONSTRAINT [DF_NSEAnnouncement_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
 GO
 ALTER TABLE [dbo].[Stock_Days] ADD  DEFAULT (getdate()) FOR [Updated_on]
 GO
 ALTER TABLE [dbo].[STOCK_NTFCTN] ADD  DEFAULT ((0)) FOR [Priority]
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateAutoTrade]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddMMSN_Companies_TOP7]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  Procedure [dbo].[AddMMSN_Companies_TOP7]
+as begin
+
+DROP TABLE IF EXISTS  MMSN_Companies_TOP7
+;WITH Ctefinancilas AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(created_on as Date) ORDER BY created_on),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(created_on as Date) ORDER BY created_on DESC)
+    FROM MMSN_Companies with (nolock)   )
+	Select * into MMSN_Companies_TOP7 from Ctefinancilas where RnDesc_C <=12 
+	End
+GO
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateAutoTrade]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2057,7 +3060,7 @@ Delete from StockPriceConfig where Symbol=(select Symbol from Equitys where MSN_
 end
 End
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateFavorites]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateFavorites]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2068,7 +3071,7 @@ begin
 Update Equitys set isprime=@ifavorite where MSN_SECID=@msnId
 End
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateForT3]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateForT3]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2087,7 +3090,7 @@ Update Equitys set TDays=@Value where Symbol=@symbol
 
 End
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateForWatchList]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateForWatchList]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2106,7 +3109,18 @@ Update Equitys set watchList=@Value where Symbol=@symbol
 
 End
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateStockChangeConfig]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateIsExclude]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Procedure [dbo].[AddOrUpdateIsExclude](@msnId varchar(500),@IsExclude bit)
+as
+begin
+Update Equitys set IsExclude=@IsExclude where MSN_SECID=@msnId
+End
+GO
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateStockChangeConfig]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2134,7 +3148,7 @@ INSERT INTO [dbo].[StockPriceConfig]
 end
 end
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateStockPriceConfig]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateStockPriceConfig]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2162,7 +3176,7 @@ INSERT INTO [dbo].[StockPriceConfig]
 end
 end
 GO
-/****** Object:  StoredProcedure [dbo].[AddOrUpdateWatchList]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddOrUpdateWatchList]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2179,7 +3193,29 @@ INSERT INTO [dbo].[WatchList]
 		   GETDATE())
 End
 GO
-/****** Object:  StoredProcedure [dbo].[AUTOSELLHolds]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[AddTempfinancials]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+Create procedure [dbo].[AddTempfinancials]
+as begin 
+
+Declare @Date_Financials DateTime;
+select @Date_Financials=MAX(QuarterEnd) from Stock_Financial_Results;
+drop table if exists  tempfinancials
+;WITH Ctefinancilas AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(QuarterEnd as Date) ORDER BY QuarterEnd),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(QuarterEnd as Date) ORDER BY QuarterEnd DESC)
+    FROM Stock_Financial_Results with (nolock)    where CAST(QuarterEnd as Date )=  CAST(@Date_Financials as Date) and CurrencyIn='CR' )
+
+	Select * into tempfinancials from Ctefinancilas where RnDesc_C=1 
+	End
+GO
+/****** Object:  StoredProcedure [dbo].[AUTOSELLHolds]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2250,7 +3286,7 @@ print 1
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[BatchExecute]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[BatchExecute]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2263,7 +3299,7 @@ print '1'
 --exec Import_Last_Stock
 end
 GO
-/****** Object:  StoredProcedure [dbo].[BatchExecute_copy]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[BatchExecute_copy]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2276,7 +3312,7 @@ exec Import_Histry
 --exec Import_Last_Stock
 end
 GO
-/****** Object:  StoredProcedure [dbo].[CLEAR_beRISH_bULLISH]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[CLEAR_beRISH_bULLISH]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2286,6 +3322,27 @@ GO
 CREATE proc [dbo].[CLEAR_beRISH_bULLISH]
 AS
 BEGIN
+
+
+;WITH Cte AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry_Extended_Ticks with (nolock)    where CAST(ltt as Date )=  CAST(GETDATE() as Date) )
+
+	insert into Ticker_Stocks_Histry_Extended_Ticks_Histry
+	select [symbol]
+      ,[BearishCount]
+      ,[BulishCount]
+      ,[Ltt]
+      ,[Match]
+      ,[Data]
+      ,[Stock_Name]
+      ,[StockCode],ID   from  CTE where RnDesc_C > 1 
+
+
+
+	Delete  from  Ticker_Stocks_Histry_Extended_Ticks where Id  in (select Id from Ticker_Stocks_Histry_Extended_Ticks_Histry where cast(Ltt as Date)=cast(getdate() as Date))
 
 --;WITH Cte AS(
 --SELECT *,
@@ -2300,7 +3357,7 @@ BEGIN
 print  1
 eND
 GO
-/****** Object:  StoredProcedure [dbo].[DynamicPivotTableInSql]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[DynamicPivotTableInSql]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2339,7 +3396,7 @@ BEGIN
  
 END
 GO
-/****** Object:  StoredProcedure [dbo].[DynamicPivotTableInSqlForCompanies]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[DynamicPivotTableInSqlForCompanies]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2377,7 +3434,7 @@ BEGIN
  
 END
 GO
-/****** Object:  StoredProcedure [dbo].[ExportJsonData]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[ExportJsonData]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2423,12 +3480,12 @@ SELECT   h.[symbol]
 	  eq.MSN_SECID as msn_secid
   FROM [STOCK].[dbo].[Ticker_Stocks_Histry] h
   left join Equitys eq on eq.Symbol=h.symbol --order by symbol,ltt desc
-  where  CAST(ltt as Date)= CAST(GETDATE() as Date)
+ where  CAST(ltt as Date)= CAST(GETDATE() as Date)
   
---  where  CAST(ltt as Date) >= '2023-09-01'
+ --where  CAST(ltt as Date) >= '2023-09-01'
   End 
 GO
-/****** Object:  StoredProcedure [dbo].[GET_CKT]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GET_CKT]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2474,7 +3531,7 @@ SELECT [symbol]
 	order by bPrice desc
 	END
 GO
-/****** Object:  StoredProcedure [dbo].[Get_MSN_Stocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_MSN_Stocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2568,7 +3625,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[Get_STock_Days]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_STock_Days]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2594,7 +3651,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[Get_StockticksbySymbol]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_StockticksbySymbol]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2663,7 +3720,7 @@ SELECT  [symbol]
   FROM [STOCK].[dbo].[Ticker_Stocks_19]  where symbol=@symbol
   end
 GO
-/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2713,7 +3770,7 @@ WHERE EQ.recommondations in ('strongBuy','buy')
   End
 
 GO
-/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED_Upper_CKT]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED_Upper_CKT]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2722,28 +3779,28 @@ CREATE Procedure [dbo].[Get_Todays_Stock_PRED_Upper_CKT]
 as
 begin
 Declare @Date DateTime  = getdate();
- with CTE as (
+-- with CTE as (
 
-select distinct symbol,cast([open]  as decimal(15,2)) as [open] ,cast([last]  as decimal(15,2)) as Last,stock_name,VolumeC,cast(ttv  as decimal(15,2)) as ttv,change, 'Increament of 2 and Volumeof 2 ' as Type  from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
-and  last > cast([open]  as decimal(10,2))+ (cast([open]  as decimal(10,2))/100)* 2  and cast([open]  as decimal(10,2))>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 2 and cast (ttv as decimal)  > 500000
+--select distinct symbol,cast([open]  as decimal(15,2)) as [open] ,cast([last]  as decimal(15,2)) as Last,stock_name,VolumeC,cast(ttv  as decimal(15,2)) as ttv,change, 'Increament of 2 and Volumeof 2 ' as Type  from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
+--and  last > cast([open]  as decimal(10,2))+ (cast([open]  as decimal(10,2))/100)* 2  and cast([open]  as decimal(10,2))>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 2 and cast (ttv as decimal)  > 500000
 
-union all
-select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 4 and Volumeof 5 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
-and  last > [open] + ([open]/100)* 4  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 5 and cast (ttv as decimal)  > 1000000
-
-
-union all
-
-select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 6 and Volumeof 8 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
-and  last > [open] + ([open]/100)* 6  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 8 and cast (ttv as decimal)  > 1000000
+--union all
+--select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 4 and Volumeof 5 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
+--and  last > [open] + ([open]/100)* 4  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 5 and cast (ttv as decimal)  > 1000000
 
 
-union all
+--union all
 
-select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 10 and Volumeof 10 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
-and  last > [open] + ([open]/100)* 10  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 10 and cast (ttv as decimal)  > 1000000
+--select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 6 and Volumeof 8 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
+--and  last > [open] + ([open]/100)* 6  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 8 and cast (ttv as decimal)  > 1000000
 
-)
+
+--union all
+
+--select distinct symbol,[open],[last],stock_name,VolumeC,ttv,change ,'Increament of 10 and Volumeof 10 ' as Type from  Ticker_Stocks_Histry where CAST(ltt as date)=CAST(@Date as Date) 
+--and  last > [open] + ([open]/100)* 10  and [open]>0 and cast(ttv as decimal(15,2)) > (cast(ttv as decimal(15,2))/100)* 10 and cast (ttv as decimal)  > 1000000
+
+--)
 
 
 --Insert into STOCK_NTFCTN(
@@ -2803,102 +3860,102 @@ and  last > [open] + ([open]/100)* 10  and [open]>0 and cast(ttv as decimal(15,2
 
 
 
-Insert into STOCK_NTFCTN([symbol]
-      ,[Date]
-	  ,Last
-      ,[STOCKName]
-      ,[IsNotified]
-      ,[IsUppCKT]
-      ,[ISSell]
-      ,[ISPrict]
-      ,[Change]
-      ,[PO_KEY])
+--Insert into STOCK_NTFCTN([symbol]
+--      ,[Date]
+--	  ,Last
+--      ,[STOCKName]
+--      ,[IsNotified]
+--      ,[IsUppCKT]
+--      ,[ISSell]
+--      ,[ISPrict]
+--      ,[Change]
+--      ,[PO_KEY])
 
-(
-SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
-( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC) as STOCKName 
-,
-0,0,0,0,cast(p.change as decimal(5,2)),
+--(
+--SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
+--( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC) as STOCKName 
+--,
+--0,0,0,0,cast(p.change as decimal(5,2)),
 
-case when eq.SectorName='Diversified' Then 'Common_LOW'  
-     when eq.SectorName='Telecommunication' Then 'Common_LOW' else 
-     SUBSTRING (eq.SectorName, 1, 13) + '_LOW' End as  GroupName 
-
-
-FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
-inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
-inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
-WHERE  cast(change as decimal(5,2)) < -1 and cast(change as decimal(5,2)) < 0 and cast(p.change as  decimal(5,2))%0.25=0.0    and cast(P.ttv  as decimal)> 500000
-and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as  decimal(5,2))  
-and CAST(Date as Date)=CAST(ltt as Date) )
-GROUP BY SectorName, p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
+--case when eq.SectorName='Diversified' Then 'Common_LOW'  
+--     when eq.SectorName='Telecommunication' Then 'Common_LOW' else 
+--     SUBSTRING (eq.SectorName, 1, 13) + '_LOW' End as  GroupName 
 
 
-UNION ALL
+--FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
+--inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
+--inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
+--WHERE  cast(change as decimal(5,2)) < -1 and cast(change as decimal(5,2)) < 0 and cast(p.change as  decimal(5,2))%0.25=0.0    and cast(P.ttv  as decimal)> 500000
+--and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as  decimal(5,2))  
+--and CAST(Date as Date)=CAST(ltt as Date) )
+--GROUP BY SectorName, p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
 
-SELECT distinct    p.symbol, cast(ltt as Date) as Date, p.[last],
-( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC) as STOCKName 
-,
-0,0,0,0,cast(p.change as decimal(5,2)),
 
-case when eq.SectorName='Diversified' Then 'Common_HIGH'  
-     when eq.SectorName='Telecommunication' Then 'Common_HIGH' 
-	 else 
-     SUBSTRING (eq.SectorName, 1, 13) + '_HIGH' End as  GroupName 
-FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
-inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
-inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
-WHERE  cast(change as decimal(5,2))  > 1 and cast(change as decimal(5,2)) < 3 and cast(p.change as  decimal(5,2))%0.25=0.0  and   cast(P.ttv  as decimal) > 500000
-and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and CAST(Date as Date)=CAST(ltt as Date))
-GROUP BY SectorName, p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
+--UNION ALL
 
-UNION ALL
+--SELECT distinct    p.symbol, cast(ltt as Date) as Date, p.[last],
+--( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC) as STOCKName 
+--,
+--0,0,0,0,cast(p.change as decimal(5,2)),
 
-SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
-( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC ) as STOCKName 
-,
-0,0,0,0,cast(p.change as decimal(5,2)),
+--case when eq.SectorName='Diversified' Then 'Common_HIGH'  
+--     when eq.SectorName='Telecommunication' Then 'Common_HIGH' 
+--	 else 
+--     SUBSTRING (eq.SectorName, 1, 13) + '_HIGH' End as  GroupName 
+--FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
+--inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
+--inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
+--WHERE  cast(change as decimal(5,2))  > 1 and cast(change as decimal(5,2)) < 3 and cast(p.change as  decimal(5,2))%0.25=0.0  and   cast(P.ttv  as decimal) > 500000
+--and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and CAST(Date as Date)=CAST(ltt as Date))
+--GROUP BY SectorName, p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
 
-case when eq.SectorName='Diversified' Then 'Common_ROSEUP'  
-     when eq.SectorName='Telecommunication' Then 'Common_ROSEUP' 
-	  when eq.SectorName='Utilities' Then 'Common_ROSEUP' 
-	 when eq.SectorName='Commodities' Then 'Commodities_HIGH' 
-	  when eq.SectorName='Consumer Discretionary' Then 'Consumer Disc_HIGH' 
-	   when eq.SectorName='Fast Moving Consumer Goods' Then 'Fast Moving C_HIGH' 
-	 when eq.SectorName='Energy' Then 'Energy_HIGH' 
-	  when eq.SectorName=' Information Technology' Then 'Common_ROSEUP' 
+--UNION ALL
+
+--SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
+--( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + 'Rating: '+ cast(c.Rating as varchar(100))+'; Min:'+ cast(THRS_MIN as varchar(100))+'; Max: '+ cast(THRS_MAX as varchar(100))+' ; VOlume :'+ P.VolumeC ) as STOCKName 
+--,
+--0,0,0,0,cast(p.change as decimal(5,2)),
+
+--case when eq.SectorName='Diversified' Then 'Common_ROSEUP'  
+--     when eq.SectorName='Telecommunication' Then 'Common_ROSEUP' 
+--	  when eq.SectorName='Utilities' Then 'Common_ROSEUP' 
+--	 when eq.SectorName='Commodities' Then 'Commodities_HIGH' 
+--	  when eq.SectorName='Consumer Discretionary' Then 'Consumer Disc_HIGH' 
+--	   when eq.SectorName='Fast Moving Consumer Goods' Then 'Fast Moving C_HIGH' 
+--	 when eq.SectorName='Energy' Then 'Energy_HIGH' 
+--	  when eq.SectorName=' Information Technology' Then 'Common_ROSEUP' 
 	
-	 else 
-SUBSTRING (SectorName, 1, 13) + '_ROSEUP'  End as GroupName 
-FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
-inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
-inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
-WHERE  cast(change as decimal(5,2)) > 4  and cast(p.change as  decimal(5,2))%0.25=0.0   and cast(P.ttv  as decimal) > 500000
-and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol
-and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and CAST(Date as Date)=CAST(ltt as Date)    )
-GROUP BY (SectorName), p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
+--	 else 
+--SUBSTRING (SectorName, 1, 13) + '_ROSEUP'  End as GroupName 
+--FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
+--inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol 
+--inner  join Company_Ratings_Only_DIVI C on C.Symbol=p.symbol
+--WHERE  cast(change as decimal(5,2)) > 4  and cast(p.change as  decimal(5,2))%0.25=0.0   and cast(P.ttv  as decimal) > 500000
+--and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol
+--and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and CAST(Date as Date)=CAST(ltt as Date)    )
+--GROUP BY (SectorName), p.symbol,change,p.[last],c.Rating,THRS_MIN,THRS_MAX,cast(ltt as Date),[stock_name],VolumeC
 
-union all
+--union all
 
-SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
-( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + ' Total Sell QTY :  '  + cast (totalSellQ  as  varchar(100) )+  ' ; Sellprice:  ' + cast( sPrice as   varchar(100)  ) + '; SellQTY:' + cast( sQty as   varchar(100) ) +' ; VOlume :'+ P.VolumeC   ) as STOCKName 
-,
-0,0,0,0,cast(p.change as decimal(5,2)),'SELL_STOCK_OWN' as GroupName 
-FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
-WHERE symbol in ('1.1!526608') and CAST(ltt as Date)=CAST(@Date as Date) and  totalSellQ >=  (totalBuyQt/100)* 5 
- and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and PO_KEY='SELL_STOCK_OWN' )
+--SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
+--( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + ' Total Sell QTY :  '  + cast (totalSellQ  as  varchar(100) )+  ' ; Sellprice:  ' + cast( sPrice as   varchar(100)  ) + '; SellQTY:' + cast( sQty as   varchar(100) ) +' ; VOlume :'+ P.VolumeC   ) as STOCKName 
+--,
+--0,0,0,0,cast(p.change as decimal(5,2)),'SELL_STOCK_OWN' as GroupName 
+--FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
+--WHERE  CAST(ltt as Date)=CAST(@Date as Date) and cast(p.change as decimal(5,2)) < -4-- totalSellQ >=  (totalBuyQt/100)* 5 
+-- and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and PO_KEY='SELL_STOCK_OWN' )
 
 
-  union all
+  --union all
  
-SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
-( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + ' Total Sell QTY :  '  + cast (totalSellQ  as  varchar(100) )+  ' ; Sellprice:  ' + cast( sPrice as   varchar(100)  ) + '; SellQTY:' + cast( sQty as   varchar(100) )  +' ; VOlume :'+ P.VolumeC   ) as STOCKName 
-,
-0,0,0,0,cast(p.change as decimal(5,2)),'Upper_CKT' as GroupName 
-FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
-WHERE  CAST(ltt as Date)=CAST(@Date as Date) and  P.upperCktLm =P.last and  cast (ttv as decimal)  > 1000000
- and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and PO_KEY='Upper_CKT' )
- )
+--SELECT distinct   p.symbol, cast(ltt as Date) as Date, p.[last],
+--( [stock_name] + '; change' + ' : ' +  cast( change  as varchar(100)) + '; Last : ' + cast (p.[last] as varchar(100)) + ' Total Sell QTY :  '  + cast (totalSellQ  as  varchar(100) )+  ' ; Sellprice:  ' + cast( sPrice as   varchar(100)  ) + '; SellQTY:' + cast( sQty as   varchar(100) )  +' ; VOlume :'+ P.VolumeC   ) as STOCKName 
+--,
+--0,0,0,0,cast(p.change as decimal(5,2)),'Upper_CKT' as GroupName 
+--FROM [STOCK].[dbo].[Ticker_Stocks_Histry] P
+--WHERE  CAST(ltt as Date)=CAST(@Date as Date) and  P.upperCktLm =P.last and  cast (ttv as decimal)  > 1000000
+-- and not  exists (select 1 from STOCK_NTFCTN where symbol=p.symbol and cast(change as decimal(5,2)) = cast(p.change as decimal(5,2))  and PO_KEY='Upper_CKT' )
+-- --)
 
 
 
@@ -3044,7 +4101,7 @@ WHERE  CAST(ltt as Date)=CAST(@Date as Date) and  P.upperCktLm =P.last and  cast
   End
 
 GO
-/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED_Upper_CKT_OLD]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Get_Todays_Stock_PRED_Upper_CKT_OLD]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3101,7 +4158,7 @@ and  CAST(ltt as Date)=CAST(@Date as Date)   and not  exists (select 1 from STOC
   End
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetBuysStocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetBuysStocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3115,7 +4172,7 @@ SELECT *,cast([Last]-[open] as Decimal(10,2)) as INC
   FROM [STOCK].[dbo].[BuyStock] where ratio >=@top and CAST(ltt as Date)=cast(@Date as Date)  order by ratio desc
   end
 GO
-/****** Object:  StoredProcedure [dbo].[GetBuyStockTriggers]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetBuyStockTriggers]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3123,36 +4180,45 @@ GO
 CREATE Procedure  [dbo].[GetBuyStockTriggers]
 as begin
 
-SELECT eq.SecurityId as StockCode,  eq.Symbol as symbol,eq.SecurityName as StockName,
+SELECT N.SC as StockCode, '1.1!'+ n.TK as symbol,n.sn as   StockName,
 isnull(T.Price,0) as PointerPrice,cast(((isnull(T.Price,0)) + (0.002 * isnull(T .Price,0))) as decimal(10,2)) as buyATPrice, cast(((isnull(T.Price,0)) + ((0.1)*isnull(T.Price,0))) as decimal(10,2)) as sellAtPrice,
 
 (CASE WHEN T.change='' THEN -9999
      WHEN T.change is null then -9999
 	 else cast(ISNULL(T.Change,-9999) as decimal(10,2)) end) as buyATChange
 --cast(ISNULL(T.Change,-9999) as decimal(10,2)) as  buyATChange
-  FROM Equitys eq
+  FROM  [STOCK].[dbo].[StockScriptNew_CPY]  N
+   left join [STOCK].[dbo].[Equitys] Eq on Eq.Symbol ='1.1!'+ n.TK
+   left join Live_Stocks l on l.symbol='1.1!'+ n.TK 
+
+
+-- and E.Symbol='1.1!544026'
+ 
   left join [STOCK].[dbo].[StockPriceConfig] T  on eq.Symbol=T.Symbol
-  where eq.IsEnabledForAutoTrade=1  order by eq.SecurityName
+   where   ec='BSE' and n.isactive=1 and l.[last] < 2000
+  --where eq.IsEnabledForAutoTrade=1 
+  order by eq.SecurityName
   End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetDummyTestBySymbol]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetDummyTestBySymbol]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
+--GetDummyTestBySymbol ''
   CREATE Procedure [dbo].[GetDummyTestBySymbol](@Code varchar(20))
   as
   begin
 
-  Select * from Ticker_Stocks_01_02_24 where  ltt < ='2024-02-01 09:20:06.000' 
+  Select top 50000 * from [STOCK].[dbo].Ticker_Stocks_15_03_24 where    cast (ttv as Float) > 0   order by ltt asc--Ticker_Stocks06_02 where symbol='1.1!543396' order by ltt asc 
+  --Select * from Ticker_Stocks_01_02_24 where  ltt < ='2024-02-01 09:20:06.000'  symbol='1.1!500103'
   --where symbol='1.1!543720' and  [open] > 0 order by ltt desc
   end
 GO
-/****** Object:  StoredProcedure [dbo].[GetPivotData]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetPivotData]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3309,7 +4375,7 @@ where (ISPSU=1 or  CAN_BUY=1 or MSNRating in ('strongBuy','Buy') )and
 --left join Live_Stocks E  on E.Symbol =P.Symbol
 End
 GO
-/****** Object:  StoredProcedure [dbo].[GetPivotData_Company]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetPivotData_Company]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3432,7 +4498,164 @@ Select * from TempPivotResultsCompnay
 --left join Live_Stocks E  on E.Symbol =P.Symbol
 End
 GO
-/****** Object:  StoredProcedure [dbo].[getStockDetails]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetPivotData_dummy]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--GetPivotData '2023-11-01','ttv'
+--GetPivotData '2023-11-14','ttv' ,'','','','>','10','100'
+--GetPivotData '2023-08-15','change'
+
+
+
+Create Proc [dbo].[GetPivotData_dummy](@Date Date, @column varchar(20), @groupName varchar(max)='', @subGroup varchar(max)='',
+
+
+
+@CKTName varchar(25)=null,
+@ConditionOperator varchar(10)=null,
+@dynamicminValue varchar(100) =null,
+@dynamicmaxValue  varchar(100)=null,
+@isWatchList bit= 0
+
+)
+as
+begin 
+
+Declare @previousDate DateTime = @Date
+
+
+declare @DynamicWhere  varchar(max)='';
+
+if(@ConditionOperator is not null and @ConditionOperator<>'' and @column <> 'ttv'  )
+begin
+print @dynamicminValue
+set @DynamicWhere=case when @ConditionOperator = '>' Then  '['+@column+'] '+@ConditionOperator+' cast ('+ @dynamicminValue+' as bigint) '  
+                       when @ConditionOperator = '<' Then  '['+@column+']'+@ConditionOperator+' cast ('+ @dynamicminValue+' as bigint) '  
+					   when @ConditionOperator  like '%range%' Then  '['+@column+'] between '+' cast ('+ @dynamicminValue+' as bigint) and  cast('  + @dynamicmaxValue + ' as bigint)'
+					   End
+
+
+ print @DynamicWhere
+End
+else 
+begin
+set @DynamicWhere='1=1'
+end 
+
+if not exists (select * from Ticker_Stocks_Histry where cast(ltt as Date)=CAST(@Date as Date))
+begin
+set @Date= (select MAX(CAST(ltt as Date)) from Ticker_Stocks_Histry) 
+end 
+
+if not exists (select * from Ticker_Stocks_Histry where cast(ltt as Date)=CAST(@Date as Date))
+begin
+set @Date= (select MAX(CAST(ltt as Date)) from Ticker_Stocks_Histry) 
+end 
+
+truncate table TempPivot;
+drop table if exists TempPivotResults;
+
+--Declare @previousDate Date = (SELECT DATEADD(
+--    day,
+--    IIF(DATENAME(weekday,@Date) = 'Monday', -3, -1),
+--    CAST(@Date AS DATE)
+--));
+drop table if exists #tempdata;
+DECLARE @sql_select  nvarchar(max);
+
+    SELECT  e.symbol,STOCK_name + ' ' +e.symbol as STOCK_name  ,ltt,[close],
+	
+	case when @column ='high-low' then [high]-[low] end as DayChange,
+	[open],[last],ttv,change,low,high,
+        RnAsc = ROW_NUMBER() OVER(PARTITION BY E.symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc = ROW_NUMBER() OVER(PARTITION BY E.symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    into #tempCTE  FROM Ticker_Stocks_Histry   H
+	left join Equitys E on h.symbol=E.Symbol
+	where  CAST(ltt as Date) >=cast(@previousDate as Date) --and cast (ttv as decimal) > 5000000 
+	and ( @groupName is null or  @groupName=''  or E.IgroupName    in  (SELECT id FROM [dbo].[ufnSplit](@groupName)))
+	and ( @subGroup is null or   @subGroup='' or  E.ISubgroupName    in  (SELECT id FROM [dbo].[ufnSplit](@subGroup)))
+	and (@CKTName ='' or  @CKTName is null or 
+	    [last]= CASE
+         WHEN @CKTName ='upperCktLm' THEN upperCktLm
+         WHEN @CKTName ='lowerCktLm' THEN lowerCktLm
+		 end
+		 
+		 or 
+		  [open]= CASE
+         WHEN @CKTName ='upperCktLm' THEN upperCktLm
+         WHEN @CKTName ='lowerCktLm' THEN lowerCktLm
+		 end
+		 or 
+		  [close]= CASE
+         WHEN @CKTName ='upperCktLm' THEN upperCktLm
+         WHEN @CKTName ='lowerCktLm' THEN lowerCktLm
+		 end
+		 )
+
+		
+		-- and [open]=upperCktLm
+	--and (@lastcolumnwhere ='' or  @lastcolumnwhere is null or last=@lastcolumnwhere)
+
+
+	if(@column='high-low')
+	 set @column='DayChange'
+	--#select distinct symbol,STOCK_name, 0 as Value,cast(ltt as Date) as Date  into TempPivot   from #tempCTE where RnDesc=1 order by symbol
+--SET @sql_select='Insert into  TempPivot select distinct symbol,STOCK_name,['+@column+'] as value,cast(ltt as Date) as Date   from #tempCTE where RnDesc=1   order by symbol'
+
+SET @sql_select='Insert into  TempPivot select distinct symbol,STOCK_name,['+@column+'] as value,cast(ltt as Date) as Date   from #tempCTE where RnDesc=1 and '+@DynamicWhere+'   order by symbol'
+print @sql_select
+EXECUTE sp_executesql @sql_select
+--Select * from TempPivot
+
+
+DECLARE @sql  nvarchar(max);
+DECLARE @columnname nvarchar(max);
+
+
+--select @columnname = STUFF((SELECT ',' + QUOTENAME(convert(char(10), date, 120)) 
+select @columnname = STUFF((SELECT ',' + QUOTENAME(convert(char(10), date, 110)) 
+                    from TempPivot
+                    group by date
+                    order by date asc
+            FOR XML PATH(''), TYPE
+            ).value('.', 'NVARCHAR(MAX)') 
+        ,1,1,'')
+
+SET @sql='
+SELECT * into TempPivotResults 
+FROM  TempPivot t
+PIVOT
+(SUM([value])
+FOR [Date] IN('+@columnname+')) AS p '
+
+EXECUTE sp_executesql @sql
+
+
+Select Eq.MSN_SECID as M, [open],[last],[last]-[open] as Diff , P.* from TempPivotResults P
+left join Live_Stocks E  on E.Symbol =P.Symbol
+inner  JOIN Equitys  eq ON eq.Symbol= P.Symbol --and ISPSU=1
+left join (SELECT  [Symbol],CAN_BUY,MSNRating  FROM Company_Ratings_Only_DIVI )A  on A.Symbol= P.Symbol  
+
+where (ISPSU=1 or  CAN_BUY=1 or MSNRating in ('strongBuy','Buy') )and 
+@isWatchList=0 or eq.MSN_SECID in (select symbol from WatchList where symbol=eq.MSN_SECID and cast(date  as date)> =cast(GETDATE()-1 as date))
+--where eq.Symbol in (select Symbol from MSNDownStocks where estimate_recommendation in ('buy','strongbuy') and cast(Created_On as date)=cast(GETDATE() as Date))
+--where eq.Symbol in (select Symbol from MSNupStocks where estimate_recommendation in ('buy','strongbuy'))
+--where eq.symbol in ('1.1!530355','1.1!532960','1.1!532430','1.1!504286',
+--'1.1!543284','1.1!532708','1.1!507878','1.1!531205',
+--'1.1!532444',' 1.1!511700','1.1!511571','1.1!526335','1.1!530525','1.1!533287','1.1!526861',
+--'1.1!522257','1.1!526662','1.1!536659','1.1!517556','1.1!500540','1.1!521149','1.1!532933','1.1!511116','1.1!506605','1.1!543540','1.1!531859'
+--,'1.1!521246','1.1!519528','1.1!535136','1.1!531092','1.1!511535','1.1!511535','1.1!530557','1.1!508922','1.1!533152','1.1!526869','1.1!532925',
+--'1.1!513250','1.1!532799','1.1!532624','1.1!524314','1.1!523836','1.1!517288','1.1!506858','1.1!501848',' 1.1!538568','1.1!514010','1.1!533217','1.1!540361')
+--where E.symbol ='1.1!516092'
+--WHERE EQ.recommondations in ('strongBuy','buy') 
+
+--Select P.* from TempPivotResults P
+--left join Live_Stocks E  on E.Symbol =P.Symbol
+End
+GO
+/****** Object:  StoredProcedure [dbo].[getStockDetails]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3468,17 +4691,19 @@ order by cast(BroadcastDateTime as datetime) desc
 end
   
 GO
-/****** Object:  StoredProcedure [dbo].[GetTopStockforBuyAutomation]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[GetTopStockforBuyAutomation]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
---[GetTopStockforBuyAutomation] '0'
-	CREATE Procedure [dbo].[GetTopStockforBuyAutomation](@isorderbysize bit =1)
+--[GetTopStockforBuyAutomation] '0','2024-03-05'
+	CREATE Procedure [dbo].[GetTopStockforBuyAutomation](@isorderbysize bit =1,@Date DateTime =null)
 	as
 	begin
 	exec CLEAR_beRISH_bULLISH;
-	Declare @Date DateTime =(select max(ltt) from [Ticker_Stocks_Histry_Extended_Ticks] with (nolock) )
+	if(@Date is null)
+      set @Date  =(select max(ltt) from [Ticker_Stocks_Histry_Extended_Ticks] with (nolock) )
+
 	if(@isorderbysize=1)
 	begin 
 	   
@@ -3489,8 +4714,9 @@ GO
 	select T.Symbol,  
 	isnull(T.BulishCount,0) as BulishCount,
 	isnull(T.BearishCount,0) as BearishCount,
-	isnull(T.Stock_Name,'') as Stock_Name,
+	isnull(T.StockCode,'') as Stock_Name,
 	isnull(T.StockCode,'') as StockCode,
+	
 	T.ltt,
 	isnull(JSON_VALUE(Data, '$.candleResult.Price'),0) as  candleResult_Price,
 	isnull(JSON_VALUE(Data, '$.candleResult.Match'),0) as  candleResult_Match ,
@@ -3521,10 +4747,10 @@ GO
 
 	
 	from [Ticker_Stocks_Histry_Extended_Ticks] T with (nolock) 
-	where CAST( ltt as Date )=  cast(getdate() as Date)) -- CAST(@Date as Date))
+	where CAST( ltt as Date )=  CAST(@Date as Date))
 
 	
-		Select top 25 *   from  Cte where RnDesc_C = 1 order by   candleResult_Size   desc
+		Select  top 50 *   from  Cte where RnDesc_C = 1 and  cast(candleResult_Price as float)  < 1500 order by   BulishCount   desc
 
 	End
 	--where symbol='1.1!532814' order by Ltt desc
@@ -3538,7 +4764,7 @@ GO
 	select T.Symbol,  
 	isnull(T.BulishCount,0) as BulishCount,
 	isnull(T.BearishCount,0) as BearishCount,
-	isnull(T.Stock_Name,'') as Stock_Name,
+	isnull(T.StockCode,'') as Stock_Name,
 	isnull(T.StockCode,'') as StockCode,
 	T.ltt,
 	isnull(JSON_VALUE(Data, '$.candleResult.Price'),0) as  candleResult_Price,
@@ -3570,16 +4796,16 @@ GO
 
 	
 	from [Ticker_Stocks_Histry_Extended_Ticks] T with (nolock) 
-	where CAST( ltt as Date )=  cast(getdate() as Date)) -- CAST(@Date as Date))
+	where CAST( ltt as Date )=   CAST(@Date as Date))
 
 	
-		Select top 25 *   from  Cte where RnDesc_C = 1 order by   BulishCount   desc
+		Select top 50  *   from  Cte where RnDesc_C = 1 and  cast(candleResult_Price as float) < 1500 order by   BulishCount   desc
 
 	End
 	--where symb
 	End
 GO
-/****** Object:  StoredProcedure [dbo].[Import_Histry]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Import_Histry]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3668,7 +4894,7 @@ SELECT *,
 --end
 End
 GO
-/****** Object:  StoredProcedure [dbo].[Import_Last_Stock]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Import_Last_Stock]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3686,9 +4912,11 @@ Declare @previousDate Date = (SELECT DATEADD(
 Declare @Date DateTime =(select isnull(MAX(ltt),GETDATE()-30) from Ticker_Stocks_Histry);
 WITH Cte AS(
 SELECT *,
-        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
-        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
-    FROM Ticker_Stocks_Histry  where CAST(ltt as Date) >= cast(@Date as date))
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry  )
+	--select * from Cte where  RnDesc_C=1
+
 
 	INSERT INTO Live_Stocks
            ([symbol]
@@ -3747,7 +4975,7 @@ ORDER BY symbol, ltt;
 
 End
 GO
-/****** Object:  StoredProcedure [dbo].[Insert_BSE_NEWS]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Insert_BSE_NEWS]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3899,7 +5127,7 @@ End
 end
 END
 GO
-/****** Object:  StoredProcedure [dbo].[INSERT_MMSN_Companies]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[INSERT_MMSN_Companies]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4246,9 +5474,13 @@ JSON_VALUE(JsonData, '$.equity.company.website')  as website,GETDATE()
 
 
 FROM  Equitys where JSON_VALUE(JsonData, '$.equity.company.address.countryCode')='IN'
+
+
+EXEC AddMMSN_Companies_TOP7
+exec AddTempfinancials
 End
 GO
-/****** Object:  StoredProcedure [dbo].[InsertAUTO_BUY_EQUTIES]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertAUTO_BUY_EQUTIES]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4332,7 +5564,7 @@ End
 END
 
 GO
-/****** Object:  StoredProcedure [dbo].[InsertBuyStocks]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertBuyStocks]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4367,7 +5599,7 @@ not  exists (select 1 from STOCK_NTFCTN where symbol=@STOCKCode and cast(change 
 
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[InsertCurrentHoldings]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertCurrentHoldings]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4376,7 +5608,7 @@ CREATE Procedure [dbo].[InsertCurrentHoldings](@STOCKCode varchar(100),@Change i
 as
 begin
  
- Insert into STOCK_NTFCTN([symbol]
+ Insert into dbo.STOCK_NTFCTN([symbol]
       ,[Date]
 	  ,Last
       ,[STOCKName]
@@ -4391,17 +5623,17 @@ begin
  case when @Change > 4.0 then '<b><ul>'+  @STOCKCode +  ' </b></ul> has increased proift the percentage of ' + cast( @Change as varchar(20))  + ' Current Holdings'
    when @Change < 0.0 then  '<b><ul>'+  @STOCKCode +  ' </b></ul> has decreased loss  percentage of ' + cast( @Change as varchar(20)) + ' Current Holdings' end  as STOCKName 
 ,
-0,0,0,0,cast(@Change as decimal(5,2)),'SELL_STOCK_OWN' as GroupName 
+0,0,0,0,cast(@Change as decimal(5,2)),'SELL_STOCK_DOWN' as GroupName 
 WHERE  
 
-(@Change > 4.0 or  @Change < 0.0) and 
-not  exists (select 1 from STOCK_NTFCTN where symbol=@STOCKCode and cast(change as decimal(5,2)) = cast(@Change as decimal(5,2))  and CAST(Date as Date)=cast(GETDATE() as Date)    and PO_KEY='SELL_STOCK_OWN' )
+--(@Change > 3.0 or  @Change < 0.0) and 
+not  exists (select null from dbo.STOCK_NTFCTN where symbol=@STOCKCode and cast(change as decimal(5,2)) = cast(@Change as decimal(5,2))  and CAST(Date as Date)=cast(GETDATE() as Date)    and PO_KEY='SELL_STOCK_DOWN' )
 
 
 
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[InsertCurrentPosition]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertCurrentPosition]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4411,7 +5643,7 @@ as
 begin
  
 
- Insert into STOCK_NTFCTN([symbol]
+ Insert into dbo.STOCK_NTFCTN([symbol]
       ,[Date]
 	  ,Last
       ,[STOCKName]
@@ -4426,12 +5658,12 @@ begin
  case when @Change > 4.0 then '<b><ul>'+  @STOCKCode +  ' </b></ul> has increased proift the percentage of ' + cast( @Change as varchar(20))  + ' Current Position'
    when @Change < 0.0 then  '<b><ul>'+  @STOCKCode +  ' </b></ul> has decreased loss  percentage of ' + cast( @Change as varchar(20)) + ' Current Position' end  as STOCKName 
 ,
-0,0,0,0,cast(@Change as decimal(5,2)),'SELL_STOCK_OWN' as GroupName 
+0,0,0,0,cast(@Change as decimal(5,2)),'SELL_STOCK_DOWN' as GroupName 
 WHERE 
 
-(@Change > 4.0 or  @Change < 0.0) and 
+--(@Change > 3.0 or  @Change < 0.0) and 
 -- CAST(ltt as Date)=cast(GETDATE() as Date) --and  totalSellQ >=  (totalBuyQt/100)* 80
-  not  exists (select 1 from STOCK_NTFCTN where symbol=@STOCKCode and cast(change as decimal(5,2)) = cast(@Change as decimal(5,2))  and CAST(Date as Date)=cast(GETDATE() as Date)    and PO_KEY='SELL_STOCK_OWN' )
+  not  exists (select null from dbo.STOCK_NTFCTN where symbol=@STOCKCode and cast(change as decimal(5,2)) = cast(@Change as decimal(5,2))  and CAST(Date as Date)=cast(GETDATE() as Date)    and PO_KEY='SELL_STOCK_DOWN' )
 
 
 
@@ -4448,7 +5680,7 @@ WHERE
 
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[InsertFromMicrosoft]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertFromMicrosoft]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4484,7 +5716,35 @@ SELECT
   FROM [STOCK].[dbo].[Equitys]
   End
 GO
-/****** Object:  StoredProcedure [dbo].[Insertipo_Current]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertFromScriptnew]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Procedure [dbo].[InsertFromScriptnew]
+as
+begin
+
+INSERT INTO [dbo].[Equitys]
+           ([SecurityCode]
+           
+           ,[SecurityId]
+           ,[SecurityName]
+           ,[Status]
+           ,[Symbol]
+           ,[IsActive]
+           )
+
+Select TK,NS,SN,'ACTIVE','1.1!'+TK,1
+  FROM [STOCK].[dbo].[StockScriptNew_CPY] CPY
+  left  join Equitys E  on cast(E.SecurityCode as varchar(50))=cast(CPY.TK as varchar(50)) where CPY.EC='BSE' and CPY.IsActive=1
+ and E.SecurityId is null
+ End
+
+
+ Select * from Equitys
+GO
+/****** Object:  StoredProcedure [dbo].[Insertipo_Current]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4561,7 +5821,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[Insertipo_Upcomming]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Insertipo_Upcomming]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4644,7 +5904,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[InsertNSENews]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertNSENews]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4710,7 +5970,7 @@ END
 
 End
 GO
-/****** Object:  StoredProcedure [dbo].[InsertOrUpdateMSN_Notification]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[InsertOrUpdateMSN_Notification]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4742,7 +6002,7 @@ Update [dbo].[MSN_Equities_Notification] set IsFavoriteAdded=@IsFavoriteAdded,Is
 End 
 
 GO
-/****** Object:  StoredProcedure [dbo].[MSNDownStocksSP]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[MSNDownStocksSP]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4842,7 +6102,7 @@ Select * from MSNDownStocks
 End
 
 GO
-/****** Object:  StoredProcedure [dbo].[MSNUpStocksSP]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[MSNUpStocksSP]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4903,7 +6163,7 @@ Select * from MSNDownStocks
 End
 
 GO
-/****** Object:  StoredProcedure [dbo].[RESET_DB]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[RESET_DB]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4925,7 +6185,7 @@ SET RECOVERY FULL;
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[ResetBuyStockMarket]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[ResetBuyStockMarket]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4952,7 +6212,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[Run_AwardCount]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Run_AwardCount]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4960,16 +6220,30 @@ GO
 CREATE  Procedure [dbo].[Run_AwardCount]
 as 
 begin
-drop table if exists Stock_Award
-Select n.symbol as Code ,eq.Symbol, Eq.SecurityName, COUNT(*) as OrderCount 
-Into Stock_Award from STOCK_NTFCTN  N
-left join Equitys Eq on replace(Eq.Symbol,'1.1!','')=N.symbol
-where stockname like '%Order%'
-group by n.symbol,eq.Symbol,Eq.SecurityName
-order by COUNT(*) desc
-End
+truncate table    Stock_Award
+
+
+;with CTE as (
+
+
+Select eq.Symbol, Eq.SecurityName, COUNT(*) as OrderCount,GETDATE() as Date   from STOCK_NTFCTN  N
+left join Equitys Eq on replace(Eq.SecurityId,'1.1!','')=replace(N.symbol,'1.1!','')
+where stockname like '%Order%' and eq.Symbol is not null
+group by eq.Symbol,Eq.SecurityName
+
+union all 
+
+Select eq.Symbol, Eq.SecurityName, COUNT(*) as OrderCount,GETDATE() as Date  from STOCK_NTFCTN  N
+left join Equitys Eq on replace(Eq.Symbol,'1.1!','')=replace(N.symbol,'1.1!','')
+where stockname like '%Order%' and eq.Symbol is not null
+group by eq.Symbol,Eq.SecurityName )
+
+Insert into Stock_Award
+Select Symbol,SecurityName, sum(OrderCount) as OrderCount,GETDATE() as Date   from CTE group by Symbol,SecurityName order by sum(OrderCount) desc
+END
+
 GO
-/****** Object:  StoredProcedure [dbo].[Run_MIN_MAX_Threshold]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Run_MIN_MAX_Threshold]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5014,7 +6288,7 @@ FROM
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[SEND_NOTIFICATION]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SEND_NOTIFICATION]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5026,14 +6300,14 @@ CREATE procedure [dbo].[SEND_NOTIFICATION](@IsUpper bit,@IsSell bit)
 as
 begin
 
-exec [dbo].[Get_Todays_Stock_PRED_Upper_CKT]
+--exec [dbo].[Get_Todays_Stock_PRED_Upper_CKT]
 
 Delete from STOCK_NTFCTN where STOCKName is null;
 drop table if exists  #temp1
 
 Select * into #temp1 from 
 
-( select N.* 
+( select top 100 N.* 
 from  STOCK_NTFCTN N
 
 left  join (SELECT  [Symbol],CAN_BUY,MSNRating  FROM Company_Ratings_Only_DIVI )A  on A.Symbol= N.Symbol  
@@ -5042,7 +6316,7 @@ where isNotified=0 and PO_KEY not  in ('BSE_NEWS','NSE_NEWS','BSE_Board Meeting'
  --and ( ISPSU=1 or  CAN_BUY=1 or MSNRating in ('strongBuy','Buy'))  
 
  union all 
- Select N.* from  STOCK_NTFCTN N
+ Select  top 100 N.* from  STOCK_NTFCTN N
 
 left  join (SELECT  [Symbol],CAN_BUY,MSNRating  FROM Company_Ratings_Only_DIVI )A  on A.Symbol= N.Symbol  
 left   JOIN Equitys  eq ON eq.Symbol= N.Symbol
@@ -5050,7 +6324,7 @@ where isNotified=0 and PO_KEY in ('BSE_NEWS','NSE_NEWS','BSE_Board Meeting') )A
 
 --and  - and ( @IsUpper =null or @IsUpper=IsUppCKT)  and (@IsSell=null or  @IsSell=ISSell)
 --Update STOCK_NTFCTN set isNotified=1 where Id in (Select ID #temp1)
-Select  top 100 * from #temp1 T
+Select * from #temp1 T
 left  join PO_CONFIG  N on T.PO_KEY=n.PO_KEY_NAME 
 where N.[user]='uh61jjrcvyy1tebgv184u67jr2r36x'
 End  
@@ -5063,7 +6337,7 @@ End
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_CHART_STOCKS_BY_STOCK]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_CHART_STOCKS_BY_STOCK]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5082,7 +6356,7 @@ begin
 Select  *  from [dbo].Ticker_Stocks with (Nolock) where symbol=@Code and CAST(ltt as Date)=cast(GETDATE() as date)order by ltt asc 
 end  
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_groupName_By]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_groupName_By]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5092,7 +6366,7 @@ GO
   Select distinct  [IgroupName] as Text  from  [STOCK].[dbo].[Equitys] where  [IndustryNewName]  in  (SELECT id FROM [dbo].[ufnSplit](@IndustryNewName))
   End 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_IndustryNewName_By]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_IndustryNewName_By]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5103,58 +6377,119 @@ GO
   End 
  
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK](@Code varchar(50)='',@isfavorite bit =0,@isAutoTrade bit =0
+CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK](
+@Code varchar(50)='',
+@isfavorite bit =0,
+@isAutoTrade bit =0
 
 ,@ShowNotification bit=0,
 @minvalue int=0,
-@maxvalue int =0,
-@TDays varchar(10)=null,
-@WatchList varchar(10)=null
+@maxvalue int =20000,
+@TDays varchar(10)='',
+@WatchList varchar(10)=null,
+@isUpperCircuit bit=0,
+@islowerCircuit bit=0,
+@skip int =0,
+@take int =100,
+@IsOrderbyVolume bit=0,
+@orderby_obj varchar(100)='',
+@sortorder varchar(100)='',
+@isBullish bit = 0,
+@isbearish bit = 0,
+@IsAward bit=0,
+
+@isTarget bit =0,
+
+@IsIncludeDeleted bit=0
 )
 as
+
+
+
+
 begin 
+Declare @totalrows int;
+
+
+
+Declare @SQLStatement varchar(max);
+
+Declare @Orderby varchar(max) ='Change desc'
+if(@isBullish =1 or @IsOrderbyVolume =1 or @IsAward=1 or @isbearish=1 or @isTarget=1 or @isfavorite=1 or @isAutoTrade=1  or @ShowNotification=1 )
+set @orderby_obj=null
+
+
+SET @Orderby= CASE WHEN  @IsOrderbyVolume=1 then   'cast (ttv as float) DESC' 
+                   WHEN @isBullish=1 Then 'cast (BulishCount as float) DESC'
+				   WHEN @isbearish=1 Then 'cast (BearishCount as float) DESC'
+				   WHEN @IsAward=1 Then 'cast (AwardCount as float) DESC'
+				   WHEN @isTarget=1 Then 'cast (estimate_meanPriceTarget as float)	 DESC'
+                   When  @orderby_obj is not null  then ''+@orderby_obj+'' + ' '+@sortorder+''
+				
+				   End     
+if(@Orderby is null or @Orderby='')
+set @Orderby='Change desc'
+
 
 drop table if exists #previousData;
+drop table if exists #temptickst;
+Declare @Date DateTime, @DatefromEx DateTime;
+select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended_Ticks;
 
+;WITH Cte AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry_Extended_Ticks with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
 
+	
+	select [symbol]
+      ,[BearishCount]
+      ,[BulishCount]
+      ,[Ltt]
+      ,[Match]
+      ,[Data]
+      ,[Stock_Name] 
+      ,[StockCode],ID  into #temptickst  from  CTE where RnDesc_C = 1
 
-WITH TOPTEN AS (
-    SELECT *, ROW_NUMBER() 
-    over (
-        PARTITION BY symbol 
-        order by ltt desc
-    ) AS RowNo 
-    FROM Ticker_Stocks_Histry
-)
-SELECT  Symbol,
-	STRING_AGG(cast([change] as decimal(10,2)), ', ') change,
-	STRING_AGG(VolumeC, ', ') VolumeC,
-	STRING_AGG(cast([open] as decimal(10,2)), ', ') [open],
-	STRING_AGG(cast([close] as decimal(10,2)), ', ') [close],
-	STRING_AGG(convert(varchar, ltt, 5), ', ') ltt  into  #previousData FROM TOPTEN WHERE RowNo <= 17  group by symbol;
+--WITH TOPTEN AS (
+--    SELECT *, ROW_NUMBER() 
+--    over (
+--        PARTITION BY symbol 
+--        order by ltt desc
+--    ) AS RowNo 
+--    FROM Ticker_Stocks_Histry
+--)
+--SELECT  Symbol,
+--	STRING_AGG(cast([change] as decimal(10,2)), ', ') change,
+--	STRING_AGG(VolumeC, ', ') VolumeC,
+--	STRING_AGG(cast([open] as decimal(10,2)), ', ') [open],
+--	STRING_AGG(cast([close] as decimal(10,2)), ', ') [close],
+--	STRING_AGG(convert(varchar, ltt, 5), ', ') ltt  into  #previousData FROM TOPTEN WHERE RowNo <= 17  group by symbol;
 
 
 if(@Code is null or @Code='' )
 begin 
-Declare @Date DateTime, @DatefromEx DateTime;
+
 Drop table if exists #tempresuls
 select @Date=MAX(Created_On) from MMSN_Companies;
 
-select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended;
+print (@Date)
+--select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended;
 
-WITH Cte AS(
-SELECT *,
-        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
-        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
-    FROM [Ticker_Stocks_Histry_Extended] with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
-Delete  from  Cte where RnDesc_C > 1 
+--WITH Cte AS(
+--SELECT *,
+--        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+--        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+--    FROM [Ticker_Stocks_Histry_Extended] with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+--Delete  from  Cte where RnDesc_C > 1 
 
-Select  	L.* ,eq.MSN_SECID,isnull(c.quote_return1Week,0 ) as quote_return1Week,isnull(c.quote_return1Month,0) as quote_return1Month,isnull(c.quote_return3Month,0) as quote_return3Month,c.estimate_recommendation,isnull(c.estimate_numberOfAnalysts,0) as estimate_numberOfAnalysts,c.beta,c.keyMetrics_eps,c.estimate_meanPriceTarget,c.estimate_highPriceTarget,
+Select  L.* ,eq.MSN_SECID,isnull(c.quote_return1Week,0 ) as quote_return1Week,isnull(c.quote_return1Month,0) as quote_return1Month,isnull(c.quote_return3Month,0) as quote_return3Month,c.estimate_recommendation,isnull(c.estimate_numberOfAnalysts,0) as estimate_numberOfAnalysts,c.beta,c.keyMetrics_eps,c.estimate_meanPriceTarget,c.estimate_highPriceTarget,
 eq.isprime as isfavorite,c.quote_return6Month,c.quote_return1Year,c.quote_returnYTD,
 
 isnull(c.quote_priceChange,0 ) quote_priceChange,
@@ -5167,6 +6502,7 @@ isnull(c.quote_priceChangeYTD,0 ) quote_priceChangeYTD,
 isnull(c.quote_price52wHigh,0 ) quote_price52wHigh,
 isnull(c.quote_price52wLow,0) quote_price52wLow,
 isnull(eq.IsEnabledForAutoTrade,0) as isAutoTrad,
+
 ISNULL(N.IsFavoriteAdded,0) as IsFavoriteAdded,
 ISNULL(N.IsFavoriteRemoved,0) as IsFavoriteRemoved,
 ISNULL(cn.Price,-1)as buyAt,
@@ -5176,65 +6512,135 @@ ISNULL(cn.[Change],'')as buyAtChange,
 ISNULL(eq.TDays,'') as TDay,
 
 ISNULL(eq.watchlist,'') as watchlist,
-PR.[change] as pr_change,
-PR.[close] as  pr_close,
-PR.[open] as pr_open,
-PR.[VolumeC] as  pr_volume,
- pr.ltt as pr_date,isnull(ex.BearishCount,0) BearishCount, isnull(ex.BulishCount,0) BulishCount,ex.match,   
+--PR.[change] as pr_change,
+--PR.[close] as  pr_close,
+--PR.[open] as pr_open,
+--PR.[VolumeC] as  pr_volume,
+ --pr.ltt as pr_date,
+ isnull(ex.BearishCount,0) BearishCount, isnull(ex.BulishCount,0) BulishCount,ex.match,   
  isnull(aw.OrderCount,0) as AwardCount
+
+ ,isnull(fn.EPS,0) as fn_eps,
+ isnull(fn.OPM_Percentage,0)    as OPM_Percentage,
+ isnull(fn.NPM_Percentage,0)	 as NPM_Percentage,
+ isnull(fn.Profit_Increase,0)	 as Profit_Increase,
+ isnull(fn.RevenueIncrease,0)	 as RevenueIncrease,
+ isnull(fn.ProfitDifference,0)	 as ProfitDifference,
+ isnull(fn.RevenueDifference,0) as RevenueDifference ,
+ isnull(fn.QuarterEnd,null)	 as QuarterEnd,
+fn.UPDATED_ON as FnUpdatedon,
+cast(quote_priceChangePercent as Decimal(10,2)) as quote_priceChangePercent,
+(SELECT [dbo].[GetLASTChange] (
+   l.symbol) Last7DaysChange) as Last7DaysChange,
+ case when (cast(c.estimate_meanPriceTarget as Float)) > 0 and (cast(c.quote_priceClose as Float)) > 0  then 
+    cast(((cast(c.estimate_meanPriceTarget as Float)-cast(c.quote_priceClose as float))*100)/cast(l.last as float) as decimal(10,2))
+	else 0
+ End as FuturePercentage,
+
+  [dbo].[GetNetProfit] (
+   l.symbol) QuaterlyResults,
+   fn.NET_PROFIT as RecentNetProfit,
+   isnull(eq.IsExclude,0) as IsExclude
+  
+ 
 into #tempresuls
 
 from [dbo].[Live_Stocks] l with (Nolock) 
-left JOIN Equitys  eq ON eq.Symbol= l.Symbol
-left join MMSN_Companies c on c.MSN_SECID=eq.MSN_SECID
-left join StockPriceConfig cn on cn.Symbol=l.symbol
-left join MSN_Equities_Notification N on N.MSN_SECID=eq.MSN_SECID and CAST(N.Created_On as date)=CAST(@Date as Date)
-left join #previousData PR on PR.symbol=eq.Symbol
-left join Ticker_Stocks_Histry_Extended ex on ex.symbol=L.symbol and  CAST(ex.Ltt as Date)=cast(@DatefromEx as date) 
-left join Stock_Award AW on  AW.symbol=eq.Symbol
-where -- l.symbol='1.1!544026' and --l. symbol='1.1!500009' and -- EQ.recommondations in ('strongBuy','buy')  and 
-cast(last as decimal(10,2) )< 2000 and CAST(c.Created_On as Date)=cast(@Date as date)  
---and ex.BulishCount > 0
+left JOIN Equitys  eq with (Nolock) ON eq.Symbol= l.Symbol
+left join MMSN_Companies c with (Nolock) on c.MSN_SECID=eq.MSN_SECID
+--left join MMSN_Companies_TOP7 top7 on c.MSN_SECID=eq.MSN_SECID
+left join StockPriceConfig  cn with (Nolock) on cn.Symbol=l.symbol
+left join MSN_Equities_Notification N with (Nolock) on N.MSN_SECID=eq.MSN_SECID and CAST(N.Created_On as date)=CAST(@Date as Date)
+--left join #previousData PR on PR.symbol=eq.Symbol
+left join #temptickst ex on ex.symbol=L.symbol and  CAST(ex.Ltt as Date)=cast(@DatefromEx as date) 
+left join Stock_Award AW  with (Nolock) on  AW.symbol=eq.Symbol
+left join tempfinancials  fn  with (Nolock) on fn.Symbol=l.symbol
+where 1=1 --and eq.ISPSU=1 --and  l.symbol='1.1!500103'
+--and --l. symbol='1.1!500009' and -- EQ.recommondations in ('strongBuy','buy')  and 
 
- and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+--and fn.OPM_Percentage is not null and 
+--AND cast(last as decimal(10,2) )< 2000 
+and CAST(c.Created_On as Date)=cast(@Date as date)  
+--and ex.BulishCount > 0
+and isnull(IsExclude,0)=@IsIncludeDeleted 
+and (@islowerCircuit is null  or @islowerCircuit =0 or l.last=l.lowerCktLm or l.[open]=l.lowerCktLm) 
+
+and (@isUpperCircuit is null  or @isUpperCircuit =0 or l.last=l.upperCktLm or l.[open]=l.upperCktLm) 
+
+and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+
 
 and (@WatchList is null  or @WatchList ='' or @WatchList =eq.WatchList)
 
 -- and cn.[Change] is not null
 
-
-
 and (@isfavorite=0 or eq.isprime=@isfavorite)
 and (@isAutoTrade=0 or eq.IsEnabledForAutoTrade=@isAutoTrade)
+
 order by change desc
+
+Select @totalrows= COUNT(*) from #tempresuls
+
+
+SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls  order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	print @SQLStatement
+
+
 if(@ShowNotification=1)
 begin
-select * from #tempresuls where IsFavoriteAdded=1 or IsFavoriteRemoved=1 order by change desc
+
+
+	SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where IsFavoriteAdded=1 or IsFavoriteRemoved=1 order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	print @SQLStatement
+	
 End
 
-if(@minvalue > 0 and @maxvalue > 0)
-select * from #tempresuls where [open] between @minvalue and @maxvalue  order by change desc
+ELSE if(@minvalue > 0 and @maxvalue > 0)
+begin
 
-if(@minvalue = 0 and @maxvalue > 0)
-select * from #tempresuls where [open] <= @maxvalue order by change desc
+SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where [open] between @minvalue and @maxvalue  order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+set @SQLStatement=REPLACE(@SQLStatement,'@minvalue',@minvalue)
+set @SQLStatement=REPLACE(@SQLStatement,'@maxvalue',@maxvalue)
+print @SQLStatement
 
-if(@minvalue > 0 and @maxvalue = 0)
-select * from #tempresuls where [open] >= @minvalue order by change desc
-else
-Select * from #tempresuls order by change desc
 end
-else
-Select top 1 L.*,eq.MSN_SECID from [dbo].[Live_Stocks] L with (Nolock) 
-left JOIN Equitys  eq ON eq.Symbol= l.Symbol
+ELSE if(@minvalue = 0 and @maxvalue > 0)
+begin 
 
-where l.symbol=@Code and CAST(l.ltt as Date)=cast(GETDATE() as date) 
+	SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where [open] <= @maxvalue order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	set @SQLStatement=REPLACE(@SQLStatement,'@minvalue',@minvalue)
+set @SQLStatement=REPLACE(@SQLStatement,'@maxvalue',@maxvalue)
+	print @SQLStatement
+
+End
+
+
+
+
+
+end
+
+exec (@SQLStatement)
 
 --and eq.ISPSU=1 order by change desc--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
 --where E.symbol ='1.1!516092'
 --WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_CHART]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_CHART]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5258,12 +6664,138 @@ and eq.ISPSU=1--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
 --WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD](@Code varchar(50)='')
+CREATE  Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD](@Code varchar(50)='')
+as
+begin 
+if(@Code is null or @Code='' )
+begin 
+SELECT 
+       '1.1!'+ n.TK as symbol,
+	   isnull([open],0) [open]
+      ,isnull([last],0) [last]
+      ,isnull([high],0) [high]
+      ,isnull([low],0) [low]
+      ,isnull([change],0) [change]
+      ,isnull([bPrice],0) [bPrice]
+      ,isnull([bQty],0) [bQty]
+      ,isnull([sPrice],0) [sPrice]
+      ,isnull([sQty],0) [sQty]
+      ,isnull([ltq],0) [ltq]
+      ,isnull([avgPrice],0) [avgPrice]
+      ,isnull([quotes],'') [quotes]
+      ,isnull([ttq],0) [ttq]
+      ,isnull([totalBuyQt],0) [totalBuyQt]
+      ,isnull([totalSellQ],0) [totalSellQ]
+      ,isnull([ttv],0) [ttv]
+      ,isnull([trend],'') [trend]
+      ,isnull([lowerCktLm],0) [lowerCktLm]
+      ,isnull([upperCktLm],0) [upperCktLm]
+      ,isnull([ltt],0) [ltt]
+      ,isnull([close],0) [close]
+      ,isnull([exchange],'') [exchange]
+      ,isnull([SecurityName],'') [stock_name]
+      ,isnull(L.[ID],0) Id
+      ,isnull([Week_Min],0) [Week_Min]
+      ,isnull([Week_Max],0) [Week_Max]
+      ,isnull([TwoWeeks_Min],0) [TwoWeeks_Min]
+      ,isnull([TwoWeeks_Max],0) [TwoWeeks_Max]
+      ,isnull([Month_min],0) [Month_min]
+      ,isnull([Month_Max],0) [Month_Max]
+      ,isnull([Three_Month_min],0) [Three_Month_min]
+      ,isnull([Three_Month_max],0) [Three_Month_max]
+      
+  FROM [STOCK].[dbo].[StockScriptNew_CPY]  N
+  
+ left join [STOCK].[dbo].[Equitys] E on E.Symbol ='1.1!'+ n.TK
+
+ left join  [dbo].[Live_Stocks] L  on  E.symbol=l.symbol
+ where   ec='BSE'  and n.isactive=1-- and E.Symbol='1.1!544026'
+
+
+--[dbo].[Live_Stocks] with (Nolock) where  
+--[open] < 250 order by ltt desc 
+
+end
+else
+Select top 1 *  from [dbo].[Live_Stocks] with (Nolock) where symbol=@Code and CAST(ltt as Date)=cast(GETDATE() as date) and [open] < 150 order by ltt desc 
+end 
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD_BSE]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD_BSE](@Code varchar(50)='')
+as
+begin 
+if(@Code is null or @Code='' )
+begin 
+SELECT 
+       '1.1!'+ n.TK as symbol,
+	   isnull([open],0) [open]
+      ,isnull([last],0) [last]
+      ,isnull([high],0) [high]
+      ,isnull([low],0) [low]
+      ,isnull([change],0) [change]
+      ,isnull([bPrice],0) [bPrice]
+      ,isnull([bQty],0) [bQty]
+      ,isnull([sPrice],0) [sPrice]
+      ,isnull([sQty],0) [sQty]
+      ,isnull([ltq],0) [ltq]
+      ,isnull([avgPrice],0) [avgPrice]
+      ,isnull([quotes],'') [quotes]
+      ,isnull([ttq],0) [ttq]
+      ,isnull([totalBuyQt],0) [totalBuyQt]
+      ,isnull([totalSellQ],0) [totalSellQ]
+      ,isnull([ttv],0) [ttv]
+      ,isnull([trend],'') [trend]
+      ,isnull([lowerCktLm],0) [lowerCktLm]
+      ,isnull([upperCktLm],0) [upperCktLm]
+      ,isnull([ltt],0) [ltt]
+      ,isnull([close],0) [close]
+      ,isnull([exchange],'') [exchange]
+      ,isnull([SecurityName],'') [stock_name]
+      ,isnull(L.[ID],0) Id
+      ,isnull([Week_Min],0) [Week_Min]
+      ,isnull([Week_Max],0) [Week_Max]
+      ,isnull([TwoWeeks_Min],0) [TwoWeeks_Min]
+      ,isnull([TwoWeeks_Max],0) [TwoWeeks_Max]
+      ,isnull([Month_min],0) [Month_min]
+      ,isnull([Month_Max],0) [Month_Max]
+      ,isnull([Three_Month_min],0) [Three_Month_min]
+      ,isnull([Three_Month_max],0) [Three_Month_max]
+      
+  FROM [STOCK].[dbo].[StockScriptNew]  N
+  
+ left join [STOCK].[dbo].[Equitys] E on E.Symbol ='1.1!'+ n.TK
+
+ left join  [dbo].[Live_Stocks] L  on  E.symbol=l.symbol
+ where   ec='BSE'-- and E.Symbol='1.1!544026'
+
+
+--[dbo].[Live_Stocks] with (Nolock) where  
+--[open] < 250 order by ltt desc 
+
+end
+else
+Select top 1 *  from [dbo].[Live_Stocks] with (Nolock) where symbol=@Code and CAST(ltt as Date)=cast(GETDATE() as date) and [open] < 150 order by ltt desc 
+end 
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD_OLD]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_LOAD_OLD](@Code varchar(50)='')
 as
 begin 
 if(@Code is null or @Code='' )
@@ -5319,7 +6851,7 @@ end
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_New]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_New]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5352,7 +6884,207 @@ and eq.ISPSU=1--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
 --WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_OWN]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_OWN](@Code varchar(50)='',@isfavorite bit =0,@isAutoTrade bit =0
+
+,@ShowNotification bit=0,
+@minvalue int=0,
+@maxvalue int =0,
+@TDays varchar(10)=null,
+@WatchList varchar(10)=null,
+@isUpperCircuit bit=0,
+@islowerCircuit bit=0,
+@skip int =0,
+@take int =50000
+)
+as
+begin 
+
+Declare @totalrows int
+
+
+
+
+
+
+drop table if exists #previousData;
+drop table if exists #temptickst;
+Declare @Date DateTime, @DatefromEx DateTime;
+select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended_Ticks;
+
+;WITH Cte AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry_Extended_Ticks with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+
+	
+	select [symbol]
+      ,[BearishCount]
+      ,[BulishCount]
+      ,[Ltt]
+      ,[Match]
+      ,[Data]
+      ,[Stock_Name] 
+      ,[StockCode],ID  into #temptickst  from  CTE where RnDesc_C = 1
+
+--WITH TOPTEN AS (
+--    SELECT *, ROW_NUMBER() 
+--    over (
+--        PARTITION BY symbol 
+--        order by ltt desc
+--    ) AS RowNo 
+--    FROM Ticker_Stocks_Histry
+--)
+--SELECT  Symbol,
+--	STRING_AGG(cast([change] as decimal(10,2)), ', ') change,
+--	STRING_AGG(VolumeC, ', ') VolumeC,
+--	STRING_AGG(cast([open] as decimal(10,2)), ', ') [open],
+--	STRING_AGG(cast([close] as decimal(10,2)), ', ') [close],
+--	STRING_AGG(convert(varchar, ltt, 5), ', ') ltt  into  #previousData FROM TOPTEN WHERE RowNo <= 17  group by symbol;
+
+
+if(@Code is null or @Code='' )
+begin 
+
+Drop table if exists #tempresuls
+select @Date=MAX(Created_On) from MMSN_Companies;
+
+print (@Date)
+--select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended;
+
+--WITH Cte AS(
+--SELECT *,
+--        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+--        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+--    FROM [Ticker_Stocks_Histry_Extended] with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+--Delete  from  Cte where RnDesc_C > 1 
+
+Select  L.* ,eq.MSN_SECID,isnull(c.quote_return1Week,0 ) as quote_return1Week,isnull(c.quote_return1Month,0) as quote_return1Month,isnull(c.quote_return3Month,0) as quote_return3Month,c.estimate_recommendation,isnull(c.estimate_numberOfAnalysts,0) as estimate_numberOfAnalysts,c.beta,c.keyMetrics_eps,c.estimate_meanPriceTarget,c.estimate_highPriceTarget,
+eq.isprime as isfavorite,c.quote_return6Month,c.quote_return1Year,c.quote_returnYTD,
+
+isnull(c.quote_priceChange,0 ) quote_priceChange,
+isnull(c.quote_priceChange1Week,0 ) quote_priceChange1Week,
+isnull(c.quote_priceChange1Month,0 ) quote_priceChange1Month,
+isnull(c.quote_priceChange3Month,0 ) quote_priceChange3Month,
+isnull(c.quote_priceChange6Month,0 ) quote_priceChange6Month,
+isnull(c.quote_priceChange1Year,0 ) quote_priceChange1Year,
+isnull(c.quote_priceChangeYTD,0 ) quote_priceChangeYTD,
+isnull(c.quote_price52wHigh,0 ) quote_price52wHigh,
+isnull(c.quote_price52wLow,0) quote_price52wLow,
+isnull(eq.IsEnabledForAutoTrade,0) as isAutoTrad,
+ISNULL(N.IsFavoriteAdded,0) as IsFavoriteAdded,
+ISNULL(N.IsFavoriteRemoved,0) as IsFavoriteRemoved,
+ISNULL(cn.Price,-1)as buyAt,
+ISNULL(eq.SecurityId,l.stock_name) as securityId,
+ISNULL(cn.[Change],'')as buyAtChange,
+
+ISNULL(eq.TDays,'') as TDay,
+
+ISNULL(eq.watchlist,'') as watchlist,
+--PR.[change] as pr_change,
+--PR.[close] as  pr_close,
+--PR.[open] as pr_open,
+--PR.[VolumeC] as  pr_volume,
+ --pr.ltt as pr_date,
+ isnull(ex.BearishCount,0) BearishCount, isnull(ex.BulishCount,0) BulishCount,ex.match,   
+ isnull(aw.OrderCount,0) as AwardCount
+
+ ,isnull(fn.EPS,0) as fn_eps,
+ isnull(fn.OPM_Percentage,0)    as OPM_Percentage,
+ isnull(fn.NPM_Percentage,0)	 as NPM_Percentage,
+ isnull(fn.Profit_Increase,0)	 as Profit_Increase,
+ isnull(fn.RevenueIncrease,0)	 as RevenueIncrease,
+ isnull(fn.ProfitDifference,0)	 as ProfitDifference,
+ isnull(fn.RevenueDifference,0) as RevenueDifference ,
+ isnull(fn.QuarterEnd,null)	 as QuarterEnd,
+fn.UPDATED_ON as FnUpdatedon,
+cast(quote_priceChangePercent as Decimal(10,2)) as quote_priceChangePercent,
+(SELECT [dbo].[GetLASTChange] (
+   l.symbol) Last7DaysChange) as Last7DaysChange
+  
+ 
+into #tempresuls
+
+from [dbo].[Live_Stocks] l with (Nolock) 
+left JOIN Equitys  eq with (Nolock) ON eq.Symbol= l.Symbol
+left join MMSN_Companies c with (Nolock) on c.MSN_SECID=eq.MSN_SECID
+--left join MMSN_Companies_TOP7 top7 on c.MSN_SECID=eq.MSN_SECID
+left join StockPriceConfig  cn with (Nolock) on cn.Symbol=l.symbol
+left join MSN_Equities_Notification N with (Nolock) on N.MSN_SECID=eq.MSN_SECID and CAST(N.Created_On as date)=CAST(@Date as Date)
+--left join #previousData PR on PR.symbol=eq.Symbol
+left join #temptickst ex on ex.symbol=L.symbol and  CAST(ex.Ltt as Date)=cast(@DatefromEx as date) 
+left join Stock_Award AW  with (Nolock) on  AW.symbol=eq.Symbol
+left join tempfinancials  fn  with (Nolock) on fn.Symbol=l.symbol
+where 1=1 --and  l.symbol='1.1!500470' 
+--and --l. symbol='1.1!500009' and -- EQ.recommondations in ('strongBuy','buy')  and 
+
+--and fn.OPM_Percentage is not null and 
+--AND cast(last as decimal(10,2) )< 2000 
+and CAST(c.Created_On as Date)=cast(@Date as date)  
+--and ex.BulishCount > 0
+
+and (@islowerCircuit is null  or @islowerCircuit =0 or l.last=l.lowerCktLm or l.[open]=l.lowerCktLm) 
+
+and (@isUpperCircuit is null  or @isUpperCircuit =0 or l.last=l.upperCktLm or l.[open]=l.upperCktLm) 
+
+and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+ and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+and (@WatchList is null  or @WatchList ='' or @WatchList =eq.WatchList)
+
+-- and cn.[Change] is not null
+
+
+
+and (@isfavorite=0 or eq.isprime=@isfavorite)
+and (@isAutoTrade=0 or eq.IsEnabledForAutoTrade=@isAutoTrade)
+
+order by change desc
+
+Select @totalrows= COUNT(*) from #tempresuls
+if(@ShowNotification=1)
+begin
+select *,@totalrows as counts from #tempresuls where IsFavoriteAdded=1 or IsFavoriteRemoved=1 order by change desc  OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+End
+
+if(@minvalue > 0 and @maxvalue > 0)
+select *,@totalrows as counts from #tempresuls where [open] between @minvalue and @maxvalue  order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+if(@minvalue = 0 and @maxvalue > 0)
+select *,@totalrows as counts from #tempresuls where [open] <= @maxvalue order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+if(@minvalue > 0 and @maxvalue = 0)
+select *,@totalrows  as counts from #tempresuls where [open] >= @minvalue order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+else
+
+Select *,@totalrows as counts  from #tempresuls order by change desc
+OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+end
+else
+Select top 1 L.*,eq.MSN_SECID from [dbo].[Live_Stocks] L with (Nolock) 
+left JOIN Equitys  eq ON eq.Symbol= l.Symbol
+
+
+where l.symbol=@Code and CAST(l.ltt as Date)=cast(GETDATE() as date) 
+
+--and eq.ISPSU=1 order by change desc--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
+--where E.symbol ='1.1!516092'
+--WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
+end 
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5371,7 +7103,445 @@ else
 Select top 1 *  from [dbo].[Live_Stocks] with (Nolock) where symbol=@Code and CAST(ltt as Date)=cast(GETDATE() as date) and [open] < 100 order by ltt desc 
 end 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_SectorName]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test2]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test2](@Code varchar(50)='',@isfavorite bit =0,@isAutoTrade bit =0
+
+,@ShowNotification bit=0,
+@minvalue int=0,
+@maxvalue int =0,
+@TDays varchar(10)=null,
+@WatchList varchar(10)=null,
+@isUpperCircuit bit=0,
+@islowerCircuit bit=0,
+@skip int =0,
+@take int =250,
+@IsOrderbyVolume bit=0,
+@orderby_obj varchar(100)='',
+@sortorder varchar(100)='',
+@isBullish bit = 0,
+@isbearish bit = 0,
+@IsAward bit=0,
+
+@isTarget bit =1
+
+
+)
+as
+
+
+begin 
+
+Declare @totalrows int;
+
+Declare @SQLStatement varchar(max);
+
+Declare @Orderby varchar(max) ='Change desc'
+if(@isBullish =1 or @IsOrderbyVolume =1 or @IsAward=1 or @isbearish=1 or @isTarget=1 )
+set @orderby_obj=null
+
+
+SET @Orderby= CASE WHEN  @IsOrderbyVolume=1 then   'cast (ttv as float) DESC' 
+                   WHEN @isBullish=1 Then 'cast (BulishCount as float) DESC'
+				   WHEN @isbearish=1 Then 'cast (BearishCount as float) DESC'
+				   WHEN @IsAward=1 Then 'cast (AwardCount as float) DESC'
+				     WHEN @isTarget=1 Then 'cast (estimate_meanPriceTarget as float)	 DESC'
+                   When  @orderby_obj is not null  then ''+@orderby_obj+'' + ' '+@sortorder+''
+				
+				   End     
+if(@Orderby is null or @Orderby='')
+set @Orderby='Change desc'
+
+
+drop table if exists #previousData;
+drop table if exists #temptickst;
+Declare @Date DateTime, @DatefromEx DateTime;
+select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended_Ticks;
+
+;WITH Cte AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry_Extended_Ticks with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+
+	
+	select [symbol]
+      ,[BearishCount]
+      ,[BulishCount]
+      ,[Ltt]
+      ,[Match]
+      ,[Data]
+      ,[Stock_Name] 
+      ,[StockCode],ID  into #temptickst  from  CTE where RnDesc_C = 1
+
+--WITH TOPTEN AS (
+--    SELECT *, ROW_NUMBER() 
+--    over (
+--        PARTITION BY symbol 
+--        order by ltt desc
+--    ) AS RowNo 
+--    FROM Ticker_Stocks_Histry
+--)
+--SELECT  Symbol,
+--	STRING_AGG(cast([change] as decimal(10,2)), ', ') change,
+--	STRING_AGG(VolumeC, ', ') VolumeC,
+--	STRING_AGG(cast([open] as decimal(10,2)), ', ') [open],
+--	STRING_AGG(cast([close] as decimal(10,2)), ', ') [close],
+--	STRING_AGG(convert(varchar, ltt, 5), ', ') ltt  into  #previousData FROM TOPTEN WHERE RowNo <= 17  group by symbol;
+
+
+if(@Code is null or @Code='' )
+begin 
+
+Drop table if exists #tempresuls
+select @Date=MAX(Created_On) from MMSN_Companies;
+
+print (@Date)
+--select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended;
+
+--WITH Cte AS(
+--SELECT *,
+--        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+--        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+--    FROM [Ticker_Stocks_Histry_Extended] with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+--Delete  from  Cte where RnDesc_C > 1 
+
+Select  L.* ,eq.MSN_SECID,isnull(c.quote_return1Week,0 ) as quote_return1Week,isnull(c.quote_return1Month,0) as quote_return1Month,isnull(c.quote_return3Month,0) as quote_return3Month,c.estimate_recommendation,isnull(c.estimate_numberOfAnalysts,0) as estimate_numberOfAnalysts,c.beta,c.keyMetrics_eps,c.estimate_meanPriceTarget,c.estimate_highPriceTarget,
+eq.isprime as isfavorite,c.quote_return6Month,c.quote_return1Year,c.quote_returnYTD,
+
+isnull(c.quote_priceChange,0 ) quote_priceChange,
+isnull(c.quote_priceChange1Week,0 ) quote_priceChange1Week,
+isnull(c.quote_priceChange1Month,0 ) quote_priceChange1Month,
+isnull(c.quote_priceChange3Month,0 ) quote_priceChange3Month,
+isnull(c.quote_priceChange6Month,0 ) quote_priceChange6Month,
+isnull(c.quote_priceChange1Year,0 ) quote_priceChange1Year,
+isnull(c.quote_priceChangeYTD,0 ) quote_priceChangeYTD,
+isnull(c.quote_price52wHigh,0 ) quote_price52wHigh,
+isnull(c.quote_price52wLow,0) quote_price52wLow,
+isnull(eq.IsEnabledForAutoTrade,0) as isAutoTrad,
+ISNULL(N.IsFavoriteAdded,0) as IsFavoriteAdded,
+ISNULL(N.IsFavoriteRemoved,0) as IsFavoriteRemoved,
+ISNULL(cn.Price,-1)as buyAt,
+ISNULL(eq.SecurityId,l.stock_name) as securityId,
+ISNULL(cn.[Change],'')as buyAtChange,
+
+ISNULL(eq.TDays,'') as TDay,
+
+ISNULL(eq.watchlist,'') as watchlist,
+--PR.[change] as pr_change,
+--PR.[close] as  pr_close,
+--PR.[open] as pr_open,
+--PR.[VolumeC] as  pr_volume,
+ --pr.ltt as pr_date,
+ isnull(ex.BearishCount,0) BearishCount, isnull(ex.BulishCount,0) BulishCount,ex.match,   
+ isnull(aw.OrderCount,0) as AwardCount
+
+ ,isnull(fn.EPS,0) as fn_eps,
+ isnull(fn.OPM_Percentage,0)    as OPM_Percentage,
+ isnull(fn.NPM_Percentage,0)	 as NPM_Percentage,
+ isnull(fn.Profit_Increase,0)	 as Profit_Increase,
+ isnull(fn.RevenueIncrease,0)	 as RevenueIncrease,
+ isnull(fn.ProfitDifference,0)	 as ProfitDifference,
+ isnull(fn.RevenueDifference,0) as RevenueDifference ,
+ isnull(fn.QuarterEnd,null)	 as QuarterEnd,
+fn.UPDATED_ON as FnUpdatedon,
+cast(quote_priceChangePercent as Decimal(10,2)) as quote_priceChangePercent,
+(SELECT [dbo].[GetLASTChange] (
+   l.symbol) Last7DaysChange) as Last7DaysChange
+  
+ 
+into #tempresuls
+
+from [dbo].[Live_Stocks] l with (Nolock) 
+left JOIN Equitys  eq with (Nolock) ON eq.Symbol= l.Symbol
+left join MMSN_Companies c with (Nolock) on c.MSN_SECID=eq.MSN_SECID
+--left join MMSN_Companies_TOP7 top7 on c.MSN_SECID=eq.MSN_SECID
+left join StockPriceConfig  cn with (Nolock) on cn.Symbol=l.symbol
+left join MSN_Equities_Notification N with (Nolock) on N.MSN_SECID=eq.MSN_SECID and CAST(N.Created_On as date)=CAST(@Date as Date)
+--left join #previousData PR on PR.symbol=eq.Symbol
+left join #temptickst ex on ex.symbol=L.symbol and  CAST(ex.Ltt as Date)=cast(@DatefromEx as date) 
+left join Stock_Award AW  with (Nolock) on  AW.symbol=eq.Symbol
+left join tempfinancials  fn  with (Nolock) on fn.Symbol=l.symbol
+where 1=1 --and  l.symbol='1.1!500470' 
+--and --l. symbol='1.1!500009' and -- EQ.recommondations in ('strongBuy','buy')  and 
+
+--and fn.OPM_Percentage is not null and 
+--AND cast(last as decimal(10,2) )< 2000 
+and CAST(c.Created_On as Date)=cast(@Date as date)  
+--and ex.BulishCount > 0
+
+and (@islowerCircuit is null  or @islowerCircuit =0 or l.last=l.lowerCktLm or l.[open]=l.lowerCktLm) 
+
+and (@isUpperCircuit is null  or @isUpperCircuit =0 or l.last=l.upperCktLm or l.[open]=l.upperCktLm) 
+
+and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+ and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+and (@WatchList is null  or @WatchList ='' or @WatchList =eq.WatchList)
+
+-- and cn.[Change] is not null
+
+and (@isfavorite=0 or eq.isprime=@isfavorite)
+and (@isAutoTrade=0 or eq.IsEnabledForAutoTrade=@isAutoTrade)
+
+order by change desc
+
+Select @totalrows= COUNT(*) from #tempresuls
+
+
+SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls  order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	print @SQLStatement
+
+
+if(@ShowNotification=1)
+begin
+
+
+	SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where IsFavoriteAdded=1 or IsFavoriteRemoved=1 order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	print @SQLStatement
+	
+End
+
+ELSE if(@minvalue > 0 and @maxvalue > 0)
+begin
+
+SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where [open] between '+@minvalue+' and '+@maxvalue+'  order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+print @SQLStatement
+
+end
+ELSE if(@minvalue = 0 and @maxvalue > 0)
+begin 
+
+	SELECT @SQLStatement =  'Select *,@totalrows as counts from #tempresuls where [open] <= '+@maxvalue+' order by '+ @Orderby+'   OFFSET  @skip ROWS FETCH NEXT @take ROWS ONLY '
+	set @SQLStatement=REPLACE(@SQLStatement,'@skip',@skip)
+	set @SQLStatement=REPLACE(@SQLStatement,'@take',@take)
+	set @SQLStatement=REPLACE(@SQLStatement,'@totalrows',@totalrows)
+	print @SQLStatement
+
+End
+
+
+
+
+
+end
+
+exec (@SQLStatement)
+
+--and eq.ISPSU=1 order by change desc--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
+--where E.symbol ='1.1!516092'
+--WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
+end 
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test4]    Script Date: 19-03-2024 05:15:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Procedure [dbo].[SP_GET_LIVE_STOCKS_BY_STOCK_Test4](@Code varchar(50)='',@isfavorite bit =0,@isAutoTrade bit =0
+
+,@ShowNotification bit=0,
+@minvalue int=0,
+@maxvalue int =0,
+@TDays varchar(10)=null,
+@WatchList varchar(10)=null,
+@isUpperCircuit bit=0,
+@islowerCircuit bit=0,
+@skip int =0,
+@take int =50000,
+@IsAward bit =0
+)
+as
+begin 
+
+Declare @totalrows int
+
+
+
+
+
+
+drop table if exists #previousData;
+drop table if exists #temptickst;
+Declare @Date DateTime, @DatefromEx DateTime;
+select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended_Ticks;
+
+;WITH Cte AS(
+SELECT *,
+        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+    FROM Ticker_Stocks_Histry_Extended_Ticks with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+
+	
+	select [symbol]
+      ,[BearishCount]
+      ,[BulishCount]
+      ,[Ltt]
+      ,[Match]
+      ,[Data]
+      ,[Stock_Name] 
+      ,[StockCode],ID  into #temptickst  from  CTE where RnDesc_C = 1
+
+--WITH TOPTEN AS (
+--    SELECT *, ROW_NUMBER() 
+--    over (
+--        PARTITION BY symbol 
+--        order by ltt desc
+--    ) AS RowNo 
+--    FROM Ticker_Stocks_Histry
+--)
+--SELECT  Symbol,
+--	STRING_AGG(cast([change] as decimal(10,2)), ', ') change,
+--	STRING_AGG(VolumeC, ', ') VolumeC,
+--	STRING_AGG(cast([open] as decimal(10,2)), ', ') [open],
+--	STRING_AGG(cast([close] as decimal(10,2)), ', ') [close],
+--	STRING_AGG(convert(varchar, ltt, 5), ', ') ltt  into  #previousData FROM TOPTEN WHERE RowNo <= 17  group by symbol;
+
+
+if(@Code is null or @Code='' )
+begin 
+
+Drop table if exists #tempresuls
+select @Date=MAX(Created_On) from MMSN_Companies;
+
+print (@Date)
+--select @DatefromEx=MAX(ltt) from Ticker_Stocks_Histry_Extended;
+
+--WITH Cte AS(
+--SELECT *,
+--        RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
+--        RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
+--    FROM [Ticker_Stocks_Histry_Extended] with (nolock)    where CAST(ltt as Date )=  CAST(@DatefromEx as Date) )
+--Delete  from  Cte where RnDesc_C > 1 
+
+Select  L.* ,eq.MSN_SECID,isnull(c.quote_return1Week,0 ) as quote_return1Week,isnull(c.quote_return1Month,0) as quote_return1Month,isnull(c.quote_return3Month,0) as quote_return3Month,c.estimate_recommendation,isnull(c.estimate_numberOfAnalysts,0) as estimate_numberOfAnalysts,c.beta,c.keyMetrics_eps,c.estimate_meanPriceTarget,c.estimate_highPriceTarget,
+eq.isprime as isfavorite,c.quote_return6Month,c.quote_return1Year,c.quote_returnYTD,
+
+isnull(c.quote_priceChange,0 ) quote_priceChange,
+isnull(c.quote_priceChange1Week,0 ) quote_priceChange1Week,
+isnull(c.quote_priceChange1Month,0 ) quote_priceChange1Month,
+isnull(c.quote_priceChange3Month,0 ) quote_priceChange3Month,
+isnull(c.quote_priceChange6Month,0 ) quote_priceChange6Month,
+isnull(c.quote_priceChange1Year,0 ) quote_priceChange1Year,
+isnull(c.quote_priceChangeYTD,0 ) quote_priceChangeYTD,
+isnull(c.quote_price52wHigh,0 ) quote_price52wHigh,
+isnull(c.quote_price52wLow,0) quote_price52wLow,
+isnull(eq.IsEnabledForAutoTrade,0) as isAutoTrad,
+ISNULL(N.IsFavoriteAdded,0) as IsFavoriteAdded,
+ISNULL(N.IsFavoriteRemoved,0) as IsFavoriteRemoved,
+ISNULL(cn.Price,-1)as buyAt,
+ISNULL(eq.SecurityId,l.stock_name) as securityId,
+ISNULL(cn.[Change],'')as buyAtChange,
+
+ISNULL(eq.TDays,'') as TDay,
+
+ISNULL(eq.watchlist,'') as watchlist,
+--PR.[change] as pr_change,
+--PR.[close] as  pr_close,
+--PR.[open] as pr_open,
+--PR.[VolumeC] as  pr_volume,
+ --pr.ltt as pr_date,
+ isnull(ex.BearishCount,0) BearishCount, isnull(ex.BulishCount,0) BulishCount,ex.match,   
+ isnull(aw.OrderCount,0) as AwardCount
+
+ ,isnull(fn.EPS,0) as fn_eps,
+ isnull(fn.OPM_Percentage,0)    as OPM_Percentage,
+ isnull(fn.NPM_Percentage,0)	 as NPM_Percentage,
+ isnull(fn.Profit_Increase,0)	 as Profit_Increase,
+ isnull(fn.RevenueIncrease,0)	 as RevenueIncrease,
+ isnull(fn.ProfitDifference,0)	 as ProfitDifference,
+ isnull(fn.RevenueDifference,0) as RevenueDifference ,
+ isnull(fn.QuarterEnd,null)	 as QuarterEnd,
+fn.UPDATED_ON as FnUpdatedon,
+cast(quote_priceChangePercent as Decimal(10,2)) as quote_priceChangePercent,
+(SELECT [dbo].[GetLASTChange] (
+   l.symbol) Last7DaysChange) as Last7DaysChange
+  
+ 
+into #tempresuls
+
+from [dbo].[Live_Stocks] l with (Nolock) 
+left JOIN Equitys  eq with (Nolock) ON eq.Symbol= l.Symbol
+left join MMSN_Companies c with (Nolock) on c.MSN_SECID=eq.MSN_SECID
+--left join MMSN_Companies_TOP7 top7 on c.MSN_SECID=eq.MSN_SECID
+left join StockPriceConfig  cn with (Nolock) on cn.Symbol=l.symbol
+left join MSN_Equities_Notification N with (Nolock) on N.MSN_SECID=eq.MSN_SECID and CAST(N.Created_On as date)=CAST(@Date as Date)
+--left join #previousData PR on PR.symbol=eq.Symbol
+left join #temptickst ex on ex.symbol=L.symbol and  CAST(ex.Ltt as Date)=cast(@DatefromEx as date) 
+left join Stock_Award AW  with (Nolock) on  AW.symbol=eq.Symbol
+left join tempfinancials  fn  with (Nolock) on fn.Symbol=l.symbol
+where 1=1 --and  l.symbol='1.1!500470' 
+--and --l. symbol='1.1!500009' and -- EQ.recommondations in ('strongBuy','buy')  and 
+
+--and fn.OPM_Percentage is not null and 
+--AND cast(last as decimal(10,2) )< 2000 
+and CAST(c.Created_On as Date)=cast(@Date as date)  
+--and ex.BulishCount > 0
+
+and (@islowerCircuit is null  or @islowerCircuit =0 or l.last=l.lowerCktLm or l.[open]=l.lowerCktLm) 
+
+and (@isUpperCircuit is null  or @isUpperCircuit =0 or l.last=l.upperCktLm or l.[open]=l.upperCktLm) 
+
+and (@TDays is null  or @TDays ='' or @TDays =eq.TDays) 
+
+and (@WatchList is null  or @WatchList ='' or @WatchList =eq.WatchList)
+and (@isfavorite=0 or eq.isprime=@isfavorite)
+and (@isAutoTrade=0 or eq.IsEnabledForAutoTrade=@isAutoTrade)
+and (@IsAward=0 or aw.OrderCount > 0)
+
+order by change desc
+
+Select @totalrows= COUNT(*) from #tempresuls
+if(@ShowNotification=1)
+begin
+select *,@totalrows as counts from #tempresuls where IsFavoriteAdded=1 or IsFavoriteRemoved=1 order by change desc  OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+End
+
+if(@minvalue > 0 and @maxvalue > 0)
+select *,@totalrows as counts from #tempresuls where [open] between @minvalue and @maxvalue  order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+if(@minvalue = 0 and @maxvalue > 0)
+select *,@totalrows as counts from #tempresuls where [open] <= @maxvalue order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+if(@minvalue > 0 and @maxvalue = 0)
+select *,@totalrows  as counts from #tempresuls where [open] >= @minvalue order by change desc OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+else
+
+Select *,@totalrows as counts  from #tempresuls order by change desc
+OFFSET  @skip ROWS 
+FETCH NEXT @take ROWS ONLY 
+
+end
+else
+Select top 1 L.*,eq.MSN_SECID from [dbo].[Live_Stocks] L with (Nolock) 
+left JOIN Equitys  eq ON eq.Symbol= l.Symbol
+
+
+where l.symbol=@Code and CAST(l.ltt as Date)=cast(GETDATE() as date) 
+
+--and eq.ISPSU=1 order by change desc--and EQ.recommondations in ('strongBuy','buy') and [open] < 150
+--where E.symbol ='1.1!516092'
+--WHERE EQ.recommondations in ('strongBuy')--,'buy')  --and [last] < 500
+end 
+GO
+/****** Object:  StoredProcedure [dbo].[SP_GET_SectorName]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5381,7 +7551,7 @@ GO
   Select distinct  [SectorName] as Text from  [STOCK].[dbo].[Equitys] where SectorName <> '-'
   End 
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GET_SubgroupName_By]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GET_SubgroupName_By]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5392,7 +7562,7 @@ CREATE  Procedure [dbo].[SP_GET_SubgroupName_By](@groupName varchar(100))
   End 
  
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GetTopPerformer]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GetTopPerformer]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5420,13 +7590,13 @@ End
 
 					
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GetTopPerformer_new]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[SP_GetTopPerformer_new]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
---SP_GetTopPerformer 100,'2023-09-06'
+--SP_GetTopPerformer 100,'2024-02-06'
 
 
 CREATE   Proc [dbo].[SP_GetTopPerformer_new](@top int ,@Date DateTime)
@@ -5437,7 +7607,7 @@ WITH Cte AS(
 SELECT  *,
         RnAsc_C = ROW_NUMBER() OVER(PARTITION BY symbol, CAST(ltt as Date) ORDER BY ltt),
         RnDesc_C = ROW_NUMBER() OVER(PARTITION BY  symbol,CAST(ltt as Date) ORDER BY ltt DESC)
-    FROM [Ticker_Stocks] with (nolock)  where CAST(ltt as Date)=cast(@Date as Date)  and [open] >0 )
+    FROM [Ticker_Stocks_02_06] with (nolock)  where CAST(ltt as Date)=cast(@Date as Date)  and [open] >0 )
 
 	SELECT  top (@top)  [symbol]
            ,[open]
@@ -5484,7 +7654,7 @@ End
 
 					
 GO
-/****** Object:  StoredProcedure [dbo].[TablesFromJSON]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[TablesFromJSON]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5506,7 +7676,7 @@ WHILE @RowCount <> 0
         @JSON = @TheJSON;
   END;
 GO
-/****** Object:  StoredProcedure [dbo].[Ticker_Current]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Ticker_Current]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5588,7 +7758,7 @@ WHERE
 ORDER BY symbol, ltt
 END
 GO
-/****** Object:  StoredProcedure [dbo].[Ticker_today]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Ticker_today]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5706,7 +7876,7 @@ order by ltt desc
 Select * from TodaysRatios where Ratio > 100 order by Ratio desc;
 End
 GO
-/****** Object:  StoredProcedure [dbo].[Ticker_yesterday]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[Ticker_yesterday]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5828,7 +7998,7 @@ Select * from #temp_Ratio
 
 End
 GO
-/****** Object:  StoredProcedure [dbo].[TruncatloadExtended]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[TruncatloadExtended]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5851,7 +8021,7 @@ End
 --	sELECT L.stock_name ,* FROM Ticker_Stocks_Histry_Extended_Ticks  t
 --LEFT JOIN Live_Stocks L ON L.symbol =t.symbol ORDER BY t.BulishCount DESC
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateNotiifcation]    Script Date: 05-02-2024 21:23:23 ******/
+/****** Object:  StoredProcedure [dbo].[UpdateNotiifcation]    Script Date: 19-03-2024 05:15:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

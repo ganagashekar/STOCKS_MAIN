@@ -29,6 +29,12 @@
         public string exchange { get; set; }
         public string stock_name { get; set; }
         public string VolumeC { set; get; }
+        public string OI { get; set; }
+        public string CHNGOI { get; set; }
+        public string product_type { get; set; }
+        public string expiry_date { get; set; }
+        public string strike_price { get; set; }
+        public string right { get; set; }
     }
 
     public class ChartData

@@ -1,0 +1,13 @@
+{
+  "appSettings": {
+    "url": "https://localhost:447/livefeedhub"
+  },
+  "cors": {
+    "rules": [
+      {
+        "origin": "https://contoso.com",
+        "allow": true
+      }
+    ]
+  }
+}

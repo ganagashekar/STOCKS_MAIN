@@ -20,8 +20,10 @@ class Program
 
         IConfiguration config = builder.Build();
 
-        var url = "http://localhost:45/breezeOperation";// "http://localhost:5000/BreezeOperation";// config.GetSection("appSettings:url").Value;
+        // var url = "http://localhost:45/breezeOperation";// "http://localhost:5000/BreezeOperation";// config.GetSection("appSettings:url").Value;
 
+        var url = "https://localhost:7189/BreezeOperation";
+    
         Console.WriteLine(url);
 
         var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\key.txt");
