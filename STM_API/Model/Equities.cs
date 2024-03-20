@@ -11,15 +11,15 @@
         public double? low { get; set; }
         public double? change { get; set; }
         public double? bPrice { get; set; }
-        public int bQty { get; set; }
+        public int? bQty { get; set; }
         public double? sPrice { get; set; }
-        public int sQty { get; set; }
-        public int ltq { get; set; }
+        public int? sQty { get; set; }
+        public int? ltq { get; set; }
         public double? avgPrice { get; set; }
         public string quotes { get; set; }
-        public int ttq { get; set; }
-        public int totalBuyQt { get; set; }
-        public int totalSellQ { get; set; }
+        public int? ttq { get; set; }
+        public int? totalBuyQt { get; set; }
+        public int? totalSellQ { get; set; }
         public string ttv { get; set; }
         public string trend { get; set; }
         public double? lowerCktLm { get; set; }
@@ -53,15 +53,15 @@
         public double? low { get; set; }
         public double? change { get; set; }
         public double? bPrice { get; set; }
-        public int bQty { get; set; }
+        public int? bQty { get; set; }
         public double? sPrice { get; set; }
-        public int sQty { get; set; }
-        public int ltq { get; set; }
+        public int? sQty { get; set; }
+        public int? ltq { get; set; }
         public double? avgPrice { get; set; }
         public string quotes { get; set; }
-        public int ttq { get; set; }
-        public int totalBuyQt { get; set; }
-        public int totalSellQ { get; set; }
+        public int? ttq { get; set; }
+        public int? totalBuyQt { get; set; }
+        public int? totalSellQ { get; set; }
         public double ttv { get; set; }
         public string trend { get; set; }
         public double? lowerCktLm { get; set; }

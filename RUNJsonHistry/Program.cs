@@ -10,8 +10,8 @@ class Program
     static async Task Main(string[] args)
     {
 
-        //string HUbUrl = "https://localhost:7189/livefeedhub";
-        string HUbUrl = "http://localhost:45/livefeedhub";
+        string HUbUrl = "https://localhost:7189/livefeedhub";
+       // string HUbUrl = "http://localhost:45/livefeedhub";
         try
         {
             Console.WriteLine(HUbUrl);

@@ -257,7 +257,7 @@ namespace STM_API.Hubs
                     }
                     try
                     {
-                        data = data.Replace(orginaltext, volume.ToString("F"));
+                        if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
                         data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
                         await Clients.All.SendAsync("SendCaptureLiveDataForAutomation", data);
                     }

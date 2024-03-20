@@ -81,10 +81,18 @@ namespace MSNStocks
                     catch (Exception ex)
                     {
 
-                        var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=nse&count=1", equity.SecurityName.Replace("Limited", "").Replace("LTD.", "")));
-                        var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
-                        var stockresult = await getstockDetails(findresult.SecId);
-                        equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? "Null";
+                        try
+                        {
+                            var result = await HttpHelper.Get<StockQuery>("https://services.bingapis.com/", string.Format("contentservices-finance.csautosuggest/api/v1/Query?query={0}&market=nse&count=1", equity.SecurityName.Replace("Limited", "").Replace("LTD.", "")));
+                            var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
+                            var stockresult = await getstockDetails(findresult.SecId);
+                            equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? "Null";
+                        }
+                        catch (Exception)
+                        {
+
+                           
+                        }
                     }
                     db.Entry(equity).State = EntityState.Modified;
                     db.SaveChanges();
