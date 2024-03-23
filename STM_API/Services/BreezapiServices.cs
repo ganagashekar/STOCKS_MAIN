@@ -159,7 +159,7 @@ namespace STM_API.Services
                 var results = GetExportAutomationLiveStocksToJson();
 
 
-                var chubnkresulst = results.Chunk<Equities>(100000);
+                var chubnkresulst = results.Chunk<Equities>(3000);
                 int i = 0;
                 foreach (var item in chubnkresulst)
                 {

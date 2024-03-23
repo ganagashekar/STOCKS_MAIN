@@ -97,6 +97,7 @@ namespace STM_API.Hubs
             else
             {
                 _breezapiServices.ExportAutomationLiveStocksToJson();
+                GetAllStocksForLoadAutomation(Id);
             }
             //var results = _stockTicker.SendAllStocksForLoad().ToList();
             //await Clients.Caller.SendAsync("SendAllStocksForLoad", results);

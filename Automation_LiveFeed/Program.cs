@@ -22,7 +22,7 @@ class Program
 
         // var url = "http://localhost:45/breezeOperation";// "http://localhost:5000/BreezeOperation";// config.GetSection("appSettings:url").Value;
 
-        var url = "https://localhost:7189/BreezeOperation";
+        var url = "http://localhost:45/breezeOperation";
     
         Console.WriteLine(url);
 

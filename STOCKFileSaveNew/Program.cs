@@ -48,7 +48,7 @@ class Program
         connection.On<string>("SendLiveData", async param =>
         {
 
-            Console.WriteLine($"{param}");
+           // Console.WriteLine($"{param}");
             await RunFileSave(param);
         });
 
@@ -84,7 +84,12 @@ class Program
             var count = Regex.Matches(stringBuilder.ToString(), Environment.NewLine).Count();
             stringBuilder.AppendLine(livedata.ToString());
 
-            if (count > 500)
+
+           
+            TimeSpan end = TimeSpan.Parse("09:16");   // 2 AM
+            TimeSpan now = DateTime.Now.TimeOfDay;
+
+            if (count > 1000 || now <= end)
             {
                 System.IO.File.AppendAllLines(filename, new[] { stringBuilder.ToString() });
                 stringBuilder = new StringBuilder();
@@ -137,15 +142,15 @@ class Program
         public double? low { get; set; }
         public double? change { get; set; }
         public double? bPrice { get; set; }
-        public int bQty { get; set; }
+        public int? bQty { get; set; }
         public double? sPrice { get; set; }
-        public int sQty { get; set; }
-        public int ltq { get; set; }
+        public int? sQty { get; set; }
+        public int? ltq { get; set; }
         public double? avgPrice { get; set; }
         public string quotes { get; set; }
-        public int ttq { get; set; }
-        public int totalBuyQt { get; set; }
-        public int totalSellQ { get; set; }
+        public int? ttq { get; set; }
+        public int? totalBuyQt { get; set; }
+        public int? totalSellQ { get; set; }
         public string ttv { get; set; }
         public string trend { get; set; }
         public double? lowerCktLm { get; set; }

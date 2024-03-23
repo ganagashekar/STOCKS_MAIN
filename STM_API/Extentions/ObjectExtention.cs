@@ -6,6 +6,7 @@ namespace STM_API.Extentions
 {
     public static class ObjectExtention
     {
+        
         public static  List<EquitiesHsitry> CustomSort<T>( List<EquitiesHsitry> input, string property,string Customorderby)
         {
             if (Customorderby == "asc")
