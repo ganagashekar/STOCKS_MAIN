@@ -30,14 +30,12 @@ namespace ConsoleAppTestProject
                .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true);
 
             IConfiguration config = builder.Build();
-            var url = "http://localhost:45/breezeOperation";
+            var url = "http://localhost:99/breezeOperation";
             Console.WriteLine(url);
             var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             string HUbUrl = url;
-            await using var connection = new HubConnectionBuilder().WithUrl(url).WithAutomaticReconnect().Build();
-            Random r = new Random();
-            Console.WriteLine(connection.ConnectionId);
+            
             try
             {
                 string APIKEY = string.Empty;
@@ -54,33 +52,42 @@ namespace ConsoleAppTestProject
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
+                        HUbUrl = "http://localhost:90/BreezeOperation";
                         break;
                     case 1:
                         line = lines[1].ToString().Split(',');
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
+                        HUbUrl = "http://localhost:91/BreezeOperation";
                         break;
                     case 2:
                         line = lines[2].ToString().Split(',');
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
+                        HUbUrl = "http://localhost:92/BreezeOperation";
                         break;
                     case 3:
                         line = lines[3].ToString().Split(',');
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
+                        HUbUrl = "http://localhost:99/BreezeOperation";
                         break;
                     case 4:
                         line = lines[4].ToString().Split(',');
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
+                        HUbUrl = "http://localhost:49/BreezeOperation";
                         break;
                 }
                 Console.WriteLine(arg);
+
+                await using var connection = new HubConnectionBuilder().WithUrl(url).WithAutomaticReconnect().Build();
+                Random r = new Random();
+                Console.WriteLine(connection.ConnectionId);
                 BreezeConnect breeze = new BreezeConnect(APIKEY);
                 breeze.generateSessionAsPerVersion(APISecret, token);
                 var responseObject = await breeze.wsConnectAsync();

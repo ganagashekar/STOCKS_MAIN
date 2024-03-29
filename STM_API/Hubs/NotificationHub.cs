@@ -57,10 +57,28 @@ namespace STM_API.Hubs
 
 
 
-        public async Task GetBuyStockTriggers()
+        public async Task GetBuyStockTriggers(int Id)
         {
-            var result = _breezapiServices.GetBuyStockTriggers().ToList();
-            await Clients.All.SendAsync("SendGetBuyStockTriggers", result);
+            try
+            {
+                if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id)))
+                {
+                    var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id));
+                    var equities = System.Text.Json.JsonSerializer.Deserialize<List<BuyStockAlertModel>>(text).ToList();
+
+                    var result = _breezapiServices.GetBuyStockTriggers().ToList();
+                    await Clients.Caller.SendAsync("SendGetBuyStockTriggers", result.Where(x => equities.Any(y => y.symbol == x.symbol)).ToList());
+                    //var results = _stockTicker.SendAllStocksForLoad().ToList();
+                    //await Clients.Caller.SendAsync("SendAllStocksForLoad", equities);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                await Clients.Caller.SendAsync("SendAllStocksForLoad", ex);
+            }
+            //var result = _breezapiServices.GetBuyStockTriggers().ToList();
+            //await Clients.All.SendAsync("SendGetBuyStockTriggers", result);
 
         }
 
@@ -128,40 +146,41 @@ namespace STM_API.Hubs
         public async Task ExportBuyStockAlterFromAPP_IND(string data)
         {
 
+            await Clients.All.SendAsync("ExportBuyStockAlterFromAPP_IND_Filesave", data);
 
-            if (!string.IsNullOrEmpty(data))
-            {
-                var livedata = System.Text.Json.JsonSerializer.Deserialize<List<EquityModelAutomation>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }).ToList().
-                    Select(x => new Ticker_Stocks_Histry_Extended_Mdl
-                    {
-                        symbol = x.symbol,
-                        Ltt = x.lttDateTime < DateTime.Now.AddDays(-1).Date ? DateTime.Now : x.lttDateTime,
-                        //Createdon = DateTime.Now,
-                        BearishCount = x.bearishCount,
-                        BulishCount = x.bullishCount,
-                        Match = x.match,
-                        Data = x.data,
-                        Stock_Name = x.stockName,
-                        StockCode = x.stockCode,
-                        BulishCount_100 = x.bullishCount_100,
-                        BulishCount_95 = x.bullishCount_95,
-                        Volumedifference = x.volumeDifferecne,
-                        TriggredPrice = x.triggredPrice,
-                        TriggredLtt = x.triggredLtt.ToString() == "01-01-0001 12:00:00 AM" ? null : x.triggredLtt
-                    }).ToList().ToDataTable();
-
-
-
+            //if (!string.IsNullOrEmpty(data))
+            //{
+            //    var livedata = System.Text.Json.JsonSerializer.Deserialize<List<EquityModelAutomation>>(data, new JsonSerializerOptions
+            //    {
+            //        PropertyNameCaseInsensitive = true
+            //    }).ToList().
+            //        Select(x => new Ticker_Stocks_Histry_Extended_Mdl
+            //        {
+            //            symbol = x.symbol,
+            //            Ltt = x.lttDateTime < DateTime.Now.AddDays(-1).Date ? DateTime.Now : x.lttDateTime,
+            //            //Createdon = DateTime.Now,
+            //            BearishCount = x.bearishCount,
+            //            BulishCount = x.bullishCount,
+            //            Match = x.match,
+            //            Data = x.data,
+            //            Stock_Name = x.stockName,
+            //            StockCode = x.stockCode,
+            //            BulishCount_100 = x.bullishCount_100,
+            //            BulishCount_95 = x.bullishCount_95,
+            //            Volumedifference = x.volumeDifferecne,
+            //            TriggredPrice = x.triggredPrice,
+            //            TriggredLtt = x.triggredLtt.ToString() == "01-01-0001 12:00:00 AM" ? null : x.triggredLtt
+            //        }).ToList().ToDataTable();
 
 
 
 
-                CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended_Ticks");
 
-            }
+
+
+            //    CopyToSQL(livedata, "dbo.Ticker_Stocks_Histry_Extended_Ticks");
+
+            //}
         }
 
         public async Task ExportBuyStockAlterFromAPP(string data)

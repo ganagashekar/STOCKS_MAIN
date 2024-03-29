@@ -12,11 +12,16 @@ namespace DemoReadFileTrailerCS
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+
+            string arg = "2";
+            if (args.Any())
+                arg = args[0];
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Console.WriteLine(arg);
+            Application.Run(new Form1(Convert.ToInt16(arg)));
         }
     }
 }

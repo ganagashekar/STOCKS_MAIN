@@ -30,9 +30,42 @@ class Program
 
         var HUbUrl = config.GetSection("appSettings:url").Value;
 
+
+        string arg = "0";
+        if (args.Any())
+            arg = args[0];
+
+
+
+        switch (Convert.ToInt16(arg))
+        {
+            case 0:
+
+                HUbUrl = "http://localhost:45/livefeedhub";
+                break;
+            case 1:
+
+                HUbUrl = "http://localhost:46/livefeedhub";
+                break;
+            case 2:
+
+                HUbUrl = "http://localhost:47/livefeedhub";
+                break;
+            case 3:
+
+                HUbUrl = "http://localhost:48/livefeedhub";
+                break;
+            case 4:
+
+                HUbUrl = "http://localhost:49/livefeedhub";
+                break;
+        }
+
+
+
         Console.WriteLine(HUbUrl);
 
-        string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
+        string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + "_" + arg + ".txt";
         if (!System.IO.File.Exists(filename))
         {
             System.IO.File.WriteAllText(filename, Environment.NewLine);
@@ -48,8 +81,8 @@ class Program
         connection.On<string>("SendLiveData", async param =>
         {
 
-           // Console.WriteLine($"{param}");
-            await RunFileSave(param);
+            
+             RunFileSave(param, Convert.ToInt16(arg));
         });
 
         connection.Closed += async (exception) =>
@@ -64,7 +97,7 @@ class Program
 
     }
 
-    private static async Task RunFileSave(string param)
+    private static void RunFileSave(string param, int arg)
     {
         try
         {
@@ -80,12 +113,12 @@ class Program
 
             Equities livedata = JsonSerializer.Deserialize<Equities>(param);
 
-            string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + ".txt";
+            string filename = @"C:\Hosts\Files\" + DateTime.Now.Date.ToShortDateString() + "_" + arg + ".txt";
+          
+            //Console.WriteLine(filename);
             var count = Regex.Matches(stringBuilder.ToString(), Environment.NewLine).Count();
             stringBuilder.AppendLine(livedata.ToString());
 
-
-           
             TimeSpan end = TimeSpan.Parse("09:16");   // 2 AM
             TimeSpan now = DateTime.Now.TimeOfDay;
 

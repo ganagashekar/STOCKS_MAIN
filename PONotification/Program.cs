@@ -10,7 +10,9 @@ class Program
     static async Task Main(string[] args)
     {
 
-       // string HUbUrl = "http://192.168.0.106:90/livefeedhub";
+        // string HUbUrl = "http://192.168.0.106:90/livefeedhub";
+        // string HUbUrl = "http://localhost:48/livefeedhub";
+
         string HUbUrl = "https://localhost:7189/livefeedhub";
         try
         {
@@ -18,7 +20,7 @@ class Program
 
             await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
             connection.KeepAliveInterval = TimeSpan.FromMinutes(1);
-
+            Thread.Sleep(2000);
 
             await connection.StartAsync();
             Console.WriteLine(connection.ConnectionId.ToString());

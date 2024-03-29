@@ -12,16 +12,19 @@ namespace DemoReadFileTrailerCS
     {
 
         private readonly string _strPath = @"C:\Hosts\Files\";
-        private readonly string _strFileName = DateTime.Now.Date.ToShortDateString() + ".txt";
+        private readonly string _strFileName = string.Empty; 
 
         private StreamReader _textReader;
         private int _fileLength;
 
-        public Form1()
+        public Form1(int arg)
         {
+            _strFileName = DateTime.Now.Date.ToShortDateString() + "_" + arg + ".txt";
             InitializeComponent();
             btnStartMonitoring_Click(null, null);
             btnStartMonitoring.Visible = false;
+            
+           
             this.Hide();
         }
 

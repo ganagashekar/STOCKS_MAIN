@@ -10,10 +10,87 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using static System.Net.WebRequestMethods;
 
 public class Program
 {
+    static void sendnotification(string stockName, string filtertext, string attachement, string subject)
+    {
+        //var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
+        //var iphonelis = new List<string>() { "SELL_STOCK_DOWN" };
+        var parameters = new Dictionary<string, string>
+        {
+            ["token"] = "a2g7y61yyznygj1k5i3njthhpdswdh",
+            ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+            ["priority"] = "1",
+            ["message"] = string.Format("This Stock got new orders  for {0} with filter {1} and attachment {2} and subject {3}", stockName, filtertext, attachement, subject),
+            ["title"] = "Orders",
+            ["retry"] = "30",
+            ["expire"] = "300",
+            ["html"] = "1",
+            ["sound"] = "echo",
+            ["device"] = "iphone"
+        };
+
+        using var client = new HttpClient();
+        var response = client.PostAsync("https://api.pushover.net/1/messages.json", new
+        FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+    }
+
+    static string ExecuteCommand(string filename, string attachment)
+    {
+        string filteredtxt = string.Empty;
+        try
+        {
+            int exitCode;
+            ProcessStartInfo processInfo;
+            Process process;
+
+            processInfo = new ProcessStartInfo(filename, "" + attachment + "");
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            // *** Redirect the output ***
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            process = Process.Start(processInfo);
+            process.WaitForExit();
+
+            // *** Read the streams ***
+            // Warning: This approach can lead to deadlocks, see Edit #2
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            if (output.ToString().Split("\r\n").Where(x => x != "").Count() > 2)
+            {
+                filteredtxt = output.ToString().Split("\r\n").Where(x => x != "").LastOrDefault();
+                var splitstring = filteredtxt.ToLower().Split(',');
+                filteredtxt = string.Join(',', splitstring.Distinct());
+
+
+
+
+
+            }
+
+
+            exitCode = process.ExitCode;
+
+            Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
+            Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
+            Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
+            process.Close();
+            return filteredtxt;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
     static void Main()
     {
         var cmd = @"curl   ""https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w?pageno={0}&strCat=&strPrevDate={1}&strScrip=&strSearch=P&strToDate={2}&strType=C&subcategory="" ^
@@ -52,6 +129,16 @@ public class Program
 
                 foreach (var r in Resp_obj.Table)
                 {
+                    string atatchementur = string.IsNullOrEmpty(r.ATTACHMENTNAME) ? "" : "https://www.bseindia.com/xml-data/corpfiling/AttachLive/" + r.ATTACHMENTNAME;
+                    var filteredtxt = ExecuteCommand(@"C:\Hosts\Breeze\filternews.bat", atatchementur);
+
+
+                    //if (!string.IsNullOrEmpty(filteredtxt))
+                    //{
+                    //    sendnotification(Convert.ToString(r.SLONGNAME) ?? "",
+                    //        filteredtxt, atatchementur,
+                    //        r.NEWSSUB);
+                    //}
                     using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
                     {
 
@@ -92,6 +179,9 @@ public class Program
                             sqlComm.Parameters.AddWithValue("@AUDIOFILE", Convert.ToString(r.AUDIO_VIDEO_FILE) ?? "");
                             sqlComm.Parameters.AddWithValue("@BaseURL", "https://www.bseindia.com/xml-data/corpfiling/AttachLive/");
                             sqlComm.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
+                            sqlComm.Parameters.AddWithValue("@IsOrder", !string.IsNullOrEmpty(filteredtxt));
+                            sqlComm.Parameters.AddWithValue("@Filteredtxt", filteredtxt);
+
                             sqlComm.CommandType = CommandType.StoredProcedure;
                             conn.Open();
                             sqlComm.ExecuteNonQuery();

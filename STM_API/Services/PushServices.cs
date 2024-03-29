@@ -26,7 +26,7 @@ namespace STM_API.Services
             using var client = new HttpClient();
             var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
             FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
-       
+        }
 
         public async Task SendPushServicesAsyncASAP(string stockName, string volume, string price)
         {
