@@ -1,14 +1,12 @@
 ﻿using Breeze;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Configuration;
-using STM_API.Model;
+
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Configuration.Json;
 
 //.Net Core 3.1
 namespace ConsoleAppTestProject
@@ -25,13 +23,13 @@ namespace ConsoleAppTestProject
 
         static async Task Main(string[] args)
         {
-            //var url = "http://localhost:99/breezeOperation";
-            var url = "https://localhost:7189/breezeOperation";
-           // Console.WriteLine(url);
+           
+            var url = "http://localhost:99/breezeOperation";
+            //Console.WriteLine(url);
             var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             string HUbUrl = url;
-            
+
             try
             {
                 string APIKEY = string.Empty;
@@ -41,14 +39,14 @@ namespace ConsoleAppTestProject
                 string arg = "0";
                 if (args.Any())
                     arg = args[0];
-                switch (Convert.ToInt16(arg))
+                switch (0)
                 {
                     case 0:
                         line = lines[0].ToString().Split(',');
                         APIKEY = line[0];
                         APISecret = line[1];
                         token = line[2];
-                        HUbUrl = "http://localhost:90/BreezeOperation";
+                        HUbUrl = "http://localhost:8080/BreezeOperation";
                         break;
                     case 1:
                         line = lines[1].ToString().Split(',');
@@ -79,9 +77,9 @@ namespace ConsoleAppTestProject
                         HUbUrl = "http://localhost:49/BreezeOperation";
                         break;
                 }
-                Console.WriteLine(arg);
-                Console.WriteLine(HUbUrl);
-                await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
+              //  Console.WriteLine(arg);
+
+                await using var connection = new HubConnectionBuilder().WithUrl("http://localhost:8080/BreezeOperation").WithAutomaticReconnect().Build();
                 Random r = new Random();
                 Console.WriteLine(connection.ConnectionId);
                 BreezeConnect breeze = new BreezeConnect(APIKEY);
@@ -90,10 +88,7 @@ namespace ConsoleAppTestProject
                 Console.WriteLine(JsonSerializer.Serialize(responseObject));
 
                 await connection.StartAsync();
-                Console.WriteLine("Conection" + connection.ConnectionId);
-                Console.WriteLine("GetAllStocksForLoadAutomation" + Convert.ToInt16(arg));
-                await connection.SendAsync("GetAllStocksForLoadAutomation", Convert.ToInt16(arg));
-                connection.On<List<string>>("SendGetAllStocksForLoadAutomation", async param =>
+                connection.On<List<string>>("SendGetBuyForAutomation_Auto", async param =>
                 {
                     Console.WriteLine("Count" + param.Count);
                     Stopwatch stopwatch = new Stopwatch();
@@ -118,6 +113,10 @@ namespace ConsoleAppTestProject
                     stopwatch.Reset();
 
                 });
+                Console.WriteLine("Conection" + connection.ConnectionId);
+                Console.WriteLine("GetBuyForAutomation_Auto" + Convert.ToInt16(arg));
+                await connection.SendAsync("GetBuyForAutomation_Auto");
+                
 
 
                 breeze.ticker(async (data) =>
@@ -131,7 +130,7 @@ namespace ConsoleAppTestProject
                         {
                             // Console.WriteLine(JsonSerializer.Serialize(data));
                             // Console.WriteLine("Ticker Data:" + JsonSerializer.Serialize(data));
-                            await connection.InvokeAsync("CaptureLiveDataForBuyForAutomation", JsonSerializer.Serialize(data));
+                            await connection.InvokeAsync("CaptureLiveDataForAutomation_Auto", JsonSerializer.Serialize(data));
 
                         }
                         else

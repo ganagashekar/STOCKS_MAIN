@@ -252,6 +252,11 @@ namespace STM_API.Hubs
             PushServices pushServices = new PushServices();
             await pushServices.SendPushServicesAsyncASAP(stockName, volume, price);
         }
+        public async Task SendPOPlaceOrder(string title, string message)
+        {
+            PushServices pushServices = new PushServices();
+            await pushServices.SendPushServicesAsyncASAPMsg(title, message);
+        }
         public async Task CaptureLiveDataForAutomation(string data)
         {
             try
@@ -280,6 +285,104 @@ namespace STM_API.Hubs
                         if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
                         data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
                         await Clients.All.SendAsync("SendCaptureLiveDataForAutomation", data);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+
+        public async Task CaptureLiveDataForAutomation_Auto(string data)
+        {
+            try
+            {
+                Equities livedata = System.Text.Json.JsonSerializer.Deserialize<Equities>(data);
+
+                string orginaltext = livedata.ttv;
+                try
+                {
+                    double volume;
+                    switch (livedata.ttv)
+                    {
+                        case var s when livedata.ttv.Contains("C"):
+                            volume = (Convert.ToDouble(livedata.ttv.Replace("C", "")) * 10000000);
+                            break;
+                        case var s when livedata.ttv.Contains("L"):
+                            volume = Convert.ToDouble(livedata.ttv.Replace("L", "")) * 100000;
+                            break;
+                        default:
+                            double.TryParse(livedata.ttv, out volume);
+                            break;
+
+                    }
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
+                        data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
+                        await Clients.All.SendAsync("SendCaptureLiveDataForAutomation_Auto", data);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+
+        public async Task CaptureLiveDataForBuyForAutomation(string data)
+        {
+            try
+            {
+                Equities livedata = System.Text.Json.JsonSerializer.Deserialize<Equities>(data);
+
+                string orginaltext = livedata.ttv;
+                try
+                {
+                    double volume;
+                    switch (livedata.ttv)
+                    {
+                        case var s when livedata.ttv.Contains("C"):
+                            volume = (Convert.ToDouble(livedata.ttv.Replace("C", "")) * 10000000);
+                            break;
+                        case var s when livedata.ttv.Contains("L"):
+                            volume = Convert.ToDouble(livedata.ttv.Replace("L", "")) * 100000;
+                            break;
+                        default:
+                            double.TryParse(livedata.ttv, out volume);
+                            break;
+
+                    }
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
+                        data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
+                        await Clients.All.SendAsync("SendCaptureLiveDataForBuyForAutomation", data);
                     }
                     catch (Exception ex)
                     {
@@ -340,6 +443,18 @@ namespace STM_API.Hubs
         {
             var results = _breezapiServices.SendAllStocksForLoad();
             await Clients.All.SendAsync("SendGetListOfSymbols", results.ToList());
+        }
+
+        public async Task GetBuyForAutomation()
+        {
+            var results = _breezapiServices.GetBuyForAutomation();
+            await Clients.All.SendAsync("SendGetBuyForAutomation", results.ToList());
+        }
+
+        public async Task GetBuyForAutomation_Auto()
+        {
+            var results = _breezapiServices.GetBuyForAutomation();
+            await Clients.All.SendAsync("SendGetBuyForAutomation_Auto", results.ToList());
         }
 
 

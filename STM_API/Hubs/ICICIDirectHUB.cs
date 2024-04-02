@@ -76,12 +76,12 @@ namespace STM_API.Hubs
         public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
-            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250, bool IsExcludedeleted = false)
+            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250, bool IsExcludedeleted = false, string EC="All")
         {
 
 
             var results = _stockTicker.GetStocksList(isfavorite, isUpperCircuit, islowerCircuit, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList, isTarget, isBullish, isbearish, IsOrderbyVolume
-                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted).ToList();
+                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted,EC).ToList();
             //int counts =  results.FirstOrDefault().rowcount- results.Count() ;
 
 

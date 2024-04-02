@@ -748,7 +748,7 @@ namespace STM_API.Services
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
-            bool IsIncludeDeleted = false)
+            bool IsIncludeDeleted = false,string EC="All")
         {
 
           
@@ -787,7 +787,8 @@ namespace STM_API.Services
 
                     sqlComm.Parameters.AddWithValue("@isTarget", isTarget);
                     sqlComm.Parameters.AddWithValue("@IsIncludeDeleted", IsIncludeDeleted);
-                    
+                    sqlComm.Parameters.AddWithValue("@EC", EC);
+
 
                     sqlComm.CommandType = CommandType.StoredProcedure;
                     SqlDataAdapter da = new SqlDataAdapter();
@@ -842,67 +843,67 @@ namespace STM_API.Services
                             var candleResult = quotesList.GetMarubozu(85);
 
                             var _stokc = new EquitiesHsitry();
-                            _stokc.symbol = r[0].ToString();
-                            _stokc.open = Convert.ToDouble(r[1].ToString());
-                            _stokc.last = Convert.ToDouble(r[2].ToString());
-                            _stokc.high = Convert.ToDouble(r[3].ToString());
-                            _stokc.low = Convert.ToDouble(r[4].ToString());
-                            _stokc.change = Convert.ToDouble(r[5].ToString());
-                            _stokc.bPrice = Convert.ToDouble(r[6].ToString());
-                            _stokc.totalBuyQt = Convert.ToInt32(r[7]);
-                            _stokc.sPrice = Convert.ToDouble(r[8].ToString());
-                            _stokc.totalSellQ = Convert.ToInt32(r[9]);
-                            _stokc.avgPrice = Convert.ToDouble(r[11].ToString());
-                            _stokc.ttv = Convert.ToDouble(r[16] ?? 0);//.Replace("L", "100000").Replace("C", "1000000"));
-                            _stokc.lowerCktLm = Convert.ToDouble(r[18].ToString());
-                            _stokc.upperCktLm = Convert.ToDouble(r[19].ToString());
-                            _stokc.ltt = r[20].ToString();
-                            _stokc.close = Convert.ToDouble(r[21].ToString());
-                            _stokc.stock_name = r[23].ToString();
-                            _stokc.Data = quotelist.Select(x => x.close.Value).ToList().AddValue(Convert.ToDouble(r[21].ToString())).ToList();
+                            _stokc.symbol = r["symbol"].ToString();
+                            _stokc.open = Convert.ToDouble(r["open"].ToString());
+                            _stokc.last = Convert.ToDouble(r["last"].ToString());
+                            _stokc.high = Convert.ToDouble(r["high"].ToString());
+                            _stokc.low = Convert.ToDouble(r["low"].ToString());
+                            _stokc.change = Convert.ToDouble(r["change"].ToString());
+                            _stokc.bPrice = Convert.ToDouble(r["bPrice"].ToString());
+                            _stokc.totalBuyQt = Convert.ToInt32(r["totalBuyQt"]);
+                            _stokc.sPrice = Convert.ToDouble(r["sPrice"].ToString());
+                            _stokc.totalSellQ = Convert.ToInt32(r["totalSellQ"]);
+                            _stokc.avgPrice = Convert.ToDouble(r["avgPrice"].ToString());
+                            _stokc.ttv = Convert.ToDouble(r["ttv"] ?? 0);//.Replace("L", "100000").Replace("C", "1000000"));
+                            _stokc.lowerCktLm = Convert.ToDouble(r["lowerCktLm"].ToString());
+                            _stokc.upperCktLm = Convert.ToDouble(r["upperCktLm"].ToString());
+                            _stokc.ltt = r["ltt"].ToString();
+                            _stokc.close = Convert.ToDouble(r["close"].ToString());
+                            _stokc.stock_name = r["stock_name"].ToString();
+                            _stokc.Data = quotelist.Select(x => x.close.Value).ToList().AddValue(Convert.ToDouble(r["close"].ToString())).ToList();
                                                                                                   
-                            _stokc.buyat = Convert.ToDouble(r[60] ?? 0);
-                            _stokc.DataPoint= GetJsonFileHistryDataPoint(r[0].ToString(), Convert.ToDouble(r[21].ToString()), _stokc.buyat);
+                            _stokc.buyat = Convert.ToDouble(r["buyAt"] ?? 0);
+                            _stokc.DataPoint= GetJsonFileHistryDataPoint(r["symbol"].ToString(), Convert.ToDouble(_stokc.last), _stokc.buyat);
                             _stokc.min = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x)) :0;
                             _stokc.max = _stokc.Data.Any() ?_stokc.Data.Where(x => x > 0).Max(x => Convert.ToInt32(x)):0;
-                            _stokc.href = string.Format("https://www.msn.com/en-in/money/stockdetails/fi-{0}?duration=5D>", r[34].ToString());
-                            _stokc.stockdetailshref = string.Format("/StockDetails?id={0}", r[34].ToString());
-                            _stokc.return1w = Convert.ToDouble(r[35] ?? 0);
-                            _stokc.return1m = Convert.ToDouble(r[36] ?? 0);
-                            _stokc.return3m = Convert.ToDouble(r[37] ?? 0);
-                            _stokc.return1d = Convert.ToDouble(r[48] ?? 0);
-                            _stokc.securityId = r[61].ToString();
-                            _stokc.SECId = r[34].ToString();
-                            _stokc.msn_secid = r[34].ToString();
-                            _stokc.recmdtn = (r[38] ?? "").ToString();
-                            _stokc.noofrec = Convert.ToDouble(r[39] ?? 0);
-                            _stokc.beta = (r[40] ?? "").ToString();
-                            _stokc.eps = (r[41] ?? "").ToString();
+                            _stokc.href = string.Format("https://www.msn.com/en-in/money/stockdetails/fi-{0}?duration=5D>", r["MSN_SECID"].ToString());
+                            _stokc.stockdetailshref = string.Format("/StockDetails?id={0}", r["MSN_SECID"].ToString());
+                            _stokc.return1w = Convert.ToDouble(r["quote_return1Week"] ?? 0);
+                            _stokc.return1m = Convert.ToDouble(r["quote_return1Month"] ?? 0);
+                            _stokc.return3m = Convert.ToDouble(r["quote_return3Month"] ?? 0);
+                            _stokc.return1d = Convert.ToDouble(r["quote_priceChange"] ?? 0);
+                            _stokc.securityId = r["securityId"].ToString();
+                            _stokc.SECId = r["MSN_SECID"].ToString();
+                            _stokc.msn_secid = r["MSN_SECID"].ToString();
+                            _stokc.recmdtn = (r["estimate_recommendation"] ?? "").ToString();
+                            _stokc.noofrec = Convert.ToDouble(r["estimate_numberOfAnalysts"] ?? 0);
+                            _stokc.beta = (r["beta"] ?? "").ToString();
+                            _stokc.eps = (r["keyMetrics_eps"] ?? "").ToString();
                            
-                            _stokc.target = (r[42] ?? "").ToString();
-                            _stokc.isfavorite = !string.IsNullOrEmpty(r[44].ToString()) ? Convert.ToBoolean(r[44] ?? false): false;
-                            _stokc.VolumeC = (r[33] ?? "").ToString();
-                            _stokc.return6m= Convert.ToDouble(r[45] ?? 0);
-                            _stokc.return1Year = Convert.ToDouble(r[46] ?? 0);
-                            _stokc.returnYTD = Convert.ToDouble(r[47] ?? 0);
-                            _stokc.priceChange_Day = Convert.ToDouble(r[48] ?? 0);
+                            _stokc.target = (r["estimate_meanPriceTarget"] ?? "").ToString();
+                            _stokc.isfavorite = !string.IsNullOrEmpty(r["isfavorite"].ToString()) ? Convert.ToBoolean(r["isfavorite"] ?? false): false;
+                            _stokc.VolumeC = (r["VolumeC"] ?? "").ToString();
+                            _stokc.return6m= Convert.ToDouble(r["quote_return6Month"] ?? 0);
+                            _stokc.return1Year = Convert.ToDouble(r["quote_return1Year"] ?? 0);
+                            _stokc.returnYTD = Convert.ToDouble(r["quote_returnYTD"] ?? 0);
+                            _stokc.priceChange_Day = Convert.ToDouble(r["quote_priceChange"] ?? 0);
 
-                            _stokc.priceChange_1w = Convert.ToDouble(r[49] ?? 0);
-                            _stokc.priceChange_1m = Convert.ToDouble(r[50] ?? 0);
-                            _stokc.priceChange_3m = Convert.ToDouble(r[51] ?? 0);
+                            _stokc.priceChange_1w = Convert.ToDouble(r["quote_priceChange1Week"] ?? 0);
+                            _stokc.priceChange_1m = Convert.ToDouble(r["quote_priceChange1Month"] ?? 0);
+                            _stokc.priceChange_3m = Convert.ToDouble(r["quote_priceChange3Month"] ?? 0);
 
-                            _stokc.priceChange_6m = Convert.ToDouble(r[52] ?? 0);
-                            _stokc.priceChange_1year = Convert.ToDouble(r[53] ?? 0);
-                            _stokc.priceChange_YTD = Convert.ToDouble(r[54] ?? 0);
+                            _stokc.priceChange_6m = Convert.ToDouble(r["quote_priceChange6Month"] ?? 0);
+                            _stokc.priceChange_1year = Convert.ToDouble(r["quote_priceChange1Year"] ?? 0);
+                            _stokc.priceChange_YTD = Convert.ToDouble(r["quote_priceChangeYTD"] ?? 0);
                             
-                            _stokc.price52Weekshigh = Convert.ToDouble(r[55] ?? 0);
-                            _stokc.price52Weekslow = Convert.ToDouble(r[56] ?? 0);
-                            _stokc.isenabledforautoTrade= Convert.ToBoolean(r[57] ?? false);
-                            _stokc.buyatChange= (r[62] ?? "").ToString();
-                            _stokc.IsLowerCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.lowerCktLm;
-                            _stokc.IsUpperCircuite = Convert.ToDouble(r[1].ToString()) == _stokc.upperCktLm;
-                            _stokc.tdays = Convert.ToString(r[63] ?? 0);
-                            _stokc.WacthList = Convert.ToString(r[64] ?? "");
+                            _stokc.price52Weekshigh = Convert.ToDouble(r["quote_price52wHigh"] ?? 0);
+                            _stokc.price52Weekslow = Convert.ToDouble(r["quote_price52wLow"] ?? 0);
+                            _stokc.isenabledforautoTrade= Convert.ToBoolean(r["isAutoTrad"] ?? false);
+                            _stokc.buyatChange= (r["buyAtChange"] ?? "").ToString();
+                            _stokc.IsLowerCircuite = Convert.ToDouble(r["open"].ToString()) == _stokc.lowerCktLm;
+                            _stokc.IsUpperCircuite = Convert.ToDouble(r["open"].ToString()) == _stokc.upperCktLm;
+                            _stokc.tdays = Convert.ToString(r["TDay"] ?? 0);
+                            _stokc.WacthList = Convert.ToString(r["watchlist"] ?? "");
 
                             _stokc.pr_change = string.Join(',', quotelist.Skip(quotelist.Count-30).Take(30).Select(x => x.change)); //// Convert.ToString(r[65] ?? "");
                             _stokc.pr_close = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.close)); //Convert.ToString(r[66] ?? "");
@@ -915,11 +916,11 @@ namespace STM_API.Services
                             _stokc.pr_Match = string.Join(",", candleResult.Skip(quotelist.Count - 30).Take(30).Select(x=>x.Match.ToString().Replace("Signal","")));
                             _stokc.pr_SuperTrend = string.Join(",", Strend.Skip(quotelist.Count - 30).Take(30).Select(x => x.SuperTrend.HasValue ? Convert.ToDouble(x.SuperTrend).ToString("F2") : ""));
                             
-                            _stokc.Match = Convert.ToString(r[67] ?? "");
-                            _stokc.BullishCount = Convert.ToInt16(r[66] ?? 0);
-                            _stokc.BearishCount = Convert.ToInt16(r[65] ?? 0);
+                            _stokc.Match = Convert.ToString(r["match"] ?? "");
+                            _stokc.BullishCount = Convert.ToInt16(r["BulishCount"] ?? 0);
+                            _stokc.BearishCount = Convert.ToInt16(r["BearishCount"] ?? 0);
 
-                            _stokc.AwardCount = Convert.ToInt32(r[68] ?? 0);
+                            _stokc.AwardCount = Convert.ToInt32(r["AwardCount"] ?? 0);
 
                            var resverse= quotelist.Skip(quotelist.Count - 10).Take(10).Select(x => Convert.ToDouble(x.change).ToString("N2")).Reverse();
                             _stokc.last7DaysChange = string.Join(',', resverse);
@@ -933,8 +934,8 @@ namespace STM_API.Services
                             _stokc.revenueDifference = Convert.ToDouble(r["RevenueDifference"] ?? 0);
                             _stokc.quarterEnd = Convert.ToDateTime(r["QuarterEnd"].ToString() !="" ? Convert.ToDateTime(r["QuarterEnd"]).ToShortDateString(): null);
                             _stokc.FnUpdatedon = Convert.ToDateTime(r["FnUpdatedon"].ToString() !="" ? Convert.ToDateTime(r["FnUpdatedon"]).ToShortDateString(): null);
-                            _stokc.last7DaysChange = Convert.ToString(r["Last7DaysChange"].ToString() ?? "");
-                            _stokc.change = Convert.ToDouble(r["quote_priceChangePercent"].ToString());
+                            _stokc.last7DaysChange = Convert.ToString(string.IsNullOrEmpty(r["Last7DaysChange"].ToString()) ? _stokc.last7DaysChange :r["Last7DaysChange"].ToString());
+                            _stokc.change = Convert.ToDouble(r["quote_priceChangePercent"].ToString())==0 ? _stokc.change: Convert.ToDouble(r["quote_priceChangePercent"].ToString());
                             _stokc.rowcount = Convert.ToInt32(r["counts"].ToString());
                             _stokc.futurePercentage = Convert.ToDouble(r["FuturePercentage"] ?? 0);
                             _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "");

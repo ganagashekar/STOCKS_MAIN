@@ -35,6 +35,8 @@
         public string expiry_date { get; set; }
         public string strike_price { get; set; }
         public string right { get; set; }
+
+        public string SecurityId { get; set; }
     }
 
     public class ChartData

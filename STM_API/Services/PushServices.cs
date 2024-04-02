@@ -51,6 +51,29 @@ namespace STM_API.Services
             FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
         }
 
+        public async Task SendPushServicesAsyncASAPMsg(string tittle, string message)
+        {
+            //var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
+            //var iphonelis = new List<string>() { "SELL_STOCK_DOWN" };
+            var parameters = new Dictionary<string, string>
+            {
+                ["token"] = "ajd8p1o564xjvq9rydmfrupgzcbgsk",
+                ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                ["priority"] = "1",
+                ["message"] = message,
+                ["title"] = tittle,
+                ["retry"] = "30",
+                ["expire"] = "300",
+                ["html"] = "1",
+                ["sound"] = "echo",
+                ["device"] = "iphone"
+            };
+
+            using var client = new HttpClient();
+            var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+            FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+        }
+
 
     }
 }
