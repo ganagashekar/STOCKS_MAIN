@@ -809,7 +809,7 @@ namespace MSNStocks
                                     ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
                                     ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
                                     ["priority"] = "1",
-                                    ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2}", item.companyName, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT),
+                                    ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores", item.companyName, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT/10000000),
                                     ["title"] = "FinacialResult",
                                     ["retry"] = "30",
                                     ["expire"] = "300",
