@@ -683,11 +683,11 @@ namespace MSNStocks
             }
         }
 
-        static string ExecuteCommandNSExbrl(string filename)
+        static string ExecuteCommandNSExbrl(string filename,string param )
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "cmd.exe";
-              string param = "https://nsearchives.nseindia.com/corporate/xbrl/NBFC_INDAS_104606_1102707_19042024080602.xml";
+           //   string param = "https://nsearchives.nseindia.com/corporate/xbrl/NBFC_INDAS_104606_1102707_19042024080602.xml";
             startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_FIN_xbrl.bat" + " " + param; ;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
@@ -748,7 +748,7 @@ namespace MSNStocks
                     {
                         string inline_output = "";
                         param = item.xbrl;
-                         inline_output = ExecuteCommandNSExbrl(@"C:\Hosts\Breeze\NSE_FIN_xbrl.bat").Split("GANGA").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+                         inline_output = ExecuteCommandNSExbrl(@"C:\Hosts\Breeze\NSE_FIN_xbrl.bat", param).Split("GANGA").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
                         //  inline_output = Getdate(item.xbrl);
                         XmlDocument doc1 = new XmlDocument();
                         doc1.LoadXml(RemoveEmptyLines(inline_output.ToString().Trim()));
