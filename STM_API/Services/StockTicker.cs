@@ -748,7 +748,7 @@ namespace STM_API.Services
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
-            bool IsIncludeDeleted = false,string EC="All")
+            bool IsIncludeDeleted = false,string EC="All", string statsColumnRecords = null, string statsColumnCondition = null, int lastRecords = 0)
         {
 
           
@@ -788,6 +788,10 @@ namespace STM_API.Services
                     sqlComm.Parameters.AddWithValue("@isTarget", isTarget);
                     sqlComm.Parameters.AddWithValue("@IsIncludeDeleted", IsIncludeDeleted);
                     sqlComm.Parameters.AddWithValue("@EC", EC);
+                    sqlComm.Parameters.AddWithValue("@change", lastRecords);
+
+                    sqlComm.Parameters.AddWithValue("@StatsColumn", statsColumnRecords);
+                    sqlComm.Parameters.AddWithValue("@Condition", statsColumnCondition);
 
 
                     sqlComm.CommandType = CommandType.StoredProcedure;
@@ -940,6 +944,11 @@ namespace STM_API.Services
                             _stokc.futurePercentage = Convert.ToDouble(r["FuturePercentage"] ?? 0);
                             _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "");
                             _stokc.isIncludeDeleted = Convert.ToBoolean(r["IsExclude"] ?? false);
+
+                            _stokc.past_PercentageChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PercentageChange"].ToString()) ?  0 : r["Past_PercentageChange"].ToString());
+                            _stokc.past_PriceChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PriceChange"].ToString()) ? 0 : r["Past_PriceChange"].ToString()); 
+
+
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
                             //_stokc.TwoWeeks_min = !string.IsNullOrEmpty(r[27].ToString()) ? Convert.Todouble(r[27]) : default(double?);
@@ -2147,6 +2156,11 @@ namespace STM_API.Services
 
                 throw;
             }
+        }
+
+        internal CancellationToken Equities_Stats()
+        {
+            throw new NotImplementedException();
         }
     }
     public static class ArrayExtensions

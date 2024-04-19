@@ -25,6 +25,8 @@ class Program
             await connection.SendAsync("ExportStocksToJson");
             await connection.SendAsync("StocksDays");
 
+           
+
             Task.WaitAll();
 
         }

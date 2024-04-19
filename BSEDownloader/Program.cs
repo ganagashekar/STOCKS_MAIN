@@ -91,6 +91,8 @@ public class Program
         }
     }
 
+
+    
     static void Main()
     {
         var cmd = @"curl   ""https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w?pageno={0}&strCat=&strPrevDate={1}&strScrip=&strSearch=P&strToDate={2}&strType=C&subcategory="" ^
@@ -131,8 +133,6 @@ public class Program
                 {
                     string atatchementur = string.IsNullOrEmpty(r.ATTACHMENTNAME) ? "" : "https://www.bseindia.com/xml-data/corpfiling/AttachLive/" + r.ATTACHMENTNAME;
                     var filteredtxt = ExecuteCommand(@"C:\Hosts\Breeze\filternews.bat", atatchementur);
-
-
                     //if (!string.IsNullOrEmpty(filteredtxt))
                     //{
                     //    sendnotification(Convert.ToString(r.SLONGNAME) ?? "",

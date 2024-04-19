@@ -1,29 +1,234 @@
 ﻿
+using BSE_Financilas;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MSNStocks.Models;
 using MSNStocks.Models.results;
+using MSNStocks.Models.xml2;
 using MSNStocks.Query;
 using MSNStocks.Result;
 using MSNStocks.WebApp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
+using Skender.Stock.Indicators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Reflection.PortableExecutable;
+using System.Security.Policy;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 using static System.Net.WebRequestMethods;
 
 namespace MSNStocks
 {
     public static class API_MSN_Library
     {
+        public static List<Equities> GetJsonFileHistryData(string Symvbol)
+        {
 
+            if (System.IO.File.Exists(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol)))
+            {
+                try
+                {
+                    var text = System.IO.File.ReadAllText(string.Format("{0}{1}.json", @"C:\Hosts\JsonFiles\", Symvbol));
+                    return JsonConvert.DeserializeObject<List<Equities>>(text).OrderByDescending(x => Convert.ToDateTime(x.ltt)).Take(60).OrderBy(x => Convert.ToDateTime(x.ltt)).ToList();
+
+                    //var sortlist = data.Select(x => x.open.Value).ToList();
+                    //sortlist.Add(Last);
+                    //return sortlist;
+
+
+
+                    //Arraysortlist = sortlist.Select(x => Convert.ToDecimal(x)).ToList();
+                    //var nearest = sortlist.OrderBy(x => Math.Abs((long)x - Last)).First();
+
+                    //var index = sortlist.ToArray().IndexOf(nearest);
+
+                    //return data.Count() - index;
+                    //return index;
+                }
+                catch (Exception)
+                {
+
+                    return new List<Equities>();
+                }
+            }
+            else
+            {
+                return new List<Equities>();
+            }
+        }
+
+
+        // public 
+        public static async Task EquitiesStats()
+        {
+
+
+
+
+            using (var db = new STOCKContext())
+            {
+                Console.WriteLine("Database Connected");
+                Console.WriteLine();
+                Console.WriteLine("Listing Category Sales For 1997s");
+                var equites = db.Equitys.ToList();
+                db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
+
+
+
+                foreach (var equity in equites)
+                {
+                    List<Equities_Stats> stats = new List<Equities_Stats>();
+                    try
+                    {
+                        Equities threedaydata = null;
+                        Equities fivedaydata = null;
+                        Equities sevdaydata = null;
+                        Equities fifitendays = null;
+                        Equities tendays = null;
+
+
+                        var quotelist = GetJsonFileHistryData(equity.Symbol);
+                        if (quotelist.Count == 0)
+                        {
+                            continue;
+                        }
+                        var quotelistasc = quotelist.OrderBy(x => x.ltt);
+                        List<Skender.Stock.Indicators.Quote> quotesList = quotelist.Select(x => new Skender.Stock.Indicators.Quote
+                        {
+                            Close = Convert.ToDecimal(x.last),
+                            Open = Convert.ToDecimal(x.open),
+                            Date = Convert.ToDateTime(x.ltt),
+                            High = Convert.ToDecimal(x.high),
+                            Low = Convert.ToDecimal(x.low),
+                            Volume = Convert.ToDecimal(x.ttv)
+                        }).OrderBy(x => x.Date).ToList();
+
+
+                        IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12, 26, 9);
+                        IEnumerable<WmaResult> wmaResults = quotesList.GetWma(5);
+                        IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(7, 3);
+                        IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(7);
+
+                        IEnumerable<SuperTrendResult> Strend = quotesList.GetSuperTrend(10, 3);
+                        var candleResult = quotesList.GetMarubozu(90);
+
+                        foreach (var itemx in quotelist.Skip(quotelist.Count - 30).Take(30))
+                        {
+                            try
+                            {
+                                var equities_Stats = new Equities_Stats();
+                                equities_Stats.Symbol = itemx.symbol;
+                                equities_Stats.StockCode = itemx.SecurityId;
+                                equities_Stats.StockName = itemx.stock_name;
+                                equities_Stats.Change = itemx.change;
+                                equities_Stats.close = itemx.close;
+                                equities_Stats.Open = itemx.open;
+                                equities_Stats.Volume = Convert.ToDouble(itemx.ttv);
+                                equities_Stats.LTT = Convert.ToDateTime(itemx.ltt);
+                                equities_Stats.MACD = macdresult.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Macd.HasValue ? Convert.ToDouble(x.Macd) : 0).FirstOrDefault();
+                                equities_Stats.RSI = rsiResults.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Rsi.HasValue ? Convert.ToDouble(x.Rsi) : 0).FirstOrDefault();
+                                string? v = candleResult.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Match.ToString().Replace("Signal", "")).FirstOrDefault();
+                                equities_Stats.Match = v;
+
+                                threedaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(itemx.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+
+                                if (threedaydata != null)
+                                {
+                                    equities_Stats.ThreedaysChange = Math.Round(Convert.ToDouble(((itemx.open - threedaydata.open) / threedaydata.open) * 100), 2);
+                                    equities_Stats.ThreedaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - threedaydata.open), 2);
+                                }
+
+                                if (threedaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(threedaydata.ltt).AddDays(-2)))
+                                {
+                                    fivedaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(threedaydata.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+                                    if (fivedaydata != null)
+                                    {
+                                        equities_Stats.FivedaysChange = Math.Round(Convert.ToDouble(((itemx.open - fivedaydata.open) / fivedaydata.open) * 100), 2);
+                                        equities_Stats.FivedaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - fivedaydata.open), 2);
+                                    }
+                                }
+                                if (fivedaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(fivedaydata.ltt).AddDays(-2)))
+                                {
+                                    sevdaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(fivedaydata.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+                                    if (sevdaydata != null)
+                                    {
+                                        equities_Stats.SevendaysChange = Math.Round(Convert.ToDouble(((itemx.open - sevdaydata.open) / sevdaydata.open) * 100), 2);
+                                        equities_Stats.SevendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - sevdaydata.open), 2);
+                                    }
+                                }
+                                if (sevdaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-3)))
+                                {
+                                    tendays = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-3)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+                                    if (tendays != null)
+                                    {
+                                        equities_Stats.TendaysChange = Math.Round(Convert.ToDouble(((itemx.open - tendays.open) / tendays.open) * 100), 2);
+                                        equities_Stats.TendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - tendays.open), 2);
+                                    }
+                                }
+                                if (tendays != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-4)))
+                                {
+                                    fifitendays = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(tendays.ltt).AddDays(-4)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+                                    if (fifitendays != null)
+                                    {
+                                        equities_Stats.FifteendaysChange = Math.Round(Convert.ToDouble(((itemx.open - fifitendays.open) / fifitendays.open) * 100), 2);
+                                        equities_Stats.FifteendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - fifitendays.open), 2);
+                                    }
+                                }
+
+                                stats.Add(equities_Stats);
+
+
+                            }
+                            catch (Exception ex)
+                            {
+
+                                throw;
+                            }
+                        }
+
+                        try
+                        {
+                            db.Equities_Stats.AddRange(stats);
+                            //db.Entry(equity).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw;
+                        }
+
+                        //Console.WriteLine(equity.SecurityName);
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    };
+                    Console.WriteLine(equity.Id);
+
+                }
+
+            }
+        }
 
         public static async Task getInitStocks()
         {
@@ -91,7 +296,7 @@ namespace MSNStocks
                         catch (Exception)
                         {
 
-                           
+
                         }
                     }
                     db.Entry(equity).State = EntityState.Modified;
@@ -101,7 +306,7 @@ namespace MSNStocks
                     Console.WriteLine(equity.Id);
 
                 }
-                
+
             }
         }
 
@@ -147,15 +352,16 @@ namespace MSNStocks
                     Console.WriteLine("Database Connected");
                     Console.WriteLine();
                     Console.WriteLine("Listing Category Sales For 1997s");
-                    var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null)
+                    var equites = db.Equitys.ToList()
                         // .Where(x=>x.Symbol== "1.1!500189")
                         //.Where(x=>x.FinancialUpdatedOn ==null).
-                        .Where(x => x.IsLatestQuaterUpdated == false);
+                        .Where(x => x.IsLatestQuaterUpdated == null || x.IsLatestQuaterUpdated == false);
                     // Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
                     //db.Database.ExecuteSqlRaw("TRUNCATE TABLE dbo.[Stock_Financial_Results]");
                     foreach (var item in equites)
                     {
                         Console.WriteLine(item.Symbol);
+                        Console.WriteLine(item.Id);
                         try
                         {
                             var Stock_Financial_Results_obj = db.Stock_Financial_Results.Where(x => x.Symbol == item.Symbol).ToList();
@@ -477,6 +683,191 @@ namespace MSNStocks
             }
         }
 
+        static string ExecuteCommandNSExbrl(string filename)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+              string param = "https://nsearchives.nseindia.com/corporate/xbrl/NBFC_INDAS_104606_1102707_19042024080602.xml";
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_FIN_xbrl.bat" + " " + param; ;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            //string errors = process.StandardError.ReadToEnd();
+            return process.StandardOutput.ReadToEnd();
+            
+
+
+
+        }
+        static string ExecuteCommandNSEFirst(string filename)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+           string param = "https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly";
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_FIN.bat" + " " + param; ;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+        
+            
+        }
+
+        private static string RemoveEmptyLines(string lines)
+        {
+            return Regex.Replace(lines, @"^\s*$\n|\r", string.Empty, RegexOptions.Multiline).TrimEnd();
+        }
+        public static async Task getInitStocksFromSECIDForNSEResults()
+        {
+            string param = "";
+
+            try
+            {
+
+
+                var filteredtxt = ExecuteCommandNSEFirst(@"C:\Hosts\Breeze\NSE_FIN.bat");
+                var data = filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+
+                //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
+                var result = JsonConvert.DeserializeObject<List<FinancialsModel>>(data);
+                foreach (var item in result)
+                {
+                    MainFinancialsResult mainFinancialsResult = null;
+                    MainFinancialsResult2 mainFinancialsResult2 = null;
+                    try
+                    {
+                        string inline_output = "";
+                        param = item.xbrl;
+                         inline_output = ExecuteCommandNSExbrl(@"C:\Hosts\Breeze\NSE_FIN_xbrl.bat").Split("GANGA").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+                        //  inline_output = Getdate(item.xbrl);
+                        XmlDocument doc1 = new XmlDocument();
+                        doc1.LoadXml(RemoveEmptyLines(inline_output.ToString().Trim()));
+
+                        string jsonText = JsonConvert.SerializeXmlNode(doc1);
+                        try
+                        {
+                            mainFinancialsResult = JsonConvert.DeserializeObject<MainFinancialsResult>(jsonText);
+                        }
+                        catch (Exception)
+                        {
+
+                            mainFinancialsResult2 = JsonConvert.DeserializeObject<MainFinancialsResult2>(jsonText);
+                        }
+                        bool isnew = false;
+                        using (var db = new STOCKContext())
+                        {
+
+                            var Stock_Financial_Results_obj = db.Stock_Financial_Results_NSE.FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd == Convert.ToDateTime(item.toDate));
+                            if (Stock_Financial_Results_obj == null)
+                            {
+                                isnew = true;
+                                Stock_Financial_Results_obj = new Stock_Financial_Results_NSE();
+                                Stock_Financial_Results_obj.CREATED_ON = DateTime.Now;
+                                Stock_Financial_Results_obj.Symbol = item.symbol;
+                                Stock_Financial_Results_obj.Stock_Name = item.companyName;
+                                db.Stock_Financial_Results_NSE.Add(Stock_Financial_Results_obj);
+
+                               
+
+                            }
+                            else
+                            {
+                                db.Entry(Stock_Financial_Results_obj).State = EntityState.Modified;
+                            }
+                            if(mainFinancialsResult!=null)
+                            {
+                                Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.FirstOrDefault().text);
+                                Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.FirstOrDefault().text);
+                                Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinProfitLossForPeriod.FirstOrDefault().text);
+                                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                            }
+                            else
+                            {
+                                Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.text);
+                                Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.text);
+                                Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+
+                            }
+
+                            if (isnew)
+                            {
+                                var parameters = new Dictionary<string, string>
+                                {
+                                    ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
+                                    ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                                    ["priority"] = "1",
+                                    ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2}", item.companyName, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT),
+                                    ["title"] = "FinacialResult",
+                                    ["retry"] = "30",
+                                    ["expire"] = "300",
+                                    ["html"] = "1",
+                                    ["sound"] = "echo",
+                                    ["device"] = "iphone"
+                                };
+
+                                using var client = new HttpClient();
+                                var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+                                FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+                            }
+
+                            db.SaveChanges();
+
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                       
+                    }
+
+                }
+                // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
+
+                //  string errors = process.StandardError.ReadToEnd();
+                //Assert.IsTrue(string.IsNullOrEmpty(errors));
+            }
+            catch (Exception ex)
+            {
+
+                
+            }
+
+
+        }
+
+        private static string Getdate(string param)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+
+            startInfo.Arguments = @"/c powershell -executionpolicy unrestricted " + "C:\\Ganga\\tst.ps1" + " " + param;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+
+
+        }
 
         public static async Task getInitStocksFromSECID()
         {

@@ -5,8 +5,8 @@
         try
         {
            
-            await MSNStocks.API_MSN_Library.getInitStocksFromSECIDForBSEResults();
-           
+            await MSNStocks.API_MSN_Library.getInitStocksFromSECIDForNSEResults();
+           // await MSNStocks.getInitStocksFromSECIDForBSEResults
 
 
         }

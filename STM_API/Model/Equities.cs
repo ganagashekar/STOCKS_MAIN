@@ -158,7 +158,12 @@
         public string quaterlyResults { set; get; }
 
         public bool isIncludeDeleted { get; set; }
-        
+
+        public double? past_PriceChange { get; set; }
+        public double? past_PercentageChange { get; set; }
+
+
+
 
     }
 

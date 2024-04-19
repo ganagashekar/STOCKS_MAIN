@@ -25,9 +25,9 @@ namespace ConsoleAppTestProject
 
         static async Task Main(string[] args)
         {
-            //var url = "http://localhost:99/breezeOperation";
-            var url = "https://localhost:7189/breezeOperation";
-           // Console.WriteLine(url);
+          
+            var url = "";
+          
             var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             string HUbUrl = url;
@@ -71,13 +71,7 @@ namespace ConsoleAppTestProject
                         token = line[2];
                         HUbUrl = "http://localhost:99/BreezeOperation";
                         break;
-                    case 4:
-                        line = lines[4].ToString().Split(',');
-                        APIKEY = line[0];
-                        APISecret = line[1];
-                        token = line[2];
-                        HUbUrl = "http://localhost:49/BreezeOperation";
-                        break;
+                  
                 }
                 Console.WriteLine(arg);
                 Console.WriteLine(HUbUrl);
@@ -134,10 +128,7 @@ namespace ConsoleAppTestProject
                             await connection.InvokeAsync("CaptureLiveDataForBuyForAutomation", JsonSerializer.Serialize(data));
 
                         }
-                        else
-                        {
-
-                        }
+                       
 
 
 

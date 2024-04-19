@@ -73,15 +73,26 @@ namespace STM_API.Hubs
             // return _stockTicker.GetAllStocks();
         }
 
+        public async Task Equities_Stats()
+        {
+            var results = _stockTicker.Equities_Stats();
+            await Clients.Caller.SendAsync("SendEquities_Stats", results);
+        }
+
         public async Task GetStocksList(bool isfavorite = false, bool isUpperCircuit = false, bool islowerCircuit = false,
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
-            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250, bool IsExcludedeleted = false, string EC="All")
+            bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
+            bool IsExcludedeleted = false, string EC = "All", string StatsColumnRecords = "", string StatsColumnCondition = "", string pastChangeRecords = "")
         {
-
+            if (StatsColumnCondition!=null && string.IsNullOrEmpty(StatsColumnCondition.Replace(" ","")))
+            {
+                StatsColumnRecords = "";
+                pastChangeRecords = "0";
+            }
 
             var results = _stockTicker.GetStocksList(isfavorite, isUpperCircuit, islowerCircuit, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList, isTarget, isBullish, isbearish, IsOrderbyVolume
-                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted,EC).ToList();
+                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted, EC, StatsColumnRecords, StatsColumnCondition, Convert.ToInt32(pastChangeRecords)).ToList();
             //int counts =  results.FirstOrDefault().rowcount- results.Count() ;
 
 

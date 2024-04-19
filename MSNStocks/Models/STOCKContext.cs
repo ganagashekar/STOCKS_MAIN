@@ -21,9 +21,11 @@ namespace MSNStocks.Models
        // public virtual DbSet<Equity> Equities { get; set; } = null!;
         public virtual DbSet<Equity> Equitys { get; set; } = null!;
 
+        public virtual DbSet<Equities_Stats> Equities_Stats { get; set; } = null!;
         public virtual DbSet<Stock_Financial_Results> Stock_Financial_Results { get; set; } = null!;
+        public virtual DbSet<Stock_Financial_Results_NSE> Stock_Financial_Results_NSE { get; set; } = null!;
 
-        
+
         public virtual DbSet<LiveStock> LiveStocks { get; set; } = null!;
         public virtual DbSet<TempPivot> TempPivots { get; set; } = null!;
         public virtual DbSet<TempPivotResult> TempPivotResults { get; set; } = null!;
