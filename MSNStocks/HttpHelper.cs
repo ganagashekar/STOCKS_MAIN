@@ -44,7 +44,9 @@ namespace MSNStocks
 
             public static async Task<T> Get<T>(string apiBasicUri, string url)
             {
-                
+
+                try
+                {
                     using (var client = new HttpClient())
                     {
                         //  client = new Uri(apiBasicUri);
@@ -54,6 +56,13 @@ namespace MSNStocks
                         T resultContent = JsonConvert.DeserializeObject<T>(resultContentString);
                         return resultContent;
                     }
+                }
+                catch (Exception ex)
+                {
+
+                   
+                }
+                return JsonConvert.DeserializeObject<T>("");
                
             }
 

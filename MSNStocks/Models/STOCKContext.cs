@@ -17,6 +17,7 @@ namespace MSNStocks.Models
         }
 
         public virtual DbSet<Bustockback> Bustockbacks { get; set; } = null!;
+        public virtual DbSet<NDTVNews> NDTVNews { get; set; } = null!;
         public virtual DbSet<BuyStock> BuyStocks { get; set; } = null!;
        // public virtual DbSet<Equity> Equities { get; set; } = null!;
         public virtual DbSet<Equity> Equitys { get; set; } = null!;
