@@ -2,10 +2,17 @@
 using BSE_Financilas;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MSNStocks.Models;
 using MSNStocks.Models.results;
 using MSNStocks.Models.xml;
 using MSNStocks.Models.xml2;
+using MSNStocks.Models.xml3;
+using MSNStocks.Models.xml4;
+using MSNStocks.Models.xml5;
+using MSNStocks.Models.xml6;
+using MSNStocks.Models.xml7;
+using MSNStocks.MSN;
 using MSNStocks.NDTV.Latest;
 using MSNStocks.Query;
 using MSNStocks.Result;
@@ -15,8 +22,10 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using Skender.Stock.Indicators;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Drawing.Drawing2D;
@@ -738,51 +747,233 @@ namespace MSNStocks
 
 
                 var filteredtxt = ExecuteCommandNSEFirst(@"C:\Hosts\Breeze\NSE_FIN.bat");
+
                 var data = filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
 
-                //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
-                var result = JsonConvert.DeserializeObject<List<FinancialsModel>>(data);
-                foreach (var item in result.Where(x => Convert.ToDateTime(x.broadCastDate) > DateTime.Now.AddDays(-3)).ToList())
+                List<Stock_Financial_Results_NSE> alldatafromtable = new List<Stock_Financial_Results_NSE>();
+                using (var db = new STOCKContext())
                 {
-                    Console.WriteLine(item.companyName);
-                    MainFinancialsResult mainFinancialsResult = null;
-                    MainFinancialsResult2 mainFinancialsResult2 = null;
-                    FinancialResultsFromXMl2 financialResultsFromXMl2 = null;
-                    try
-                    {
-                        string inline_output = "";
-                        param = item.xbrl;
-                        inline_output = ExecuteCommandNSExbrl(@"C:\Hosts\Breeze\NSE_FIN_xbrl.bat", param).Split("GANGA").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
-                        //  inline_output = Getdate(item.xbrl);
-                        XmlDocument doc1 = new XmlDocument();
-                        doc1.LoadXml(RemoveEmptyLines(inline_output.ToString().Trim()));
+                    alldatafromtable = db.Stock_Financial_Results_NSE.ToList();
 
-                        string jsonText = JsonConvert.SerializeXmlNode(doc1);
+
+                    //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
+                    var result = JsonConvert.DeserializeObject<List<FinancialsModel>>(data);
+                    foreach (var item in result.Where(x => Convert.ToDateTime(x.broadCastDate) > DateTime.Now.AddDays(-3)).ToList())
+                    {
+                        Console.WriteLine(item.companyName);
+                        MainFinancialsResult mainFinancialsResult = null;
+                        MainFinancialsResult2 mainFinancialsResult2 = null;
+                        FinancialResultsFromXMl2 financialResultsFromXMl2 = null;
+                        FinancialsResultsFromXml3 FinancialsResultsFromXml3 = null;
+                        FinancialsResultsFromXml4 FinancialsResultsFromXml4 = null;
+                        FinancialsResultsFromXml6 FinancialsResultsFromXml6 = null;
+                        FinancialsResultsFromXml5 FinancialsResultsFromXml5 = null;
+                        FinancialsResultsFromXml7 FinancialsResultsFromXml7 = null;
+
+
+
+
+
                         try
                         {
-                            mainFinancialsResult = JsonConvert.DeserializeObject<MainFinancialsResult>(jsonText);
-                        }
-                        catch (Exception)
-                        {
+                            string inline_output = "";
+                            param = item.xbrl;
+                            inline_output = ExecuteCommandNSExbrl(@"C:\Hosts\Breeze\NSE_FIN_xbrl.bat", param).Split("GANGA").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+                            //  inline_output = Getdate(item.xbrl);
+                            XmlDocument doc1 = new XmlDocument();
+                            doc1.LoadXml(RemoveEmptyLines(inline_output.ToString().Trim()));
 
+                            string jsonText = JsonConvert.SerializeXmlNode(doc1);
                             try
                             {
-                                mainFinancialsResult2 = JsonConvert.DeserializeObject<MainFinancialsResult2>(jsonText);
+                                mainFinancialsResult = JsonConvert.DeserializeObject<MainFinancialsResult>(jsonText);
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
+
                                 try
                                 {
-                                    financialResultsFromXMl2 = JsonConvert.DeserializeObject<FinancialResultsFromXMl2>(jsonText);
+                                    mainFinancialsResult2 = JsonConvert.DeserializeObject<MainFinancialsResult2>(jsonText);
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
+                                    try
+                                    {
+                                        financialResultsFromXMl2 = JsonConvert.DeserializeObject<FinancialResultsFromXMl2>(jsonText);
+                                    }
+                                    catch
+                                    {
+                                        try
+                                        {
+                                            FinancialsResultsFromXml3 = JsonConvert.DeserializeObject<FinancialsResultsFromXml3>(jsonText);
+                                        }
+                                        catch (Exception)
+                                        {
+
+
+                                            try
+                                            {
+                                                FinancialsResultsFromXml4 = JsonConvert.DeserializeObject<FinancialsResultsFromXml4>(jsonText);
+                                            }
+                                            catch (Exception)
+                                            {
+
+
+                                                try
+                                                {
+                                                    FinancialsResultsFromXml6 = JsonConvert.DeserializeObject<FinancialsResultsFromXml6>(jsonText);
+                                                }
+                                                catch (Exception)
+                                                {
+
+                                                    try
+                                                    {
+                                                        FinancialsResultsFromXml5 = JsonConvert.DeserializeObject<FinancialsResultsFromXml5>(jsonText);
+                                                    }
+                                                    catch (Exception)
+                                                    {
+
+                                                        try
+                                                        {
+                                                            FinancialsResultsFromXml7 = JsonConvert.DeserializeObject<FinancialsResultsFromXml7>(jsonText);
+                                                        }
+                                                        catch (Exception)
+                                                        {
+
+                                                            await logexceptio(alldatafromtable, db, item);
+                                                            continue;
+                                                        }
+                                                       
+                                                    }
+
+                                                    
+                                                }
+
+
+                                            }
+
+                                            
+                                        }
+                                        
+
+                                    
+
+
+
+
+
+                                       
+
+                                    }
+
+                                }
+                            }
+                            bool isnew = false;
+
+                            {
+
+                                var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd == Convert.ToDateTime(item.toDate));
+                                if (Stock_Financial_Results_obj == null)
+                                {
+                                    isnew = true;
+                                    Stock_Financial_Results_obj = new Stock_Financial_Results_NSE();
+                                    Stock_Financial_Results_obj.CREATED_ON = DateTime.Now;
+                                    Stock_Financial_Results_obj.Symbol = item.symbol;
+                                    Stock_Financial_Results_obj.Stock_Name = item.companyName;
+                                    db.Stock_Financial_Results_NSE.Add(Stock_Financial_Results_obj);
+                                }
+                                else
+                                {
+                                    db.Entry(Stock_Financial_Results_obj).State = EntityState.Modified;
+                                }
+                                if (mainFinancialsResult != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinProfitLossForPeriod.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+                                if (mainFinancialsResult2 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+
+                                }
+                                if (financialResultsFromXMl2 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinBasicEarningsPerShareAfterExtraordinaryItems.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinIncome.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinProfitLossForThePeriod.FirstOrDefault().text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                if (FinancialsResultsFromXml3 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(FinancialsResultsFromXml3.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(FinancialsResultsFromXml3.xbrlixbrl.inbsefinIncome.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml3.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                if (FinancialsResultsFromXml4 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(FinancialsResultsFromXml4.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(FinancialsResultsFromXml4.xbrlixbrl.inbsefinIncome.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml4.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                if (FinancialsResultsFromXml6 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(FinancialsResultsFromXml6.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(FinancialsResultsFromXml6.xbrlixbrl.inbsefinIncome.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml6.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                if (FinancialsResultsFromXml5 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(FinancialsResultsFromXml5.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(FinancialsResultsFromXml5.xbrlixbrl.inbsefinIncome.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml5.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                if (FinancialsResultsFromXml7 != null)
+                                {
+                                    Stock_Financial_Results_obj.EPS = Convert.ToDecimal(FinancialsResultsFromXml7.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations.text);
+                                    Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(FinancialsResultsFromXml7.xbrlixbrl.inbsefinIncome.text);
+                                    Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml7.xbrlixbrl.inbsefinProfitLossForPeriod.text);
+                                    Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                                    Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                }
+
+                                Console.WriteLine(Stock_Financial_Results_obj.NET_PROFIT);
+                                if (isnew)
+                                {
+
+                                    string strlastvalue = "";
+                                    var lastvalue = GetLastValue(Stock_Financial_Results_obj.Symbol);
+                                    if (lastvalue != null)
+                                    {
+                                        strlastvalue = lastvalue.Last;
+                                    }
                                     var parameters = new Dictionary<string, string>
                                     {
                                         ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
                                         ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
                                         ["priority"] = "1",
-                                        ["message"] = string.Format("Company {0} Error while fetching Issues", item.companyName),
+                                        ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores  LTP is {3} ", item.companyName, 
+                                        Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000, strlastvalue.ToString()),
                                         ["title"] = "FinacialResult",
                                         ["retry"] = "30",
                                         ["expire"] = "300",
@@ -794,98 +985,26 @@ namespace MSNStocks
                                     using var client = new HttpClient();
                                     var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
                                     FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
-
-                                    continue;
-
                                 }
 
+
+
+
                             }
                         }
-                        bool isnew = false;
-                        using (var db = new STOCKContext())
+                        catch (Exception ex)
                         {
-
-                            var Stock_Financial_Results_obj = db.Stock_Financial_Results_NSE.FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd == Convert.ToDateTime(item.toDate));
-                            if (Stock_Financial_Results_obj == null)
-                            {
-                                isnew = true;
-                                Stock_Financial_Results_obj = new Stock_Financial_Results_NSE();
-                                Stock_Financial_Results_obj.CREATED_ON = DateTime.Now;
-                                Stock_Financial_Results_obj.Symbol = item.symbol;
-                                Stock_Financial_Results_obj.Stock_Name = item.companyName;
-                                db.Stock_Financial_Results_NSE.Add(Stock_Financial_Results_obj);
-
-
-
-                            }
-                            else
-                            {
-                                db.Entry(Stock_Financial_Results_obj).State = EntityState.Modified;
-                            }
-                            if (mainFinancialsResult != null)
-                            {
-                                Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinProfitLossForPeriod.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
-                                Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
-                            }
-                            if (mainFinancialsResult2 != null)
-                            {
-                                Stock_Financial_Results_obj.EPS = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinBasicEarningsLossPerShareFromContinuingOperations.text);
-                                Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinComprehensiveIncomeForThePeriod.text);
-                                Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinProfitLossForPeriod.text);
-                                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
-                                Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
-
-                            }
-                            if (financialResultsFromXMl2 != null)
-                            {
-                                Stock_Financial_Results_obj.EPS = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinBasicEarningsPerShareAfterExtraordinaryItems.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.Revenue = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinIncome.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinProfitLossForThePeriod.FirstOrDefault().text);
-                                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
-                                Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
-                            }
-
-                            Console.WriteLine(Stock_Financial_Results_obj.NET_PROFIT);
-                            if (isnew)
-                            {
-                                var parameters = new Dictionary<string, string>
-                                {
-                                    ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
-                                    ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
-                                    ["priority"] = "1",
-                                    ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores", item.companyName, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000),
-                                    ["title"] = "FinacialResult",
-                                    ["retry"] = "30",
-                                    ["expire"] = "300",
-                                    ["html"] = "1",
-                                    ["sound"] = "echo",
-                                    ["device"] = "iphone"
-                                };
-
-                                using var client = new HttpClient();
-                                var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
-                                FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
-                            }
-
-                            db.SaveChanges();
-
+                            Console.WriteLine(ex.InnerException.Message);
 
                         }
+                        db.SaveChanges();
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.InnerException.Message);
+                    // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
 
-                    }
+                    //  string errors = process.StandardError.ReadToEnd();
+                    //Assert.IsTrue(string.IsNullOrEmpty(errors));
 
                 }
-                // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
-
-                //  string errors = process.StandardError.ReadToEnd();
-                //Assert.IsTrue(string.IsNullOrEmpty(errors));
             }
             catch (Exception ex)
             {
@@ -896,6 +1015,83 @@ namespace MSNStocks
 
         }
 
+        private static async Task logexceptio(List<Stock_Financial_Results_NSE> alldatafromtable, STOCKContext db, FinancialsModel? item)
+        {
+            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd == Convert.ToDateTime(item.toDate));
+            if (Stock_Financial_Results_obj == null)
+            {
+
+
+
+                Stock_Financial_Results_obj = new Stock_Financial_Results_NSE();
+                Stock_Financial_Results_obj.CREATED_ON = DateTime.Now;
+                Stock_Financial_Results_obj.Symbol = item.symbol;
+                Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
+                Stock_Financial_Results_obj.Stock_Name = item.companyName;
+                db.Stock_Financial_Results_NSE.Add(Stock_Financial_Results_obj);
+                var parameters = new Dictionary<string, string>
+                {
+                    ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
+                    ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                    ["priority"] = "1",
+                    ["message"] = string.Format("Company {0} Error while fetching Issues", item.companyName),
+                    ["title"] = "FinacialResult",
+                    ["retry"] = "30",
+                    ["expire"] = "300",
+                    ["html"] = "1",
+                    ["sound"] = "echo",
+                    ["device"] = "iphone"
+                };
+
+                using var client = new HttpClient();
+                var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+                FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+
+            }
+        }
+
+        public static Stock_Financial_Results_NSE GetLastValue(string Symbol)
+        {
+            var ds = new DataSet();
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                SqlCommand sqlComm = new SqlCommand("GetLatestFiancialsDetails", conn);
+                sqlComm.Parameters.AddWithValue("@symbol", Symbol);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+
+                foreach (var r in NewStock)
+                {
+                    try
+                    {
+                        var _stokc = new Stock_Financial_Results_NSE();
+                        _stokc.Last = (r["Last"].ToString()).ToString();
+
+
+
+                        return _stokc;
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+
+                return null;//.Where(X => X.Open <= 120);
+            }
+
+            return null;
+        }
         private static string Getdate(string param)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -1063,13 +1259,15 @@ namespace MSNStocks
 
 
             var result = await HttpHelper.Get<LatestNewFromNDTV>(string.Format("https://www.ndtvprofit.com/api/v1/collections/research-reports?sort=latest-published", ""), "");
+            List<NDTVNews> nDTVNews = new List<NDTVNews>();
 
-
-            foreach (var s in result.items)
+            using (var db = new STOCKContext())
             {
-                using (var db = new STOCKContext())
+                nDTVNews = db.NDTVNews.AsNoTracking().ToList();
+                foreach (var s in result.items)
                 {
-                    NDTVNews news = db.NDTVNews.ToList().FirstOrDefault(x => x.ContentId == s.id.ToString());
+
+                    NDTVNews news = nDTVNews.ToList().FirstOrDefault(x => x.ContentId == s.id.ToString());
 
                     if (news == null)
                     {
@@ -1079,8 +1277,9 @@ namespace MSNStocks
                         news.Headline = s.story.headline;
                         news.ContentId = s.id.ToString();
                         news.Url = s.story.url;
+                        news.MSNID = s.id.ToString();
                         db.NDTVNews.Add(news);
-                        db.SaveChanges();
+
 
                         var parameters = new Dictionary<string, string>
                         {
@@ -1102,9 +1301,257 @@ namespace MSNStocks
 
                     }
                 }
+                db.SaveChanges();
             }
 
 
+        }
+
+
+
+        public static async Task LatestPublishedMSN()
+        {
+
+
+            var result = await HttpHelper.Get<ef_finance_trending_growth>("https://assets.msn.com/service/MSN/Feed/me?$top=11&DisableTypeSerialization=true&activityId=B4517126-63BD-4D29-9DE9-AA33F41FAEAF&apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&cipenabled=false&cm=en-in&contentType=article,video,slideshow&infopaneCount=5&it=edgeid&location=17.3751|78.3994&ocid=finance-verthp-feeds&query=ef_finance_trending_growth&queryType=entityfeed&responseSchema=cardview&scn=APP_ANON&timeOut=3000&user=m-31D8CAFFBBD869022E35DE94BAB868BF&wrapodata=false", "");
+            List<NDTVNews> nDTVNews = new List<NDTVNews>();
+            List<NDTVNews> savenDTVNews = new List<NDTVNews>();
+            using (var db = new STOCKContext())
+            {
+                foreach (var cards in result.subCards)
+                {
+                    if (cards.subCards == null)
+                    {
+                        continue;
+                    }
+
+                    nDTVNews = db.NDTVNews.AsNoTracking().ToList();
+                    foreach (var s in cards.subCards)
+                    {
+
+                        NDTVNews news = nDTVNews.ToList().FirstOrDefault(x => x.ContentId == s.id.ToString());
+
+                        if (news == null)
+                        {
+
+                            news = new NDTVNews();
+                            news.CreatedOn = DateTime.Now;
+                            news.Headline = s.title;
+                            news.ContentId = s.id.ToString();
+                            news.Url = s.url;
+                            news.MSNID = s.financeMetadata.stocks.Any() ? s.financeMetadata.stocks.First().stockId.ToString() : "";
+                            savenDTVNews.Add(news);
+
+
+                            var parameters = new Dictionary<string, string>
+                            {
+                                ["token"] = "aday3s2vefpndctqyyee9tv1392m1q",
+                                ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                                ["priority"] = "1",
+                                ["message"] = string.Format("Head line {0} url {1}", news.Headline, news.Url),
+                                ["title"] = "MSN_TREND_TOP",
+                                ["retry"] = "30",
+                                ["expire"] = "300",
+                                ["html"] = "1",
+                                ["sound"] = "echo",
+                                ["device"] = "iphone"
+                            };
+
+                            using var client = new HttpClient();
+                            var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+                                        FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+
+                        }
+                    }
+
+
+
+
+                }
+                db.NDTVNews.AddRange(savenDTVNews);
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception EX)
+                {
+
+
+                }
+            }
+
+        }
+
+
+
+        public static async Task LatestPublishedMSNTOP()
+        {
+
+
+            var resultss = await HttpHelper.Get<List<MSNExchangeStatisticsModel>>("https://assets.msn.com/service/Finance/ExchangeStatistics?apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&activityId=4AE92C05-AB7E-4866-8581-CBF3BD26B942&ocid=finance-utils-peregrine&cm=en-in&it=edgeid&scn=APP_ANON&ids=r6dwoq&wrapodata=false", "");
+            var result = resultss.FirstOrDefault();
+            List<string> active = new List<string>();
+            List<string> gainer = new List<string>();
+            List<string> losers = new List<string>();
+            List<MSNExchangeStatistics> statistics = new List<MSNExchangeStatistics>();
+            using (var db = new STOCKContext())
+            {
+                statistics = db.MSNExchangeStatistics.AsNoTracking().ToList();
+
+                List<MSNExchangeStatistics> activestatistics = new List<MSNExchangeStatistics>();
+                foreach (var s in result.active)
+                {
+                    var outputdata = (LatestPublishedMSNTOP_Save(statistics, active, s.displayName, s.symbol, s.instrumentId, "Active", result.timeLastUpdated));
+                    if (outputdata != null)
+                    {
+
+                        active.Add(s.displayName);
+                        activestatistics.Add(outputdata);
+                    }
+
+
+                }
+                db.MSNExchangeStatistics.AddRange(activestatistics);
+
+
+                if (active.Any())
+                {
+                    var parameters = new Dictionary<string, string>
+                    {
+                        ["token"] = "a99jvsqx7jhzc6ntojmx4c2e5raedz",
+                        ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                        ["priority"] = "1",
+                        ["message"] = string.Format("Active {0}", string.Join(",", active)),
+                        ["title"] = "MSN_ACTIVE",
+                        ["retry"] = "30",
+                        ["expire"] = "300",
+                        ["html"] = "1",
+                        ["sound"] = "echo",
+                        ["device"] = "iphone"
+                    };
+                    using var client = new HttpClient();
+                    var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+                                FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+                }
+
+                List<MSNExchangeStatistics> gainertatistics = new List<MSNExchangeStatistics>();
+                foreach (var gaibner in result.gainers)
+                {
+                    //(LatestPublishedMSNTOP_Save(statistics, active, gaibner.displayName, gaibner.symbol, gaibner.instrumentId, "Gainer"));
+
+                    var outputdata = (LatestPublishedMSNTOP_Save(statistics, active, gaibner.displayName, gaibner.symbol, gaibner.instrumentId, "Gainer", result.timeLastUpdated));
+                    if (outputdata != null)
+                    {
+
+                        gainer.Add(gaibner.displayName);
+                        gainertatistics.Add(outputdata);
+                    }
+
+                }
+
+                db.MSNExchangeStatistics.AddRange(gainertatistics);
+                //  db.SaveChanges();
+
+                if (gainer.Any())
+                {
+                    var parameters = new Dictionary<string, string>
+                    {
+                        ["token"] = "a99jvsqx7jhzc6ntojmx4c2e5raedz",
+                        ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                        ["priority"] = "1",
+                        ["message"] = string.Format("gainer {0}", string.Join(",", gainer)),
+                        ["title"] = "MSN_Gain",
+                        ["retry"] = "30",
+                        ["expire"] = "300",
+                        ["html"] = "1",
+                        ["sound"] = "echo",
+                        ["device"] = "iphone"
+                    };
+
+                    using var clientg = new HttpClient();
+                    var responseg = await clientg.PostAsync("https://api.pushover.net/1/messages.json", new
+                                FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+                }
+
+                List<MSNExchangeStatistics> loserstatistics = new List<MSNExchangeStatistics>();
+                foreach (var gaibner in result.losers)
+                {
+                    // losers.AddRange(LatestPublishedMSNTOP_Save(statistics, active, gaibner.displayName, gaibner.symbol, gaibner.instrumentId, "Losers"));
+
+                    var outputdata = (LatestPublishedMSNTOP_Save(statistics, active, gaibner.displayName, gaibner.symbol, gaibner.instrumentId, "Losers", result.timeLastUpdated));
+                    if (outputdata != null)
+                    {
+
+                        losers.Add(gaibner.displayName);
+                        loserstatistics.Add(outputdata);
+                    }
+
+                }
+                db.MSNExchangeStatistics.AddRange(loserstatistics);
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+            }
+            if (losers.Any())
+            {
+
+                //var parameters = new Dictionary<string, string>
+                //{
+                //    ["token"] = "a99jvsqx7jhzc6ntojmx4c2e5raedz",
+                //    ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                //    ["priority"] = "1",
+                //    ["message"] = string.Format("Losers {0}", string.Join(",", losers)),
+                //    ["title"] = "MSN_LOSER",
+                //    ["retry"] = "30",
+                //    ["expire"] = "300",
+                //    ["html"] = "1",
+                //    ["sound"] = "echo",
+                //    ["device"] = "iphone"
+                //};
+
+                //using var clientl = new HttpClient();
+                //var responsel = await clientl.PostAsync("https://api.pushover.net/1/messages.json", new
+                //            FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+            }
+
+
+        }
+
+        private static MSNExchangeStatistics LatestPublishedMSNTOP_Save(List<MSNExchangeStatistics> MSNExchangeStatisticslist, List<string> active,
+            string CompanyName, string symbol, string MSNID, string status,DateTime result)
+        {
+            // List<string> result = new List<string>();
+
+            var news = MSNExchangeStatisticslist.ToList().LastOrDefault(x => x.symbol == symbol.ToString() && Convert.ToDateTime(x.CreatedOn).ToString() == Convert.ToDateTime(result).ToString());
+
+            if (news == null)
+            {
+                //using (var db = new STOCKContext())
+                //{
+                news = new MSNExchangeStatistics();
+                news.CreatedOn = Convert.ToDateTime(result);
+                news.CompanyName = CompanyName;
+                news.symbol = symbol;
+                news.MSNID = MSNID;
+                news.Type = status;
+
+                //db.MSNExchangeStatistics.Add(news);
+                //db.SaveChanges();
+                // result.Add(CompanyName);
+                // }
+                // db.SaveChanges();
+            }
+            else
+            {
+                return null;
+            }
+            return news;
         }
 
         public static async Task LatestPublishedAdvanced()
@@ -1115,16 +1562,16 @@ namespace MSNStocks
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             Console.WriteLine(await response.Content.ReadAsStringAsync());
-            var result=  JsonConvert.DeserializeObject<topnav>(await response.Content.ReadAsStringAsync());
-          //  var result = await HttpHelper.Get<topnav>(string.Format("https://www.ndtvprofit.com/route-data.json?path=%2Fthe-latest&src=topnav", ""), "");
+            var result = JsonConvert.DeserializeObject<topnav>(await response.Content.ReadAsStringAsync());
+            //  var result = await HttpHelper.Get<topnav>(string.Format("https://www.ndtvprofit.com/route-data.json?path=%2Fthe-latest&src=topnav", ""), "");
 
             //foreach (var testitem in result.items)
             //{
-
-            foreach (var s in result.items)
+            using (var db = new STOCKContext())
             {
-                using (var db = new STOCKContext())
+                foreach (var s in result.items)
                 {
+
                     NDTVNews news = db.NDTVNews.ToList().FirstOrDefault(x => x.ContentId == s.id.ToString());
 
                     if (news == null)
@@ -1158,8 +1605,14 @@ namespace MSNStocks
 
                     }
                 }
-
             }
+
+        }
+
+        public static void CalculateXIRR()
+        {
+            throw new NotImplementedException();
         }
     }
+
 }

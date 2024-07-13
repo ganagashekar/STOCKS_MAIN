@@ -92,6 +92,9 @@ namespace MSNStocks.Models
         [NotMapped]
         public string VType { get; set; }
 
+        [NotMapped]
+        public string Last { get; set; }
+
         public decimal? RevenueIncrease { get; set; }
         public decimal? Profit_Increase { get; set; }
         public decimal? EPS_INcrease { get; set; }
@@ -99,6 +102,8 @@ namespace MSNStocks.Models
         public decimal? RevenueDifference { get; set; }
         public decimal? ProfitDifference { get; set; }
         public decimal? EPSDifference { get; set; }
+
+
 
     }
 

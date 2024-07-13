@@ -841,7 +841,7 @@ namespace STM_API.Services
                             IEnumerable<MacdResult> macdresult = quotesList.GetMacd(12, 26, 9);
                             IEnumerable<WmaResult> wmaResults  = quotesList.GetWma(5);
                             IEnumerable<VolatilityStopResult> Volatilityresults = quotesList.GetVolatilityStop(7, 3);
-                            IEnumerable<RsiResult> rsiResults = quotesList.GetObv().GetRsi(7);
+                            IEnumerable<RsiResult> rsiResults = quotesList.Any()? quotesList.GetObv().GetRsi(7): new List<RsiResult>();
 
                             IEnumerable<SuperTrendResult> Strend =quotesList.GetSuperTrend(10, 3);
                             var candleResult = quotesList.GetMarubozu(85);

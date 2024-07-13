@@ -44,6 +44,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<StockTicker>();
 builder.Services.AddScoped<BreezapiServices>();
+//builder.Services.ConfigureHttpJsonOptions(options => {
+//    options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
+//});
 //builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 //{
 //    builder

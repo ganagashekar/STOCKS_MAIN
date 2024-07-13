@@ -141,6 +141,16 @@ namespace STM_API.Hubs
         }
 
 
+        public async Task GetStocksStatisticsBenchMarks(int number, bool Isorderbysize = true, string Date = "" )
+        {
+            if (string.IsNullOrEmpty(Date))
+            {
+                Date = DateTime.Now.Date.ToShortDateString();
+            }
+            List<StockTalibStats> result = _breezapiServices.GetStocksStatisticsBenchMarks(number, Isorderbysize, Date).ToList();
+            await Clients.All.SendAsync("SendStocksStatisticsBenchMarks", (result));
+        }
+
 
 
         public async Task ExportBuyStockAlterFromAPP_IND(string data)
@@ -354,6 +364,102 @@ namespace STM_API.Hubs
             }
         }
 
+
+        public async Task CaptureLiveDataForBuyForAutomationNIFTY(string data)
+        {
+            try
+            {
+                Equities livedata = System.Text.Json.JsonSerializer.Deserialize<Equities>(data);
+
+                string orginaltext = livedata.ttv;
+                try
+                {
+                    double volume;
+                    switch (livedata.ttv)
+                    {
+                        case var s when livedata.ttv.Contains("C"):
+                            volume = (Convert.ToDouble(livedata.ttv.Replace("C", "")) * 10000000);
+                            break;
+                        case var s when livedata.ttv.Contains("L"):
+                            volume = Convert.ToDouble(livedata.ttv.Replace("L", "")) * 100000;
+                            break;
+                        default:
+                            double.TryParse(livedata.ttv, out volume);
+                            break;
+
+                    }
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
+                        data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
+                        await Clients.All.SendAsync("SendCaptureLiveDataForBuyForAutomationNIFTY", data);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task CaptureLiveDataForBuyForAutomationNIFTYBANK(string data)
+        {
+            try
+            {
+                Equities livedata = System.Text.Json.JsonSerializer.Deserialize<Equities>(data);
+
+                string orginaltext = livedata.ttv;
+                try
+                {
+                    double volume;
+                    switch (livedata.ttv)
+                    {
+                        case var s when livedata.ttv.Contains("C"):
+                            volume = (Convert.ToDouble(livedata.ttv.Replace("C", "")) * 10000000);
+                            break;
+                        case var s when livedata.ttv.Contains("L"):
+                            volume = Convert.ToDouble(livedata.ttv.Replace("L", "")) * 100000;
+                            break;
+                        default:
+                            double.TryParse(livedata.ttv, out volume);
+                            break;
+
+                    }
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(orginaltext) && volume > 0) { data = data.Replace(orginaltext, volume.ToString("F")); }
+                        data = data.Replace("}", string.Format(",\"volumeC\":\"{0}\" {1}", "" + orginaltext.ToString() + "", "}"));
+                        await Clients.All.SendAsync("SendCaptureLiveDataForBuyForAutomationNIFTYBANK", data);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
 
         public async Task CaptureLiveDataForBuyForAutomation(string data)
         {

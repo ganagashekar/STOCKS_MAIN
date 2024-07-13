@@ -14,13 +14,13 @@ public class Program
 
 
 
-        var builder = new ConfigurationBuilder() // .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true);
+        //var builder = new ConfigurationBuilder() // .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
+        //   .SetBasePath(Directory.GetCurrentDirectory())
+        //   .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true);
 
-        IConfiguration config = builder.Build();
+       // IConfiguration config = builder.Build();
 
-        var url = "http://localhost:45/livefeedhub"; ;/// config.GetSection("appSettings:url").Value;
+        var url = "http://localhost:8080/BreezeOperation"; ;/// config.GetSection("appSettings:url").Value;
 
         Console.WriteLine(url);
 
@@ -102,7 +102,7 @@ public class Program
             //// await connection.SendAsync("GetAllStocksForLoad", Convert.ToInt16(arg));
 
             //await connection.SendAsync("GetAllStocksForLoadAll");
-            breeze.subscribeFeedsAsync("4.1!40592");
+            breeze.subscribeFeedsAsync("4.1!51696");
 
 
 
@@ -118,7 +118,7 @@ public class Program
                     {
                         // Console.WriteLine(JsonSerializer.Serialize(data));
                         // Console.WriteLine("Ticker Data:" + JsonSerializer.Serialize(data));
-                        await connection.InvokeAsync("CaptureLiveData", JsonSerializer.Serialize(data));
+                        await connection.InvokeAsync("CaptureLiveDataForBuyForAutomationNIFTYBANK", JsonSerializer.Serialize(data));
 
                     }
                     else

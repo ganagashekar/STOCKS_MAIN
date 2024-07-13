@@ -1,5 +1,116 @@
-﻿namespace STM_API.Model
+﻿using Microsoft.VisualBasic;
+
+namespace STM_API.Model
 {
+
+    //public class StockTalibStats
+    //{
+    //    public string Id { get; set; }
+
+    //    public string SecurityId { get; set; }
+
+    //    public double? Last { get; set; }
+
+    //    public string Stockcode { get; set; }
+
+    //    public double? BenchmarkReturn { get; set; }
+
+    //    public double? TotalReturn { get; set; }
+
+    //    public double? WinRate { get; set; }
+
+    //    public double? BestTrade { get; set; }
+
+    //    public double? WorstTrade { get; set; }
+
+    //    public double? AvgWinningTrade { get; set; }
+
+    //    public double? AvgLosingTrade { get; set; }
+
+    //    public double? AvgWinningTradeDuration { get; set; }
+
+    //    public double? AvgLosingTradeDuration { get; set; }
+
+
+    //    public double? ProfitFactor { get; set; }
+
+    //    public double? TotalTrades { get; set; }
+
+    //    public double? TotalClosedTrades { get; set; }
+
+    //    public double? TotalOpenTrades { get; set; }
+
+    //    public double? MaxDrawdown { get; set; }
+
+    //    public double? MaxDrawdownDuration { get; set; }
+
+    //    public double? Expectancy { get; set; }
+
+    //    public string BuyDate { get; set; }
+
+
+    //    public string CreatedOn { get; set; }
+    //    public int BearishCount { get; set; }
+    //    public int BulishCount { get; set; }
+    //    public int BullishCount_100 { get; set; }
+    //    public int BullishCount_95 { get; set; }
+
+    //}
+
+
+    public class StockTalibStats
+    {
+        public string Id { get; set; }
+
+        public string SecurityId { get; set; }
+
+        public string Last { get; set; }
+
+        public string Stockcode { get; set; }
+
+        public string BenchmarkReturn { get; set; }
+
+        public string TotalReturn { get; set; }
+
+        public string WinRate { get; set; }
+
+        public string BestTrade { get; set; }
+
+        public string WorstTrade { get; set; }
+
+        public string AvgWinningTrade { get; set; }
+
+        public string AvgLosingTrade { get; set; }
+
+        public string AvgWinningTradeDuration { get; set; }
+
+        public string AvgLosingTradeDuration { get; set; }
+
+
+        public string ProfitFactor { get; set; }
+
+        public string TotalTrades { get; set; }
+
+        public string TotalClosedTrades { get; set; }
+
+        public string TotalOpenTrades { get; set; }
+
+        public string MaxDrawdown { get; set; }
+
+        public string MaxDrawdownDuration { get; set; }
+
+        public string Expectancy { get; set; }
+
+        public string BuyDate { get; set; }
+
+
+        public string CreatedOn { get; set; }
+        public int BearishCount { get; set; }
+        public int BulishCount { get; set; }
+        public int BullishCount_100 { get; set; }
+        public int BullishCount_95 { get; set; }
+
+    }
     public class Equities
     {
         public string? msn_secid { get; set; }

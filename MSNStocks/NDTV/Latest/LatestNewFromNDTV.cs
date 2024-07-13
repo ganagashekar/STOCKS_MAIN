@@ -1,14 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+using Newtonsoft.Json;
 namespace MSNStocks.NDTV.Latest
 {
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-    public class _0866431a2b354344B14c8dd968d28143
+
+    public class _1293e9bc53284d82A498F19d8cb05150
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -37,7 +32,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class _0c950c1e921149778ba1Babb7865faa8
+    public class _15873a207df84c65A6526eaf9c06d70d
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -66,7 +61,210 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class _0dd72efd45db4edaB53b2364588032b0
+    public class _160debb9Bbdb4f1dB0459454f093d87a
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _2070c79a9652451dAf3bD46cb161617b
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _2b662b7101764701A867762b6a1326a3
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _4216c7698c4b41e89ed71703e097f071
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _45ea5be1F606494bBa16Ea146f4f1070
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _5b8ae075Be4844698498D751743871f7
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _5d7344cb2c0040c3A15d58c4420470e5
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _65f0ecd0B3894dc793fe3f8328b11e4c
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -95,7 +293,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class _14160bad92094e4aB749B9f98b8feeef
+    public class _6b5423e501d04f60914a6914af32c545
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -124,7 +322,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class _175d2c11Ce504339A997202c8f524a98
+    public class _738462696a864bc6Bc9763e9a5262b2f
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -153,7 +351,123 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class _2155d78d67df47fe9a610956c077b0fd
+    public class _7bd31308E9854add9ed32357812f1143
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _8fc41964Dc5849b1838c366df2077ce8
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _94dfaabcEd3a494395377f4b95fcd68f
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _9c4942f2E1d34bf898072756fc00fca1
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class _9e21c8b8C88241a6863bF3e5a0f59c4f
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -179,499 +493,6 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("first-published-at")]
         public object firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _27ade497Ed3544fb900b8ed3780cbae6
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public object contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public object firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _2f7b1783D95d4a4e850d268b2980403f
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public object contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public object firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _434a87d3F74247569c65A426a62c25c1
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _463394b8Dbe346f0834316aa83f248ec
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _5221b0ef9c744d878b0727228254b258
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public object contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public object firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _58a531915aed468eB0c003b24e62afb1
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _5d811d4a314e459f8f23Bc4529e63e68
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _5e6cc98323c74a629655Ad042f24e260
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _6a52c01b0e5d451cA598162171105a5d
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _6afde9b1B31a44baBa5f605bf06b1def
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _710f20a32557421dB0beA56fb079376f
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _7224c12080134d9cB9233a25bf806086
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _8bac20ec3d8e449091aaCc9a132ac750
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _91820f39335147828da8A12cbb1492cb
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _9776f0b379654ca68fbcDf3b9c00590c
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class _9f8bf37eEf7b47f2B95e691988dec568
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
-        public List<Author> authors { get; set; }
-    }
-
-    public class A253510c5417474dA8f19e1ed1ade25a
-    {
-        [JsonProperty("author-name")]
-        public string authorname { get; set; }
-        public string headline { get; set; }
-
-        [JsonProperty("story-content-id")]
-        public string storycontentid { get; set; }
-        public string slug { get; set; }
-        public List<Section> sections { get; set; }
-
-        [JsonProperty("hero-image-metadata")]
-        public HeroImageMetadata heroimagemetadata { get; set; }
-
-        [JsonProperty("hero-image-s3-key")]
-        public string heroimages3key { get; set; }
-        public string url { get; set; }
-
-        [JsonProperty("content-updated-at")]
-        public long contentupdatedat { get; set; }
-
-        [JsonProperty("author-id")]
-        public int authorid { get; set; }
-
-        [JsonProperty("first-published-at")]
-        public long firstpublishedat { get; set; }
         public List<Author> authors { get; set; }
     }
 
@@ -705,7 +526,36 @@ namespace MSNStocks.NDTV.Latest
         public object twitterhandle { get; set; }
     }
 
-    public class B31ddebe01714af297c50c30b9ba4742
+    public class B9a2ee8c4a2c4665Aaa71f329b437ea0
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public object contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public object firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class Bae2c853Ba604cc3A07eBd7cae99b4f3
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -734,7 +584,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class B7d38ef221ec486e8f88F2e63cb049d6
+    public class Be84017250194064884aB31944cdfd2f
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -753,13 +603,42 @@ namespace MSNStocks.NDTV.Latest
         public string url { get; set; }
 
         [JsonProperty("content-updated-at")]
-        public object contentupdatedat { get; set; }
+        public long contentupdatedat { get; set; }
 
         [JsonProperty("author-id")]
         public int authorid { get; set; }
 
         [JsonProperty("first-published-at")]
-        public object firstpublishedat { get; set; }
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class C327b47fAb6e460bA7dd1750a3aa4e6b
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
         public List<Author> authors { get; set; }
     }
 
@@ -790,7 +669,7 @@ namespace MSNStocks.NDTV.Latest
         public bool shareable { get; set; }
     }
 
-    public class Cf4a78933b5f47b8A29d81c476662533
+    public class Cbfab2a6Dec546dfA73f29ab78f2ac0e
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -854,7 +733,210 @@ namespace MSNStocks.NDTV.Latest
         public string coverimages3key { get; set; }
     }
 
-    public class E52c5864Be834094Bb541b3b5f25e21d
+    public class D36a9ce982c84acb82b337ecb0c23875
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class D5e981ffC31c4499897d9f6d62aa7502
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class D8a006cc84b3479dB5ee942711ef2726
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class Dad79ee825004e28Ab0969345cbb0d4b
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class E0f38ecf7dd0455783a26b286a087797
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class E209ca7d891e4625Ab2b177707fd22b0
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class E7c1357eEb9e414bA4611fd984f86c62
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class E7d10c1eFd2647afB0a4B0ca73579f68
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -885,123 +967,123 @@ namespace MSNStocks.NDTV.Latest
 
     public class Entities
     {
-        [JsonProperty("cardAttributes_fa7666b3-6500-4c83-bd69-d177ccb5baa4")]
-        public List<int> cardAttributes_fa7666b365004c83bd69d177ccb5baa4 { get; set; }
+        [JsonProperty("cardAttributes_59c787d7-1356-453d-8ef9-9773139fd6d3")]
+        public List<int> cardAttributes_59c787d71356453d8ef99773139fd6d3 { get; set; }
         public List<int> tagEntities { get; set; }
 
-        [JsonProperty("cardAttributes_c08e6410-a1ee-4c59-8f6b-ccd9627ad7c7")]
-        public List<int> cardAttributes_c08e6410a1ee4c598f6bccd9627ad7c7 { get; set; }
+        [JsonProperty("cardAttributes_5a07df57-c1e9-4c79-9141-cc416d929b6c")]
+        public List<int> cardAttributes_5a07df57c1e94c799141cc416d929b6c { get; set; }
 
-        [JsonProperty("cardAttributes_011b7063-c30c-46eb-8110-3eb9e19fcbcc")]
-        public List<int> cardAttributes_011b7063c30c46eb81103eb9e19fcbcc { get; set; }
+        [JsonProperty("cardAttributes_4c95c2a4-7d99-4e15-b419-2e41a1b7506a")]
+        public List<int> cardAttributes_4c95c2a47d994e15b4192e41a1b7506a { get; set; }
 
-        [JsonProperty("cardAttributes_f4371997-62e9-42c1-94a9-85e9a5e77877")]
-        public List<int> cardAttributes_f437199762e942c194a985e9a5e77877 { get; set; }
+        [JsonProperty("cardAttributes_b3f67065-a2de-4a93-a787-701a5adf2e3c")]
+        public List<int> cardAttributes_b3f67065a2de4a93a787701a5adf2e3c { get; set; }
 
-        [JsonProperty("cardAttributes_fc469f8c-03f1-45c1-b09c-288ce69ba30f")]
-        public List<int> cardAttributes_fc469f8c03f145c1b09c288ce69ba30f { get; set; }
+        [JsonProperty("cardAttributes_e7a53288-ed08-401e-9f1f-ae963d096010")]
+        public List<int> cardAttributes_e7a53288ed08401e9f1fae963d096010 { get; set; }
 
-        [JsonProperty("cardAttributes_6276fbc3-f155-4ac8-b93e-06bee42a7074")]
-        public List<int> cardAttributes_6276fbc3f1554ac8b93e06bee42a7074 { get; set; }
+        [JsonProperty("cardAttributes_4501a826-b10f-4383-a23b-41992125ae41")]
+        public List<int> cardAttributes_4501a826b10f4383a23b41992125ae41 { get; set; }
 
-        [JsonProperty("cardAttributes_125764d6-8a66-4f2a-ac02-5836ad5d4fcf")]
-        public List<int> cardAttributes_125764d68a664f2aac025836ad5d4fcf { get; set; }
+        [JsonProperty("cardAttributes_f5182c0c-1116-4a7f-a5a4-fdd47314a836")]
+        public List<int> cardAttributes_f5182c0c11164a7fa5a4fdd47314a836 { get; set; }
 
-        [JsonProperty("cardAttributes_c78aaabb-c7bc-4fc3-b785-211d6c584161")]
-        public List<int> cardAttributes_c78aaabbc7bc4fc3b785211d6c584161 { get; set; }
+        [JsonProperty("cardAttributes_70ff1196-81e9-41d5-b096-4e45f8d63494")]
+        public List<int> cardAttributes_70ff119681e941d5b0964e45f8d63494 { get; set; }
 
-        [JsonProperty("cardAttributes_41e917f5-c7d7-4374-aef6-ba9bd71f5ac1")]
-        public List<int> cardAttributes_41e917f5c7d74374aef6ba9bd71f5ac1 { get; set; }
+        [JsonProperty("cardAttributes_e6f9daed-fd95-4f20-ad53-cc771d4d872b")]
+        public List<int> cardAttributes_e6f9daedfd954f20ad53cc771d4d872b { get; set; }
 
-        [JsonProperty("cardAttributes_2837c33d-014f-4293-9ea8-ad4e909ec557")]
-        public List<int> cardAttributes_2837c33d014f42939ea8ad4e909ec557 { get; set; }
+        [JsonProperty("cardAttributes_f321c119-ea61-4e7b-a458-d2e1f2855c80")]
+        public List<int> cardAttributes_f321c119ea614e7ba458d2e1f2855c80 { get; set; }
 
-        [JsonProperty("cardAttributes_95223669-20e2-467e-ae0d-2ef342eebaab")]
-        public List<int> cardAttributes_9522366920e2467eae0d2ef342eebaab { get; set; }
+        [JsonProperty("cardAttributes_82337821-ad6f-4e05-ad8e-8d5f455157e2")]
+        public List<int> cardAttributes_82337821ad6f4e05ad8e8d5f455157e2 { get; set; }
 
-        [JsonProperty("cardAttributes_61289e54-3948-4096-898e-ced5c9068fbf")]
-        public List<int> cardAttributes_61289e5439484096898eced5c9068fbf { get; set; }
+        [JsonProperty("cardAttributes_ad090d59-fbf5-4f7c-ad12-483dc230da82")]
+        public List<int> cardAttributes_ad090d59fbf54f7cad12483dc230da82 { get; set; }
 
-        [JsonProperty("cardAttributes_fd9e17e1-4cfd-4371-abd8-90c2343f70a2")]
-        public List<int> cardAttributes_fd9e17e14cfd4371abd890c2343f70a2 { get; set; }
+        [JsonProperty("cardAttributes_ffee53c2-5fbb-4ace-9d5e-29655d470260")]
+        public List<int> cardAttributes_ffee53c25fbb4ace9d5e29655d470260 { get; set; }
 
-        [JsonProperty("cardAttributes_44d6379e-5f0b-42c6-81b5-3be10f17225d")]
-        public List<int> cardAttributes_44d6379e5f0b42c681b53be10f17225d { get; set; }
+        [JsonProperty("cardAttributes_b6ce53e6-4d60-41f8-be53-a143dec6d92c")]
+        public List<int> cardAttributes_b6ce53e64d6041f8be53a143dec6d92c { get; set; }
 
-        [JsonProperty("cardAttributes_559473e4-49cb-4512-8a9d-63e80f3151c2")]
-        public List<int> cardAttributes_559473e449cb45128a9d63e80f3151c2 { get; set; }
+        [JsonProperty("cardAttributes_4e8e89d5-5d80-4ceb-9845-c587bf60ca31")]
+        public List<int> cardAttributes_4e8e89d55d804ceb9845c587bf60ca31 { get; set; }
 
-        [JsonProperty("cardAttributes_5ab030ad-3832-4db1-a30e-3c5c8f79baf2")]
-        public List<int> cardAttributes_5ab030ad38324db1a30e3c5c8f79baf2 { get; set; }
+        [JsonProperty("cardAttributes_397137f1-1d90-440f-8e9d-6bf66e1fd303")]
+        public List<int> cardAttributes_397137f11d90440f8e9d6bf66e1fd303 { get; set; }
 
-        [JsonProperty("cardAttributes_2f1ff41f-cfe9-4fc2-9bd7-2d53d211bdda")]
-        public List<int> cardAttributes_2f1ff41fcfe94fc29bd72d53d211bdda { get; set; }
+        [JsonProperty("cardAttributes_913e2790-63b0-4889-ba7b-90bd7b0f90fe")]
+        public List<int> cardAttributes_913e279063b04889ba7b90bd7b0f90fe { get; set; }
 
-        [JsonProperty("cardAttributes_86bf8890-1b50-43b5-95b2-70a72b77a19d")]
-        public List<int> cardAttributes_86bf88901b5043b595b270a72b77a19d { get; set; }
+        [JsonProperty("cardAttributes_06c80a60-9cd9-42ee-8263-67ac6c7e3a03")]
+        public List<int> cardAttributes_06c80a609cd942ee826367ac6c7e3a03 { get; set; }
 
-        [JsonProperty("cardAttributes_e7198758-30a8-44b3-8bc7-49c3588b5f8d")]
-        public List<int> cardAttributes_e719875830a844b38bc749c3588b5f8d { get; set; }
+        [JsonProperty("cardAttributes_2b625a2f-fdf4-4136-9caa-fab66396124a")]
+        public List<int> cardAttributes_2b625a2ffdf441369caafab66396124a { get; set; }
 
-        [JsonProperty("cardAttributes_b8eb13db-d564-4bea-92a5-940c2e3d70f1")]
-        public List<int> cardAttributes_b8eb13dbd5644bea92a5940c2e3d70f1 { get; set; }
+        [JsonProperty("cardAttributes_f7c76a76-1000-4687-957d-ef4c82f8d491")]
+        public List<int> cardAttributes_f7c76a7610004687957def4c82f8d491 { get; set; }
 
-        [JsonProperty("cardAttributes_a0fa9fc7-676c-45f4-952b-2c5cb43d9910")]
-        public List<int> cardAttributes_a0fa9fc7676c45f4952b2c5cb43d9910 { get; set; }
+        [JsonProperty("cardAttributes_ac1f70d1-0f3d-417c-8442-ae100878f635")]
+        public List<int> cardAttributes_ac1f70d10f3d417c8442ae100878f635 { get; set; }
 
-        [JsonProperty("cardAttributes_6c84ac8b-7c0b-4d2b-8909-92209f64f085")]
-        public List<int> cardAttributes_6c84ac8b7c0b4d2b890992209f64f085 { get; set; }
+        [JsonProperty("cardAttributes_ccbe5c1f-f52a-42be-81d2-b90c82cb098f")]
+        public List<int> cardAttributes_ccbe5c1ff52a42be81d2b90c82cb098f { get; set; }
 
-        [JsonProperty("cardAttributes_04407d4d-6255-4e65-aa4f-02f4985fa6a5")]
-        public List<int> cardAttributes_04407d4d62554e65aa4f02f4985fa6a5 { get; set; }
+        [JsonProperty("cardAttributes_57b92f01-8e78-4b0a-b05b-e6b8a6b632b1")]
+        public List<int> cardAttributes_57b92f018e784b0ab05be6b8a6b632b1 { get; set; }
 
-        [JsonProperty("cardAttributes_8b99706e-f527-43ec-8a4d-2050283731fe")]
-        public List<int> cardAttributes_8b99706ef52743ec8a4d2050283731fe { get; set; }
+        [JsonProperty("cardAttributes_399c49ec-9997-47e6-9734-4e338f7612ce")]
+        public List<int> cardAttributes_399c49ec999747e697344e338f7612ce { get; set; }
 
-        [JsonProperty("cardAttributes_e2aea1c3-60c9-4b3c-815c-69594a3828e4")]
-        public List<int> cardAttributes_e2aea1c360c94b3c815c69594a3828e4 { get; set; }
+        [JsonProperty("cardAttributes_53ce62b2-3528-421b-830a-9d3ed786afda")]
+        public List<int> cardAttributes_53ce62b23528421b830a9d3ed786afda { get; set; }
 
-        [JsonProperty("cardAttributes_1f262f6a-8e6b-49ee-b4a5-8ebba111f8d3")]
-        public List<int> cardAttributes_1f262f6a8e6b49eeb4a58ebba111f8d3 { get; set; }
+        [JsonProperty("cardAttributes_89091e59-8c04-4e80-a518-e2101d903216")]
+        public List<int> cardAttributes_89091e598c044e80a518e2101d903216 { get; set; }
 
-        [JsonProperty("cardAttributes_8f22772f-e767-4dea-87a2-b4ef2b979212")]
-        public List<int> cardAttributes_8f22772fe7674dea87a2b4ef2b979212 { get; set; }
+        [JsonProperty("cardAttributes_daaa1665-7e5e-461e-b689-46a4ced51d0c")]
+        public List<int> cardAttributes_daaa16657e5e461eb68946a4ced51d0c { get; set; }
 
-        [JsonProperty("cardAttributes_a1c9cf72-19bf-4a63-b0cf-25bc92660f35")]
-        public List<int> cardAttributes_a1c9cf7219bf4a63b0cf25bc92660f35 { get; set; }
+        [JsonProperty("cardAttributes_a4120200-c3ac-411f-9cf6-aed4ec5f2178")]
+        public List<int> cardAttributes_a4120200c3ac411f9cf6aed4ec5f2178 { get; set; }
 
-        [JsonProperty("cardAttributes_e41f6fc9-e659-408c-b34c-ce5dadd5906f")]
-        public List<int> cardAttributes_e41f6fc9e659408cb34cce5dadd5906f { get; set; }
+        [JsonProperty("cardAttributes_5f21c11d-beb7-4d54-8e42-12642089d951")]
+        public List<int> cardAttributes_5f21c11dbeb74d548e4212642089d951 { get; set; }
 
-        [JsonProperty("cardAttributes_8a377129-454a-494a-b3f3-c6e5c835bd27")]
-        public List<int> cardAttributes_8a377129454a494ab3f3c6e5c835bd27 { get; set; }
+        [JsonProperty("cardAttributes_cc973813-c4d8-4741-ba5e-f4895d237118")]
+        public List<int> cardAttributes_cc973813c4d84741ba5ef4895d237118 { get; set; }
 
-        [JsonProperty("cardAttributes_cc9cc065-7397-4535-90f0-219ad95d406e")]
-        public List<int> cardAttributes_cc9cc0657397453590f0219ad95d406e { get; set; }
+        [JsonProperty("cardAttributes_512eb52b-36ec-45e3-bbbd-244740709f07")]
+        public List<int> cardAttributes_512eb52b36ec45e3bbbd244740709f07 { get; set; }
 
-        [JsonProperty("cardAttributes_51a6b6e9-c3a7-4485-8a08-a03d64bc14ff")]
-        public List<int> cardAttributes_51a6b6e9c3a744858a08a03d64bc14ff { get; set; }
+        [JsonProperty("cardAttributes_82d5c8a2-36ba-4495-a070-86106cc93580")]
+        public List<int> cardAttributes_82d5c8a236ba4495a07086106cc93580 { get; set; }
 
-        [JsonProperty("cardAttributes_26af5df9-0d61-403c-a5a6-7a4d31ee36ee")]
-        public List<int> cardAttributes_26af5df90d61403ca5a67a4d31ee36ee { get; set; }
+        [JsonProperty("cardAttributes_be17c489-608d-4802-a518-270443daa131")]
+        public List<int> cardAttributes_be17c489608d4802a518270443daa131 { get; set; }
 
-        [JsonProperty("cardAttributes_69f7c607-35e4-42ab-bd57-8d038a6ae222")]
-        public List<int> cardAttributes_69f7c60735e442abbd578d038a6ae222 { get; set; }
+        [JsonProperty("cardAttributes_2836a316-ca2f-47fe-8fa4-197997ed2db6")]
+        public List<int> cardAttributes_2836a316ca2f47fe8fa4197997ed2db6 { get; set; }
 
-        [JsonProperty("cardAttributes_15307ea0-6fa9-4fb4-8fb9-36b13d7cf5a5")]
-        public List<int> cardAttributes_15307ea06fa94fb48fb936b13d7cf5a5 { get; set; }
+        [JsonProperty("cardAttributes_8b00aed9-fecf-445c-a4ae-32e60faa3199")]
+        public List<int> cardAttributes_8b00aed9fecf445ca4ae32e60faa3199 { get; set; }
 
-        [JsonProperty("cardAttributes_bc7b6f0a-8a5a-463d-8b39-c3779002fedb")]
-        public List<int> cardAttributes_bc7b6f0a8a5a463d8b39c3779002fedb { get; set; }
+        [JsonProperty("cardAttributes_ca1c07ca-b036-41c5-862e-84a90487a8e1")]
+        public List<int> cardAttributes_ca1c07cab03641c5862e84a90487a8e1 { get; set; }
 
-        [JsonProperty("cardAttributes_e348d068-cc8c-4e08-8781-73e7fda8aa35")]
-        public List<int> cardAttributes_e348d068cc8c4e08878173e7fda8aa35 { get; set; }
+        [JsonProperty("cardAttributes_3be08946-3e7c-47d7-b6df-ed43d38b0d44")]
+        public List<int> cardAttributes_3be089463e7c47d7b6dfed43d38b0d44 { get; set; }
+    }
 
-        [JsonProperty("cardAttributes_ed72f22d-2346-4d6c-b0aa-96dc76d3e77c")]
-        public List<int> cardAttributes_ed72f22d23464d6cb0aa96dc76d3e77c { get; set; }
-
-        [JsonProperty("cardAttributes_070e1b23-7e69-4a1a-ae78-d306b419699f")]
-        public List<int> cardAttributes_070e1b237e694a1aae78d306b419699f { get; set; }
+    public class Exchange
+    {
+        public int id { get; set; }
+        public string name { get; set; }
     }
 
     public class ExtractedData
@@ -1009,7 +1091,36 @@ namespace MSNStocks.NDTV.Latest
         public string artist { get; set; }
     }
 
-    public class F7dda7b075d446cb8bb0066a7bf438b9
+    public class F4978f0a4a4b4207Be480e5a999f2442
+    {
+        [JsonProperty("author-name")]
+        public string authorname { get; set; }
+        public string headline { get; set; }
+
+        [JsonProperty("story-content-id")]
+        public string storycontentid { get; set; }
+        public string slug { get; set; }
+        public List<Section> sections { get; set; }
+
+        [JsonProperty("hero-image-metadata")]
+        public HeroImageMetadata heroimagemetadata { get; set; }
+
+        [JsonProperty("hero-image-s3-key")]
+        public string heroimages3key { get; set; }
+        public string url { get; set; }
+
+        [JsonProperty("content-updated-at")]
+        public long contentupdatedat { get; set; }
+
+        [JsonProperty("author-id")]
+        public int authorid { get; set; }
+
+        [JsonProperty("first-published-at")]
+        public long firstpublishedat { get; set; }
+        public List<Author> authors { get; set; }
+    }
+
+    public class F591fbb89e1d4871Af32376e7ad7038b
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -1038,7 +1149,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class F8366009A110475bBc4294bfc9ddcf34
+    public class F8331d4868e54e079de1B8bd9b88ec6f
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -1067,7 +1178,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class F84b8f60E7164d67A8656d8505ba6dfd
+    public class Fb3b4c893e504a30B2147b27432e8a3a
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -1096,7 +1207,7 @@ namespace MSNStocks.NDTV.Latest
         public List<Author> authors { get; set; }
     }
 
-    public class Fbc76754Bb7244a8Baed9869c86a7b89
+    public class Fbaa9b28323e4785996c7d7e2d38a6d8
     {
         [JsonProperty("author-name")]
         public string authorname { get; set; }
@@ -1129,6 +1240,9 @@ namespace MSNStocks.NDTV.Latest
     {
         [JsonProperty("mime-type")]
         public string mimetype { get; set; }
+
+        [JsonProperty("focus-point")]
+        public List<int> focuspoint { get; set; }
         public int width { get; set; }
 
         [JsonProperty("file-size")]
@@ -1137,9 +1251,6 @@ namespace MSNStocks.NDTV.Latest
         [JsonProperty("file-name")]
         public string filename { get; set; }
         public int height { get; set; }
-
-        [JsonProperty("focus-point")]
-        public List<int> focuspoint { get; set; }
     }
 
     public class Image
@@ -1152,12 +1263,6 @@ namespace MSNStocks.NDTV.Latest
         public object alttext { get; set; }
         public string caption { get; set; }
         public Metadata metadata { get; set; }
-    }
-
-    public class Instagram
-    {
-        public string url { get; set; }
-        public string handle { get; set; }
     }
 
     public class Item
@@ -1207,7 +1312,7 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("last-updated-by")]
         public int lastupdatedby { get; set; }
-        public string aliases { get; set; }
+        public object aliases { get; set; }
 
         [JsonProperty("stock-id")]
         public int stockid { get; set; }
@@ -1220,6 +1325,14 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("bse-code")]
         public object bsecode { get; set; }
+        public string identifier { get; set; }
+
+        [JsonProperty("full-name")]
+        public string fullname { get; set; }
+        public Exchange exchange { get; set; }
+
+        [JsonProperty("secondary-industry-1")]
+        public SecondaryIndustry1 secondaryindustry1 { get; set; }
     }
 
     public class Linkedin
@@ -1230,98 +1343,110 @@ namespace MSNStocks.NDTV.Latest
 
     public class LinkedStories
     {
-        [JsonProperty("f7dda7b0-75d4-46cb-8bb0-066a7bf438b9")]
-        public F7dda7b075d446cb8bb0066a7bf438b9 f7dda7b075d446cb8bb0066a7bf438b9 { get; set; }
+        [JsonProperty("e0f38ecf-7dd0-4557-83a2-6b286a087797")]
+        public E0f38ecf7dd0455783a26b286a087797 e0f38ecf7dd0455783a26b286a087797 { get; set; }
 
-        [JsonProperty("f84b8f60-e716-4d67-a865-6d8505ba6dfd")]
-        public F84b8f60E7164d67A8656d8505ba6dfd f84b8f60e7164d67a8656d8505ba6dfd { get; set; }
+        [JsonProperty("4216c769-8c4b-41e8-9ed7-1703e097f071")]
+        public _4216c7698c4b41e89ed71703e097f071 _4216c7698c4b41e89ed71703e097f071 { get; set; }
 
-        [JsonProperty("6afde9b1-b31a-44ba-ba5f-605bf06b1def")]
-        public _6afde9b1B31a44baBa5f605bf06b1def _6afde9b1b31a44baba5f605bf06b1def { get; set; }
+        [JsonProperty("f591fbb8-9e1d-4871-af32-376e7ad7038b")]
+        public F591fbb89e1d4871Af32376e7ad7038b f591fbb89e1d4871af32376e7ad7038b { get; set; }
 
-        [JsonProperty("b7d38ef2-21ec-486e-8f88-f2e63cb049d6")]
-        public B7d38ef221ec486e8f88F2e63cb049d6 b7d38ef221ec486e8f88f2e63cb049d6 { get; set; }
+        [JsonProperty("e7d10c1e-fd26-47af-b0a4-b0ca73579f68")]
+        public E7d10c1eFd2647afB0a4B0ca73579f68 e7d10c1efd2647afb0a4b0ca73579f68 { get; set; }
 
-        [JsonProperty("2f7b1783-d95d-4a4e-850d-268b2980403f")]
-        public _2f7b1783D95d4a4e850d268b2980403f _2f7b1783d95d4a4e850d268b2980403f { get; set; }
+        [JsonProperty("8fc41964-dc58-49b1-838c-366df2077ce8")]
+        public _8fc41964Dc5849b1838c366df2077ce8 _8fc41964dc5849b1838c366df2077ce8 { get; set; }
 
-        [JsonProperty("e52c5864-be83-4094-bb54-1b3b5f25e21d")]
-        public E52c5864Be834094Bb541b3b5f25e21d e52c5864be834094bb541b3b5f25e21d { get; set; }
+        [JsonProperty("f4978f0a-4a4b-4207-be48-0e5a999f2442")]
+        public F4978f0a4a4b4207Be480e5a999f2442 f4978f0a4a4b4207be480e5a999f2442 { get; set; }
 
-        [JsonProperty("58a53191-5aed-468e-b0c0-03b24e62afb1")]
-        public _58a531915aed468eB0c003b24e62afb1 _58a531915aed468eb0c003b24e62afb1 { get; set; }
+        [JsonProperty("65f0ecd0-b389-4dc7-93fe-3f8328b11e4c")]
+        public _65f0ecd0B3894dc793fe3f8328b11e4c _65f0ecd0b3894dc793fe3f8328b11e4c { get; set; }
 
-        [JsonProperty("710f20a3-2557-421d-b0be-a56fb079376f")]
-        public _710f20a32557421dB0beA56fb079376f _710f20a32557421db0bea56fb079376f { get; set; }
+        [JsonProperty("b9a2ee8c-4a2c-4665-aaa7-1f329b437ea0")]
+        public B9a2ee8c4a2c4665Aaa71f329b437ea0 b9a2ee8c4a2c4665aaa71f329b437ea0 { get; set; }
 
-        [JsonProperty("fbc76754-bb72-44a8-baed-9869c86a7b89")]
-        public Fbc76754Bb7244a8Baed9869c86a7b89 fbc76754bb7244a8baed9869c86a7b89 { get; set; }
+        [JsonProperty("d36a9ce9-82c8-4acb-82b3-37ecb0c23875")]
+        public D36a9ce982c84acb82b337ecb0c23875 d36a9ce982c84acb82b337ecb0c23875 { get; set; }
 
-        [JsonProperty("6a52c01b-0e5d-451c-a598-162171105a5d")]
-        public _6a52c01b0e5d451cA598162171105a5d _6a52c01b0e5d451ca598162171105a5d { get; set; }
+        [JsonProperty("d8a006cc-84b3-479d-b5ee-942711ef2726")]
+        public D8a006cc84b3479dB5ee942711ef2726 d8a006cc84b3479db5ee942711ef2726 { get; set; }
 
-        [JsonProperty("2155d78d-67df-47fe-9a61-0956c077b0fd")]
-        public _2155d78d67df47fe9a610956c077b0fd _2155d78d67df47fe9a610956c077b0fd { get; set; }
+        [JsonProperty("be840172-5019-4064-884a-b31944cdfd2f")]
+        public Be84017250194064884aB31944cdfd2f be84017250194064884ab31944cdfd2f { get; set; }
 
-        [JsonProperty("9776f0b3-7965-4ca6-8fbc-df3b9c00590c")]
-        public _9776f0b379654ca68fbcDf3b9c00590c _9776f0b379654ca68fbcdf3b9c00590c { get; set; }
+        [JsonProperty("dad79ee8-2500-4e28-ab09-69345cbb0d4b")]
+        public Dad79ee825004e28Ab0969345cbb0d4b dad79ee825004e28ab0969345cbb0d4b { get; set; }
 
-        [JsonProperty("434a87d3-f742-4756-9c65-a426a62c25c1")]
-        public _434a87d3F74247569c65A426a62c25c1 _434a87d3f74247569c65a426a62c25c1 { get; set; }
+        [JsonProperty("94dfaabc-ed3a-4943-9537-7f4b95fcd68f")]
+        public _94dfaabcEd3a494395377f4b95fcd68f _94dfaabced3a494395377f4b95fcd68f { get; set; }
 
-        [JsonProperty("463394b8-dbe3-46f0-8343-16aa83f248ec")]
-        public _463394b8Dbe346f0834316aa83f248ec _463394b8dbe346f0834316aa83f248ec { get; set; }
+        [JsonProperty("45ea5be1-f606-494b-ba16-ea146f4f1070")]
+        public _45ea5be1F606494bBa16Ea146f4f1070 _45ea5be1f606494bba16ea146f4f1070 { get; set; }
 
-        [JsonProperty("5e6cc983-23c7-4a62-9655-ad042f24e260")]
-        public _5e6cc98323c74a629655Ad042f24e260 _5e6cc98323c74a629655ad042f24e260 { get; set; }
+        [JsonProperty("e209ca7d-891e-4625-ab2b-177707fd22b0")]
+        public E209ca7d891e4625Ab2b177707fd22b0 e209ca7d891e4625ab2b177707fd22b0 { get; set; }
 
-        [JsonProperty("0866431a-2b35-4344-b14c-8dd968d28143")]
-        public _0866431a2b354344B14c8dd968d28143 _0866431a2b354344b14c8dd968d28143 { get; set; }
+        [JsonProperty("5d7344cb-2c00-40c3-a15d-58c4420470e5")]
+        public _5d7344cb2c0040c3A15d58c4420470e5 _5d7344cb2c0040c3a15d58c4420470e5 { get; set; }
 
-        [JsonProperty("0c950c1e-9211-4977-8ba1-babb7865faa8")]
-        public _0c950c1e921149778ba1Babb7865faa8 _0c950c1e921149778ba1babb7865faa8 { get; set; }
+        [JsonProperty("f8331d48-68e5-4e07-9de1-b8bd9b88ec6f")]
+        public F8331d4868e54e079de1B8bd9b88ec6f f8331d4868e54e079de1b8bd9b88ec6f { get; set; }
 
-        [JsonProperty("27ade497-ed35-44fb-900b-8ed3780cbae6")]
-        public _27ade497Ed3544fb900b8ed3780cbae6 _27ade497ed3544fb900b8ed3780cbae6 { get; set; }
+        [JsonProperty("cbfab2a6-dec5-46df-a73f-29ab78f2ac0e")]
+        public Cbfab2a6Dec546dfA73f29ab78f2ac0e cbfab2a6dec546dfa73f29ab78f2ac0e { get; set; }
 
-        [JsonProperty("91820f39-3351-4782-8da8-a12cbb1492cb")]
-        public _91820f39335147828da8A12cbb1492cb _91820f39335147828da8a12cbb1492cb { get; set; }
+        [JsonProperty("7bd31308-e985-4add-9ed3-2357812f1143")]
+        public _7bd31308E9854add9ed32357812f1143 _7bd31308e9854add9ed32357812f1143 { get; set; }
 
-        [JsonProperty("14160bad-9209-4e4a-b749-b9f98b8feeef")]
-        public _14160bad92094e4aB749B9f98b8feeef _14160bad92094e4ab749b9f98b8feeef { get; set; }
+        [JsonProperty("9e21c8b8-c882-41a6-863b-f3e5a0f59c4f")]
+        public _9e21c8b8C88241a6863bF3e5a0f59c4f _9e21c8b8c88241a6863bf3e5a0f59c4f { get; set; }
 
-        [JsonProperty("175d2c11-ce50-4339-a997-202c8f524a98")]
-        public _175d2c11Ce504339A997202c8f524a98 _175d2c11ce504339a997202c8f524a98 { get; set; }
+        [JsonProperty("d5e981ff-c31c-4499-897d-9f6d62aa7502")]
+        public D5e981ffC31c4499897d9f6d62aa7502 d5e981ffc31c4499897d9f6d62aa7502 { get; set; }
 
-        [JsonProperty("9f8bf37e-ef7b-47f2-b95e-691988dec568")]
-        public _9f8bf37eEf7b47f2B95e691988dec568 _9f8bf37eef7b47f2b95e691988dec568 { get; set; }
+        [JsonProperty("160debb9-bbdb-4f1d-b045-9454f093d87a")]
+        public _160debb9Bbdb4f1dB0459454f093d87a _160debb9bbdb4f1db0459454f093d87a { get; set; }
 
-        [JsonProperty("5221b0ef-9c74-4d87-8b07-27228254b258")]
-        public _5221b0ef9c744d878b0727228254b258 _5221b0ef9c744d878b0727228254b258 { get; set; }
+        [JsonProperty("15873a20-7df8-4c65-a652-6eaf9c06d70d")]
+        public _15873a207df84c65A6526eaf9c06d70d _15873a207df84c65a6526eaf9c06d70d { get; set; }
 
-        [JsonProperty("f8366009-a110-475b-bc42-94bfc9ddcf34")]
-        public F8366009A110475bBc4294bfc9ddcf34 f8366009a110475bbc4294bfc9ddcf34 { get; set; }
+        [JsonProperty("5b8ae075-be48-4469-8498-d751743871f7")]
+        public _5b8ae075Be4844698498D751743871f7 _5b8ae075be4844698498d751743871f7 { get; set; }
 
-        [JsonProperty("5d811d4a-314e-459f-8f23-bc4529e63e68")]
-        public _5d811d4a314e459f8f23Bc4529e63e68 _5d811d4a314e459f8f23bc4529e63e68 { get; set; }
+        [JsonProperty("1293e9bc-5328-4d82-a498-f19d8cb05150")]
+        public _1293e9bc53284d82A498F19d8cb05150 _1293e9bc53284d82a498f19d8cb05150 { get; set; }
 
-        [JsonProperty("cf4a7893-3b5f-47b8-a29d-81c476662533")]
-        public Cf4a78933b5f47b8A29d81c476662533 cf4a78933b5f47b8a29d81c476662533 { get; set; }
+        [JsonProperty("2b662b71-0176-4701-a867-762b6a1326a3")]
+        public _2b662b7101764701A867762b6a1326a3 _2b662b7101764701a867762b6a1326a3 { get; set; }
 
-        [JsonProperty("8bac20ec-3d8e-4490-91aa-cc9a132ac750")]
-        public _8bac20ec3d8e449091aaCc9a132ac750 _8bac20ec3d8e449091aacc9a132ac750 { get; set; }
+        [JsonProperty("2070c79a-9652-451d-af3b-d46cb161617b")]
+        public _2070c79a9652451dAf3bD46cb161617b _2070c79a9652451daf3bd46cb161617b { get; set; }
 
-        [JsonProperty("b31ddebe-0171-4af2-97c5-0c30b9ba4742")]
-        public B31ddebe01714af297c50c30b9ba4742 b31ddebe01714af297c50c30b9ba4742 { get; set; }
+        [JsonProperty("c327b47f-ab6e-460b-a7dd-1750a3aa4e6b")]
+        public C327b47fAb6e460bA7dd1750a3aa4e6b c327b47fab6e460ba7dd1750a3aa4e6b { get; set; }
 
-        [JsonProperty("a253510c-5417-474d-a8f1-9e1ed1ade25a")]
-        public A253510c5417474dA8f19e1ed1ade25a a253510c5417474da8f19e1ed1ade25a { get; set; }
+        [JsonProperty("bae2c853-ba60-4cc3-a07e-bd7cae99b4f3")]
+        public Bae2c853Ba604cc3A07eBd7cae99b4f3 bae2c853ba604cc3a07ebd7cae99b4f3 { get; set; }
 
-        [JsonProperty("0dd72efd-45db-4eda-b53b-2364588032b0")]
-        public _0dd72efd45db4edaB53b2364588032b0 _0dd72efd45db4edab53b2364588032b0 { get; set; }
+        [JsonProperty("fb3b4c89-3e50-4a30-b214-7b27432e8a3a")]
+        public Fb3b4c893e504a30B2147b27432e8a3a fb3b4c893e504a30b2147b27432e8a3a { get; set; }
 
-        [JsonProperty("7224c120-8013-4d9c-b923-3a25bf806086")]
-        public _7224c12080134d9cB9233a25bf806086 _7224c12080134d9cb9233a25bf806086 { get; set; }
+        [JsonProperty("9c4942f2-e1d3-4bf8-9807-2756fc00fca1")]
+        public _9c4942f2E1d34bf898072756fc00fca1 _9c4942f2e1d34bf898072756fc00fca1 { get; set; }
+
+        [JsonProperty("73846269-6a86-4bc6-bc97-63e9a5262b2f")]
+        public _738462696a864bc6Bc9763e9a5262b2f _738462696a864bc6bc9763e9a5262b2f { get; set; }
+
+        [JsonProperty("fbaa9b28-323e-4785-996c-7d7e2d38a6d8")]
+        public Fbaa9b28323e4785996c7d7e2d38a6d8 fbaa9b28323e4785996c7d7e2d38a6d8 { get; set; }
+
+        [JsonProperty("6b5423e5-01d0-4f60-914a-6914af32c545")]
+        public _6b5423e501d04f60914a6914af32c545 _6b5423e501d04f60914a6914af32c545 { get; set; }
+
+        [JsonProperty("e7c1357e-eb9e-414b-a461-1fd984f86c62")]
+        public E7c1357eEb9e414bA4611fd984f86c62 e7c1357eeb9e414ba4611fd984f86c62 { get; set; }
     }
 
     public class LinkedStory
@@ -1434,6 +1559,18 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("created-at")]
         public long? createdat { get; set; }
+
+        [JsonProperty("secondary-industry-1")]
+        public SecondaryIndustry1 secondaryindustry1 { get; set; }
+    }
+
+    public class PushNotification
+    {
+        [JsonProperty("is-scheduled")]
+        public bool isscheduled { get; set; }
+
+        [JsonProperty("publish-at")]
+        public object publishat { get; set; }
     }
 
     public class LatestNewFromNDTV
@@ -1482,6 +1619,12 @@ namespace MSNStocks.NDTV.Latest
         public string sectionid { get; set; }
     }
 
+    public class SecondaryIndustry1
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+    }
+
     public class Section
     {
         [JsonProperty("domain-slug")]
@@ -1502,7 +1645,7 @@ namespace MSNStocks.NDTV.Latest
         public object data { get; set; }
     }
 
-    public class Section33
+    public class Section37
     {
         public int id { get; set; }
         public string name { get; set; }
@@ -1524,7 +1667,6 @@ namespace MSNStocks.NDTV.Latest
     {
         public Twitter twitter { get; set; }
         public Linkedin linkedin { get; set; }
-        public Instagram instagram { get; set; }
     }
 
     public class SocialShare
@@ -1614,6 +1756,9 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("word-count")]
         public int wordcount { get; set; }
+
+        [JsonProperty("story-features")]
+        public StoryFeatures storyfeatures { get; set; }
         public Entities entities { get; set; }
 
         [JsonProperty("published-at")]
@@ -1658,7 +1803,7 @@ namespace MSNStocks.NDTV.Latest
 
         [JsonProperty("hero-image-s3-key")]
         public string heroimages3key { get; set; }
-        public List<object> contributors { get; set; }
+        public object contributors { get; set; }
         public List<Card> cards { get; set; }
         public string url { get; set; }
 
@@ -1742,6 +1887,12 @@ namespace MSNStocks.NDTV.Latest
         public string contenttype { get; set; }
     }
 
+    public class StoryFeatures
+    {
+        [JsonProperty("push-notification")]
+        public PushNotification pushnotification { get; set; }
+    }
+
     public class Tag
     {
         public Properties properties { get; set; }
@@ -1769,19 +1920,10 @@ namespace MSNStocks.NDTV.Latest
         public object updatedat { get; set; }
         public string slug { get; set; }
 
-        [JsonProperty("stock-industry")]
-        public StockIndustry stockindustry { get; set; }
-
         [JsonProperty("publisher-id")]
         public int publisherid { get; set; }
         public string name { get; set; }
-
-        [JsonProperty("nse-code")]
-        public string nsecode { get; set; }
         public string type { get; set; }
-
-        [JsonProperty("stock-exchange")]
-        public StockExchange stockexchange { get; set; }
 
         [JsonProperty("entity-type-id")]
         public int entitytypeid { get; set; }
@@ -1793,16 +1935,30 @@ namespace MSNStocks.NDTV.Latest
         public int createdby { get; set; }
         public int id { get; set; }
         public string isin { get; set; }
+        public string identifier { get; set; }
+
+        [JsonProperty("full-name")]
+        public string fullname { get; set; }
 
         [JsonProperty("last-updated-by")]
         public int lastupdatedby { get; set; }
-        public string aliases { get; set; }
-
-        [JsonProperty("stock-id")]
-        public int stockid { get; set; }
+        public object aliases { get; set; }
+        public Exchange exchange { get; set; }
 
         [JsonProperty("created-at")]
         public object createdat { get; set; }
+
+        [JsonProperty("stock-industry")]
+        public StockIndustry stockindustry { get; set; }
+
+        [JsonProperty("nse-code")]
+        public string nsecode { get; set; }
+
+        [JsonProperty("stock-exchange")]
+        public StockExchange stockexchange { get; set; }
+
+        [JsonProperty("stock-id")]
+        public int? stockid { get; set; }
 
         [JsonProperty("stock-info-provider")]
         public string stockinfoprovider { get; set; }
@@ -1813,8 +1969,8 @@ namespace MSNStocks.NDTV.Latest
 
     public class Twitter
     {
-        public string url { get; set; }
         public string handle { get; set; }
+        public string url { get; set; }
     }
 
     public class ViewLayout
@@ -1827,6 +1983,5 @@ namespace MSNStocks.NDTV.Latest
     public class Votes
     {
     }
-
-
 }
+

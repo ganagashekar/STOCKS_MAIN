@@ -64,9 +64,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandleChartExample", "..\De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandlesSourceProviderExample", "..\DesktopCandle\FancyCandles\CandlesSourceProviderExample\CandlesSourceProviderExample.csproj", "{45611063-E8D5-4050-AA4B-E6D3E75A0D9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDTVProfits", "NDTVProfits\NDTVProfits.csproj", "{0F62808F-4C54-42CC-A71E-45BE8F131AAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NDTVProfits", "NDTVProfits\NDTVProfits.csproj", "{0F62808F-4C54-42CC-A71E-45BE8F131AAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BreezeAPIAutomation", "BreezeAPIAutomation\BreezeAPIAutomation.csproj", "{F94DC4DF-7DDF-4393-8FE1-4C827FF97DB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BreezeAPIAutomation", "BreezeAPIAutomation\BreezeAPIAutomation.csproj", "{F94DC4DF-7DDF-4393-8FE1-4C827FF97DB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinancialCalculator", "Finx_XIRR\XIRRCalculator\FinancialCalculator.csproj", "{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculateXIRR", "CalculateXIRR\CalculateXIRR.csproj", "{A77F0486-6096-4645-83A0-633D3B79A4BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{304F0CC3-4BC3-45F3-9DF9-91BD673419A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pyfiles", "Pyfiles", "{23015C0B-C408-4598-95BD-062C10116029}"
+	ProjectSection(SolutionItems) = preProject
+		ColabsStats\candlestick_trading_analysis_predictions.py = ColabsStats\candlestick_trading_analysis_predictions.py
+		ColabsStats\currrent_nseautomate.py = ColabsStats\currrent_nseautomate.py
+		ColabsStats\Stocs_Stats_For1Day.py = ColabsStats\Stocs_Stats_For1Day.py
+		ColabsStats\Stocs_Stats_For40Day = ColabsStats\Stocs_Stats_For40Day
+		ColabsStats\Stocs_Stats_For7Day.py = ColabsStats\Stocs_Stats_For7Day.py
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -180,6 +195,14 @@ Global
 		{F94DC4DF-7DDF-4393-8FE1-4C827FF97DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F94DC4DF-7DDF-4393-8FE1-4C827FF97DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F94DC4DF-7DDF-4393-8FE1-4C827FF97DB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A77F0486-6096-4645-83A0-633D3B79A4BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A77F0486-6096-4645-83A0-633D3B79A4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A77F0486-6096-4645-83A0-633D3B79A4BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A77F0486-6096-4645-83A0-633D3B79A4BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,6 +210,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{40164624-5C89-47CA-84EA-6C9831676D5F} = {CFDD9899-E606-4E22-931E-EBA19FFDA759}
 		{45611063-E8D5-4050-AA4B-E6D3E75A0D9B} = {CFDD9899-E606-4E22-931E-EBA19FFDA759}
+		{3A07CFE7-E3AE-4FD1-A7FA-94D7A5A9CC78} = {BDB4F9AC-AC5F-4A38-9F5E-EB098D97F465}
+		{A77F0486-6096-4645-83A0-633D3B79A4BB} = {BDB4F9AC-AC5F-4A38-9F5E-EB098D97F465}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {517B493C-959C-4855-801D-C84A95F9C8B8}

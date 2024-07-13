@@ -326,6 +326,7 @@ namespace STM_API.Services
                     sqlComm.Parameters.AddWithValue("@isorderbysize", isorderbysize);
                     sqlComm.Parameters.AddWithValue("@Date", Convert.ToDateTime(date));
                     sqlComm.CommandType = CommandType.StoredProcedure;
+                    sqlComm.CommandTimeout = 120;
                     SqlDataAdapter da = new SqlDataAdapter();
                     da.SelectCommand = sqlComm;
 
@@ -473,6 +474,107 @@ namespace STM_API.Services
 
             }
             return (List<Equities>)Enumerable.Empty<Equities>();
+        }
+
+        public List<StockTalibStats> GetStocksStatisticsBenchMarks(int type,
+            bool isorderbysize, 
+            string date)
+        {
+            string tablename= "StockTalibStats";
+            //int type = 0;
+            ////if (isOnbeday){ tablename = tablename}
+            ////else
+            //if(is3days) { tablename = tablename + 3; }
+            //else if (is5Days) { tablename = tablename + 5; }
+            //else if (is10Days) { tablename = tablename + 10; }
+            //else if (is15Days) { tablename = tablename + 15; }
+            //else if (is30days) { tablename = tablename + 30; }
+            //else if (is45days) { tablename = tablename + 45; }
+
+
+            //if (is3days) { type = 3; }
+            //else if (is5Days) { type= 5; }
+            //else if (is10Days) { type = 10; }
+            //else if (is15Days) { type = 15; }
+            //else if (is30Days) { type = 30; }
+            //else if (is45days) { type = 45; }
+
+            List<StockTalibStats> stocks = new List<StockTalibStats>();
+            DataSet ds = new DataSet();
+
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                SqlCommand sqlComm = new SqlCommand("Get_BenchMarkReturns", conn);
+                sqlComm.Parameters.AddWithValue("@TableName", tablename);
+                sqlComm.Parameters.AddWithValue("@type", type);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+
+                foreach (var r in NewStock)
+                {
+                    try
+                    {
+                        var _stokc = new StockTalibStats();
+                        _stokc.Id = r[0].ToString();
+                        _stokc.SecurityId = (r["SecurityId"].ToString()).ToString();
+                        _stokc.Last = Convert.ToDouble(r["Last"].ToString()).ToString();
+                        _stokc.Stockcode = (r["Stockcode"].ToString()).ToString();
+                        _stokc.BenchmarkReturn = Convert.ToDouble(r["BenchmarkReturn"].ToString()).ToString();
+                        _stokc.TotalReturn = Convert.ToDouble(r["TotalReturn"].ToString()).ToString();
+                        _stokc.WinRate = Convert.ToDouble(r["WinRate"].ToString()).ToString();
+                        _stokc.BestTrade = Convert.ToDouble(r["BestTrade"].ToString()).ToString();
+                        _stokc.WorstTrade = Convert.ToDouble(r["WorstTrade"].ToString()).ToString();
+                        _stokc.AvgWinningTrade = Convert.ToDouble(r["AvgWinningTrade"].ToString()).ToString();
+                        _stokc.AvgLosingTrade = Convert.ToDouble(r["AvgLosingTrade"].ToString()).ToString();
+
+                        _stokc.AvgWinningTradeDuration = Convert.ToDouble(r["AvgWinningTradeDuration"].ToString()).ToString();
+                        _stokc.AvgLosingTradeDuration = Convert.ToDouble(r["AvgLosingTradeDuration"].ToString()).ToString();
+
+                        _stokc.ProfitFactor = Convert.ToDouble(r["ProfitFactor"].ToString()).ToString();
+                        _stokc.TotalTrades = Convert.ToDouble(r["TotalTrades"].ToString()).ToString();
+                        _stokc.TotalClosedTrades = Convert.ToDouble(r["TotalClosedTrades"].ToString()).ToString();
+                        _stokc.TotalOpenTrades = Convert.ToDouble(r["TotalOpenTrades"].ToString()).ToString();
+                        _stokc.MaxDrawdown = Convert.ToDouble(r["MaxDrawdown"].ToString()).ToString();
+                        _stokc.MaxDrawdownDuration = Convert.ToDouble(r["MaxDrawdownDuration"].ToString()).ToString();
+                        _stokc.Expectancy = Convert.ToDouble(r["Expectancy"].ToString()).ToString();
+
+
+                        _stokc.BuyDate = Convert.ToString(r["BuyDate"].ToString());
+                        _stokc.CreatedOn = Convert.ToString(r["CreatedOn"].ToString());
+
+                        _stokc.BearishCount = Convert.ToInt32(r["BearishCount"].ToString());
+                        _stokc.BulishCount = Convert.ToInt32(r["BulishCount"].ToString());
+                        _stokc.BullishCount_100 = Convert.ToInt32(r["BullishCount_100"].ToString());
+                        _stokc.BullishCount_95 = Convert.ToInt32(r["BullishCount_95"].ToString());
+
+
+
+
+                        stocks.Add(_stokc);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+
+                return stocks;//.Where(X => X.Open <= 120);
+            }
+
+
+
+
+            return (List<StockTalibStats>)Enumerable.Empty<StockTalibStats>();
         }
     }
 }

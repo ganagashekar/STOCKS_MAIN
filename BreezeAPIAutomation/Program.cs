@@ -72,7 +72,7 @@ public class Program
 
             BreezeConnect breeze = new BreezeConnect(APIKEY);
             breeze.generateSessionAsPerVersion(APISecret, token);
-            var result = breeze.placeOrder("NIFTY", "NFO", "futures", "buy", "limit", null, "60.85", "50", "DAY",null,null, "02-May-2024","call", "22400",null,null,null);
+            var result = breeze.placeOrder("NIFTY", "NFO", "cash", "buy", "limit", null, "60.85", "50", "DAY",null,null, "02-May-2024","call", "22400",null,null,null);
             string time_stamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
             //string time_stamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
             //"02-May-2024"
