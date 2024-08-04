@@ -868,8 +868,8 @@ namespace STM_API.Services
                                                                                                   
                             _stokc.buyat = Convert.ToDouble(r["buyAt"] ?? 0);
                             _stokc.DataPoint= GetJsonFileHistryDataPoint(r["symbol"].ToString(), Convert.ToDouble(_stokc.last), _stokc.buyat);
-                            _stokc.min = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x)) :0;
-                            _stokc.max = _stokc.Data.Any() ?_stokc.Data.Where(x => x > 0).Max(x => Convert.ToInt32(x)):0;
+                            _stokc.min = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Any() ? _stokc.Data.Where(x => x > 0).Min(x => Convert.ToInt32(x)) : 0 : 0;
+                            _stokc.max = _stokc.Data.Any() ? _stokc.Data.Where(x => x > 0).Any() ? _stokc.Data.Where(x => x > 0).Max(x => Convert.ToInt32(x)) : 0 : 0;
                             _stokc.href = string.Format("https://www.msn.com/en-in/money/stockdetails/fi-{0}?duration=5D>", r["MSN_SECID"].ToString());
                             _stokc.stockdetailshref = string.Format("/StockDetails?id={0}", r["MSN_SECID"].ToString());
                             _stokc.return1w = Convert.ToDouble(r["quote_return1Week"] ?? 0);

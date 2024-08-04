@@ -738,6 +738,15 @@ namespace MSNStocks
         {
             return Regex.Replace(lines, @"^\s*$\n|\r", string.Empty, RegexOptions.Multiline).TrimEnd();
         }
+
+        static decimal CalculateChange(decimal previous, decimal current)
+        {
+            if (previous == 0)
+                throw new InvalidOperationException();
+
+            var change = current - previous;
+            return (decimal)change / previous;
+        }
         public static async Task getInitStocksFromSECIDForNSEResults()
         {
             string param = "";
@@ -843,26 +852,26 @@ namespace MSNStocks
                                                             await logexceptio(alldatafromtable, db, item);
                                                             continue;
                                                         }
-                                                       
+
                                                     }
 
-                                                    
+
                                                 }
 
 
                                             }
 
-                                            
+
                                         }
-                                        
-
-                                    
 
 
 
 
 
-                                       
+
+
+
+
 
                                     }
 
@@ -870,9 +879,15 @@ namespace MSNStocks
                             }
                             bool isnew = false;
 
+                            try
                             {
 
+                                var Stock_Financial_Results_all = alldatafromtable.Where(x => x.Symbol == item.symbol);
+
                                 var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd == Convert.ToDateTime(item.toDate));
+                                var Stock_Financial_Results_Previous = Stock_Financial_Results_all.OrderByDescending(x => x.QuarterEnd).FirstOrDefault(x => x.Symbol == item.symbol && x.QuarterEnd != Convert.ToDateTime(item.toDate));
+
+
                                 if (Stock_Financial_Results_obj == null)
                                 {
                                     isnew = true;
@@ -893,6 +908,10 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult.xbrlixbrl.inbsefinProfitLossForPeriod.FirstOrDefault().text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
+
+
+
                                 }
                                 if (mainFinancialsResult2 != null)
                                 {
@@ -901,6 +920,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(mainFinancialsResult2.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
 
                                 }
                                 if (financialResultsFromXMl2 != null)
@@ -910,6 +930,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(financialResultsFromXMl2.xbrlixbrl.inbsefinProfitLossForThePeriod.FirstOrDefault().text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 if (FinancialsResultsFromXml3 != null)
@@ -919,6 +940,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml3.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 if (FinancialsResultsFromXml4 != null)
@@ -928,6 +950,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml4.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 if (FinancialsResultsFromXml6 != null)
@@ -937,6 +960,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml6.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 if (FinancialsResultsFromXml5 != null)
@@ -946,6 +970,7 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml5.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 if (FinancialsResultsFromXml7 != null)
@@ -955,25 +980,39 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.NET_PROFIT = Convert.ToDecimal(FinancialsResultsFromXml7.xbrlixbrl.inbsefinProfitLossForPeriod.text);
                                     Stock_Financial_Results_obj.QuarterEnd = Convert.ToDateTime(item.toDate);
                                     Stock_Financial_Results_obj.UPDATED_ON = DateTime.Now;
+                                    StatsProfits(Stock_Financial_Results_obj, Stock_Financial_Results_Previous);
                                 }
 
                                 Console.WriteLine(Stock_Financial_Results_obj.NET_PROFIT);
+                                string strlastvalue = "";
+                                var lastvalue = GetLastValue(Stock_Financial_Results_obj.Symbol);
+                                if (lastvalue != null)
+                                {
+                                    strlastvalue = lastvalue.Last;
+                                    Stock_Financial_Results_obj.LTP = Convert.ToDecimal(lastvalue.Last);
+                                }
+
                                 if (isnew)
                                 {
 
-                                    string strlastvalue = "";
-                                    var lastvalue = GetLastValue(Stock_Financial_Results_obj.Symbol);
-                                    if (lastvalue != null)
+                                   
+                                    string revenueIncrease = "";
+                                    string ChangeInPercenate = string.Empty;
+
+                                    if (Stock_Financial_Results_obj.RevenueIncrease != 0)
                                     {
-                                        strlastvalue = lastvalue.Last;
+                                        revenueIncrease = (Stock_Financial_Results_obj.RevenueIncrease / 10000000).ToString();
+                                        revenueIncrease = revenueIncrease + " In CR and % of Revenue Increase " + Convert.ToDouble(Stock_Financial_Results_obj.RevenueDifference).ToString("N2");
                                     }
+
+                                    
                                     var parameters = new Dictionary<string, string>
                                     {
                                         ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
                                         ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
                                         ["priority"] = "1",
-                                        ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores  LTP is {3} ", item.companyName, 
-                                        Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000, strlastvalue.ToString()),
+                                        ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores  LTP is {3} and Revenue is {4}", item.companyName,
+                                        Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000, strlastvalue.ToString(), revenueIncrease),
                                         ["title"] = "FinacialResult",
                                         ["retry"] = "30",
                                         ["expire"] = "300",
@@ -991,10 +1030,17 @@ namespace MSNStocks
 
 
                             }
+                            catch (Exception ex)
+                            {
+
+                                continue;
+
+                            }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.InnerException.Message);
+
+                            continue;
 
                         }
                         db.SaveChanges();
@@ -1008,11 +1054,23 @@ namespace MSNStocks
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException.Message);
+
 
             }
 
 
+        }
+
+        private static void StatsProfits(Stock_Financial_Results_NSE? Stock_Financial_Results_obj, Stock_Financial_Results_NSE? Stock_Financial_Results_Previous)
+        {
+            Stock_Financial_Results_obj.RevenueIncrease = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.Revenue - Stock_Financial_Results_Previous.Revenue : 0);
+            Stock_Financial_Results_obj.Profit_Increase = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.NET_PROFIT - Stock_Financial_Results_Previous.NET_PROFIT : 0);
+            Stock_Financial_Results_obj.RevenueDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.Revenue.Value, Stock_Financial_Results_obj.Revenue.Value) : 0);
+            Stock_Financial_Results_obj.ProfitDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.NET_PROFIT.Value, Stock_Financial_Results_obj.NET_PROFIT.Value) : 0);
+           
+            
+            Stock_Financial_Results_obj.EPS_INcrease = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.EPS - Stock_Financial_Results_Previous.EPS : 0);
+            Stock_Financial_Results_obj.EPSDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.EPS.Value, Stock_Financial_Results_obj.EPS.Value) : 0);
         }
 
         private static async Task logexceptio(List<Stock_Financial_Results_NSE> alldatafromtable, STOCKContext db, FinancialsModel? item)
@@ -1524,7 +1582,7 @@ namespace MSNStocks
         }
 
         private static MSNExchangeStatistics LatestPublishedMSNTOP_Save(List<MSNExchangeStatistics> MSNExchangeStatisticslist, List<string> active,
-            string CompanyName, string symbol, string MSNID, string status,DateTime result)
+            string CompanyName, string symbol, string MSNID, string status, DateTime result)
         {
             // List<string> result = new List<string>();
 

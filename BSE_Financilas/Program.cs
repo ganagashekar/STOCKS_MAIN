@@ -13,7 +13,7 @@
         catch (Exception ex)
         {
 
-            throw;
+            
         }
 
 

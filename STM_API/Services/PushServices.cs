@@ -9,7 +9,7 @@ namespace STM_API.Services
         public async Task SendPushServicesAsync(string tittle, string token, string user, string priority, string message, string retry, string expire, string sound)
         {
             //var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "Orders", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
-            var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "Orders" };
+            var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "Orders", "Upper CKT" };
             var parameters = new Dictionary<string, string>
             {
                 ["token"] = token,

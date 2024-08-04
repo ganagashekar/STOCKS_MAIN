@@ -68,6 +68,8 @@ namespace MSNStocks.Models
 
         public decimal? NET_PROFIT { get; set; }
 
+        public decimal? LTP { get; set; }
+
         public decimal? EPS { get; set; }
 
         public decimal? Cash_EPS { get; set; }
