@@ -70,6 +70,8 @@ namespace STM_API.Services
                        symbol = row.Field<string>("Symbol"),
                        stockName = row.Field<string>("StockName"),
                        stockCode = row.Field<string>("StockCode"),
+                       ttq= Convert.ToDecimal(row.Field<decimal>("ttq")),
+                       ttv = Convert.ToDecimal(row.Field<decimal>("ttv")),
                    }).ToList();
                 return items.ToList();
             }

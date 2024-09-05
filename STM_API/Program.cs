@@ -82,12 +82,12 @@ if (app.Environment.IsDevelopment())
 }
 //app.UseCors(x => x.SetIsOriginAllowed(x => x.StartsWith("http://localhost:4200/")));
 //app.UseCors(x => x.AllowAnyHeader().WithOrigins("http://localhost:4200", "http://localhost:4200", "http://localhost", "https://localhost", "https://localhost/StockSignalRServer", "https://localhost/StockSignalRServer").AllowAnyMethod());
-app.UseCors(x => x.AllowAnyOrigin());
-app.UseHttpsRedirection();
+//app.UseCors(x => x.AllowAnyOrigin());
+//app.UseHttpsRedirection();
 
 
 
-app.UseAuthorization();
+//app.UseAuthorization();
 //app.UseEndpoints(endpoints => endpoints.MapHub<ICICIDirectHUB>("/livefeedhub")); // Restore this);
 app.MapHub<ICICIDirectHUB>("/livefeedhub");
 app.MapHub<BreezeOperationHUB>("/breezeoperation");

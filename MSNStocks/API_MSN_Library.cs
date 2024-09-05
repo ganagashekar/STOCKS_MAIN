@@ -1,9 +1,11 @@
 ﻿
 using BSE_Financilas;
+using ICICIVolumeBreakouts.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MSNStocks.Models;
+using MSNStocks.Models.Deals;
 using MSNStocks.Models.results;
 using MSNStocks.Models.xml;
 using MSNStocks.Models.xml2;
@@ -44,6 +46,9 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using static System.Net.WebRequestMethods;
+using System.Security.Cryptography;
+using ICICIVolumeBreakouts.Models.Histrry;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MSNStocks
 {
@@ -85,6 +90,367 @@ namespace MSNStocks
             }
         }
 
+        public static async Task GetEquitiesStats()
+        {
+            try
+            {
+                using (var db = new STOCKContext())
+                {
+                    Console.WriteLine("Database Connected");
+                    Console.WriteLine();
+                    Console.WriteLine("Listing Category Sales For 1997s");
+                    var equites = db.Equitys.ToList();
+                    db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
+                    var TickerStocksHistries = db.TickerStocksHistries.ToList().Where(x => x.Ltt > DateTime.Now.AddDays(-45)).ToList();
+
+                    var Equities_Ratings_list = db.Equities_Ratings.ToList();
+
+                    foreach (var equity in equites)
+                    {
+                        Console.WriteLine(equity.SecurityName);
+                        try
+                        {
+                            bool Isnew = false;
+                            var Equities_Ratings = Equities_Ratings_list.FirstOrDefault(x => x.Symbol == equity.Symbol);
+                            if (Equities_Ratings == null)
+                            {
+                                Equities_Ratings = new Equities_Ratings();
+                                Isnew = true;
+                            }
+
+                            var filteredtxt = ExecuteCommandBatforStatas(equity.SecurityId).ToString();
+                            var result = JsonConvert.DeserializeObject<Equities_Ratings>(filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString());
+                            if (Isnew)
+                            {
+                                db.Equities_Ratings.Add(Equities_Ratings);
+                            }
+                            Equities_Ratings.FFI_INCREASE = 0;
+                            var data = (result.Postive.Contains("FII") || result.Negative.Contains("FII")) ? result.Postive.Split("to") : null;
+                            if (data != null && data.Count() > 1)
+                            {
+                                var FFIFrom = Convert.ToDecimal(data[0].Substring(data[0].Length - 6).Replace("%", string.Empty));
+                                var FFIto = Convert.ToDecimal(data[1].Substring(0, 6).Replace("%", string.Empty));
+                                Equities_Ratings.FFI_INCREASE = FFIto - FFIFrom;
+                            }
+                            Equities_Ratings.MF_Increase = 0;
+                            var data_MU = (result.Postive.Contains("Mutual Funds") || result.Negative.Contains("Mutual Funds")) ? result.Postive.Split("to") : null;
+                            if (data_MU != null && data_MU.Count() > 1)
+                            {
+                                var FFIFrom = Convert.ToDecimal(data_MU[0].Substring(data_MU[0].Length - 6).Replace("%", string.Empty));
+                                var FFIto = Convert.ToDecimal(data_MU[1].Substring(0, 6).Replace("%", string.Empty));
+                                Equities_Ratings.MF_Increase = FFIto - FFIFrom;
+                            }
+
+                            Equities_Ratings.MACD = result.MACD ?? 0;
+                            Equities_Ratings.ROC125 = result.ROC125 ?? 0;
+                            Equities_Ratings.ATR = result.ATR ?? 0;
+                            Equities_Ratings.FS1 = result.FS1 ?? 0;
+                            Equities_Ratings.FS2 = result.FS2 ?? 0;
+                            Equities_Ratings.FS3 = result.FS3 ?? 0;
+                            Equities_Ratings.FR1 = result.FS1 ?? 0;
+                            Equities_Ratings.FR2 = result.FR2 ?? 0;
+                            Equities_Ratings.FR3 = result.FR3 ?? 0;
+                            Equities_Ratings.ADX = result.ADX ?? 0;
+                            Equities_Ratings.ROC21 = result.ROC21 ?? 0;
+                            Equities_Ratings.MCADSIG = result.MCADSIG ?? 0;
+                            Equities_Ratings.RSI = result.RSI ?? 0; ;
+                            Equities_Ratings.MFI = result.MFI ?? 0;
+                            Equities_Ratings.Opportunity = result.Opportunity ?? 0;
+                            Equities_Ratings.PIVOT = result.PIVOT ?? 0;
+                            Equities_Ratings.Strengths = result.Strengths ?? 0;
+                            Equities_Ratings.Weakness = result.Weakness ?? 0;
+                            Equities_Ratings.Threats = result.Threats ?? 0;
+                            Equities_Ratings.SecuirtyId = equity.SecurityId ?? "";
+                            Equities_Ratings.Symbol = equity.Symbol ?? "";
+                            Equities_Ratings.Postive = result.Postive ?? "";
+                            Equities_Ratings.Negative = result.Negative ?? "";
+                            Equities_Ratings.Williams = result.Williams;
+                            Equities_Ratings.FII = result.Postive ?? "";
+                            Equities_Ratings.MutaulFOunds = result.Negative ?? "";
+                            Equities_Ratings.companyName = result.companyName;
+                            Equities_Ratings.Updated_on = DateTime.Now;
+
+                        }
+                        catch (Exception)
+                        {
+
+                            continue;
+                        }
+
+
+                    }
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+
+
+            }
+        }
+
+
+        #region Volume
+
+        private static async Task<string> Getdetails(string token, string APIKEY)
+        {
+            string hostname = "https://api.icicidirect.com/breezeapi/api/v1/";
+            string endpoint = "customerdetails";
+            string url = $"{hostname}{endpoint}";
+
+
+            HttpClient client = new HttpClient();
+
+            string jsonPayload = @"{
+            ""SessionToken"": ""_token_"",
+            ""AppKey"": ""_APIKEY_""
+        }";
+
+            StringContent content = new StringContent(jsonPayload.Replace("_token_", token).Replace("_APIKEY_", APIKEY), Encoding.UTF8, "application/json");
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+            //request.Headers.Add("Content-Type", "application/json");
+            request.Content = content;
+
+            Console.WriteLine("Request headers:");
+            foreach (var header in request.Headers)
+            {
+                Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
+
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+            //Console.WriteLine(responseBody);
+            //return responseBody;
+        }
+        public static double ChangeBetweenPercentage(double v1, double v2)
+        {
+            var data = ((v1 - v2) / ((v1 + v2) / 2)) * 100;
+            return data;
+        }
+        public static double PriceIncrease(double v1, double v2)
+        {
+            return ((v1 - v2));
+        }
+
+        public static double VolumneincreaseInCrores(double v1, double v2)
+        {
+            return (v1 - v2);
+        }
+
+        #endregion
+
+        public static async Task RunEquitiesVolumne()
+        {
+            try
+            {
+                using (var db = new STOCKContext())
+                {
+                    Console.WriteLine("Database Connected");
+                    Console.WriteLine();
+                    Console.WriteLine("Listing Category Sales For 1997s");
+                    var equites = db.Equitys.ToList();
+                    //  db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
+                    //  var TickerStocksHistries = db.TickerStocksHistries.ToList().Where(x => x.Ltt > DateTime.Now.AddDays(-45)).ToList();
+
+                    var Equities_Ratings_list = db.Equities_Volume_Stats.ToList();
+
+                    string APIKEY = string.Empty;
+                    string APISecret = string.Empty;
+                    string token = string.Empty;
+                    var url = "http://localhost:99/breezeOperation";
+                    var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
+                    string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    string HUbUrl = url;
+
+
+                    string[] line;
+                    string arg = "0";
+
+
+                    switch (0)
+                    {
+                        case 0:
+                            line = lines[0].ToString().Split(',');
+                            APIKEY = line[0];
+                            APISecret = line[1];
+                            token = line[2];
+                            HUbUrl = "http://localhost:8080/BreezeOperation";
+                            break;
+                    }
+                    var bodyresponse = JsonConvert.DeserializeObject<Customer>(Getdetails(token, APIKEY).Result);
+
+                    foreach (var equity in equites)
+                    {
+                        Console.WriteLine(equity.SecurityName);
+                        try
+                        {
+
+
+                            #region working
+
+
+                            // App related Secret Key
+                            string secretKey = APISecret;
+
+                            // Payload as JSON
+                            var payload = System.Text.Json.JsonSerializer.Serialize(new
+                            {
+                                AppKey = APIKEY,
+                                SessionToken = token
+                            });
+
+                            // Time stamp generation for request-headers
+                            string timeStamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.000Z");
+                            Console.WriteLine(timeStamp);
+
+                            // Checksum generation for request-headers
+                            string checksumData = timeStamp + payload + secretKey;
+                            using var sha256 = SHA256.Create();
+                            byte[] checksumBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(checksumData));
+                            string checksum = BitConverter.ToString(checksumBytes).Replace("-", "");
+                            Console.WriteLine(checksum);
+
+
+
+                            using var client = new HttpClient();
+
+                            var queryString = "?stock_code=_stock_code_&exch_code=BSE&from_date=_FromDate_T00:00:00.000Z&to_date=_ToDate_T20:00:00.000Z&interval=1day&product_type=cash&expiry_date=&right=&strike_price=0";
+
+                            queryString = queryString.Replace("_stock_code_", equity.IssuerName).Replace("_FromDate_", DateTime.Now.Date.AddDays(-10).ToString("yyyy-MM-dd").ToString()).Replace("_ToDate_", DateTime.Now.Date.ToString("yyyy-MM-dd").ToString());
+
+                            //queryString = queryString.Replace("_stock_code_", "FLEINT").Replace("_FromDate_", "2024-08-12".ToString()).Replace("_ToDate_", "2024-08-14");
+
+
+                            var request = new HttpRequestMessage
+                            {
+                                Method = HttpMethod.Get,
+                                RequestUri = new Uri("https://breezeapi.icicidirect.com/api/v2/historicalcharts" + queryString),
+                                Headers = { { "X-SessionToken", bodyresponse.Success.session_token.ToString() }, { "apikey", APIKEY } },
+                                Content = null
+                            };
+
+                            var response = client.SendAsync(request).Result;
+                            response.EnsureSuccessStatusCode();
+
+                            var responseBody = await response.Content.ReadAsStringAsync();
+                            var results = JsonConvert.DeserializeObject<Histry>(responseBody);
+                            bool Isnew = false;
+                            var Equities_Ratings = Equities_Ratings_list.FirstOrDefault(x => x.Symbol == equity.Symbol && Convert.ToDateTime(x.Updated).Date != DateTime.Now.Date);
+                            if (Equities_Ratings == null)
+                            {
+                                Equities_Ratings = new Equities_Volume_Stats();
+                                Isnew = true;
+                            }
+                            if (results.Success.Count() > 0)
+                            {
+                                var result_volue = results.Success.OrderByDescending(x => x.datetime).ToList().Take(2).OrderBy(x => x.datetime).ToList();
+
+
+                                // var results = breeze.getHistoricalData(interval: "1day", fromDate: DateTime.Now.Date.AddDays(-10).ToString("yyyy-MM-dd").ToString(), toDate: DateTime.Now.Date.ToString("yyyy-MM-dd").ToString(), stockCode: "BHEL", exchangeCode: "NSE", productType: "cash", "", "", "");
+
+
+                                //  List<HistoricalData> myDeserializedClass = JsonConvert.DeserializeObject<List<Histry>>(result.Success);
+                                var First = result_volue[0];
+                                var second = result_volue[1];
+                                //var thrird = result[2];
+                                //var Four = result[3];
+                                //var fifth = result[4];
+
+                                var firsdaychange = ChangeBetweenPercentage(Convert.ToDouble(second.close), Convert.ToDouble(First.close));
+                                var firsdaychangeVolume = ChangeBetweenPercentage(Convert.ToDouble(second.volume), Convert.ToDouble(First.volume));
+                                //var secondaychange = ChangeBetweenPercentage(Convert.ToDouble(thrird.close), Convert.ToDouble(First.close));
+                                //var thirdchange = ChangeBetweenPercentage(Convert.ToDouble(Four.close), Convert.ToDouble(First.close));
+                                //var fourthchange = ChangeBetweenPercentage(Convert.ToDouble(fifth.close), Convert.ToDouble(First.close));
+
+
+                                var firsdaychange_INC = PriceIncrease(Convert.ToDouble(second.close), Convert.ToDouble(First.close));
+                                // var secondaychange_INC = PriceIncrease(Convert.ToDouble(thrird.close), Convert.ToDouble(First.close));
+                                //var thirdchange_INC = PriceIncrease(Convert.ToDouble(Four.close), Convert.ToDouble(First.close));
+                                //var fourthchange_INC = PriceIncrease(Convert.ToDouble(fifth.close), Convert.ToDouble(First.close));
+
+
+                                var firsdaychange_Volu = VolumneincreaseInCrores(Convert.ToDouble(second.volume), Convert.ToDouble(First.volume));
+                                //var secondaychange_Volu = VolumneincreaseInCrores(Convert.ToDouble(thrird.volume), Convert.ToDouble(First.volume));
+                                //var thirdchange_Volu = VolumneincreaseInCrores(Convert.ToDouble(Four.volume), Convert.ToDouble(First.volume));
+                                //var fourthchange_Volu = VolumneincreaseInCrores(Convert.ToDouble(fifth.volume), Convert.ToDouble(First.volume));
+
+                                //from var element in myDeserializedClass.GetNth(10) select element;
+                                //var resulss= from var element in myDeserializedClass.get(10) select element;
+
+
+
+                                #endregion
+
+
+
+
+                                // var filteredtxt = ExecuteCommandBatforStatas(equity.SecurityId).ToString();
+                                // var result = JsonConvert.DeserializeObject<Equities_Ratings>(filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString());
+                                if (Isnew)
+                                {
+                                    Equities_Ratings.Symbol = equity.Symbol;
+                                    db.Equities_Volume_Stats.Add(Equities_Ratings);
+                                }
+                                Equities_Ratings.VolumeUPBy_Percentage = (decimal?)firsdaychangeVolume;
+                                Equities_Ratings.Yesterday_volume = result_volue[0].volume;
+                                Equities_Ratings.Todays_volume = result_volue[1].volume;
+                                Equities_Ratings.LTP = (decimal)result_volue[1].close;
+                                Equities_Ratings.Stock_name = result_volue[1].stock_code;
+
+
+                                Equities_Ratings.Updated = Convert.ToDateTime(DateTime.Now);
+                                db.SaveChanges();
+                                Thread.Sleep(20);
+                            }
+                            else
+                            {
+                                if (Isnew)
+                                {
+                                    Equities_Ratings.Symbol = equity.Symbol;
+                                    db.Equities_Volume_Stats.Add(Equities_Ratings);
+                                    Equities_Ratings.Updated = Convert.ToDateTime(DateTime.Now);
+                                }
+                                db.SaveChanges();
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            continue;
+
+                        }
+
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+        }
+
+        private static object ExecuteCommandBatforStatas(string? securityId)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            //   string param = "https://nsearchives.nseindia.com/corporate/xbrl/NBFC_INDAS_104606_1102707_19042024080602.xml";
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\Equities_Stats.bat" + " " + securityId; ;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            //string errors = process.StandardError.ReadToEnd();
+            return process.StandardOutput.ReadToEnd();
+        }
 
         // public 
         public static async Task EquitiesStats()
@@ -100,6 +466,7 @@ namespace MSNStocks
                 Console.WriteLine("Listing Category Sales For 1997s");
                 var equites = db.Equitys.ToList();
                 db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
+                var TickerStocksHistries = db.TickerStocksHistries.ToList().Where(x => x.Ltt > DateTime.Now.AddDays(-45)).ToList();
 
 
 
@@ -240,6 +607,144 @@ namespace MSNStocks
 
             }
         }
+
+
+        //public static async Task EquitiesStatsForLKT()
+        //{
+
+
+
+
+        //    using (var db = new STOCKContext())
+        //    {
+        //        Console.WriteLine("Database Connected");
+        //        Console.WriteLine();
+        //        Console.WriteLine("Listing Category Sales For 1997s");
+        //        var equites = db.Equitys.ToList();
+        //        db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
+        //        var TickerStocksHistries = db.TickerStocksHistries.ToList().Where(x => x.Ltt > DateTime.Now.AddDays(-45)).ToList();
+
+
+
+        //        foreach (var equity in equites)
+        //        {
+        //            List<Equities_Stats> stats = new List<Equities_Stats>();
+        //            try
+        //            {
+        //                Equities threedaydata = null;
+        //                Equities fivedaydata = null;
+        //                Equities sevdaydata = null;
+        //                Equities fifitendays = null;
+        //                Equities tendays = null;
+
+
+        //                var quotelist = TickerStocksHistries.Where(x => x.Symbol == equity.Symbol).ToList().OrderByDescending(x => x.Ltt).Take(30).ToList();
+        //                if (quotelist.Count == 0)
+        //                {
+        //                    continue;
+        //                }
+
+
+        //                foreach (var itemx in quotelist.Skip(quotelist.Count - 30).Take(7))
+        //                {
+        //                    try
+        //                    {
+        //                        var equities_Stats = new Equities_Stats();
+        //                        equities_Stats.Symbol = itemx.Symbol;
+        //                        equities_Stats.StockCode = equity.SecurityId;
+        //                        equities_Stats.StockName = equity.SecurityName;
+        //                        equities_Stats.Change = Convert.ToDouble(itemx.Change);
+        //                        equities_Stats.close = Convert.ToDouble(itemx.Close);
+        //                        equities_Stats.Open = itemx.open;
+        //                        equities_Stats.Volume = Convert.ToDouble(itemx.ttv);
+        //                        equities_Stats.LTT = Convert.ToDateTime(itemx.ltt);
+        //                        equities_Stats.MACD = macdresult.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Macd.HasValue ? Convert.ToDouble(x.Macd) : 0).FirstOrDefault();
+        //                        equities_Stats.RSI = rsiResults.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Rsi.HasValue ? Convert.ToDouble(x.Rsi) : 0).FirstOrDefault();
+        //                        string? v = candleResult.Where(y => y.Date == Convert.ToDateTime(itemx.ltt)).Select(x => x.Match.ToString().Replace("Signal", "")).FirstOrDefault();
+        //                        equities_Stats.Match = v;
+
+        //                        threedaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(itemx.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+
+        //                        if (threedaydata != null)
+        //                        {
+        //                            equities_Stats.ThreedaysChange = Math.Round(Convert.ToDouble(((itemx.open - threedaydata.open) / threedaydata.open) * 100), 2);
+        //                            equities_Stats.ThreedaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - threedaydata.open), 2);
+        //                        }
+
+        //                        if (threedaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(threedaydata.ltt).AddDays(-2)))
+        //                        {
+        //                            fivedaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(threedaydata.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+        //                            if (fivedaydata != null)
+        //                            {
+        //                                equities_Stats.FivedaysChange = Math.Round(Convert.ToDouble(((itemx.open - fivedaydata.open) / fivedaydata.open) * 100), 2);
+        //                                equities_Stats.FivedaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - fivedaydata.open), 2);
+        //                            }
+        //                        }
+        //                        if (fivedaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(fivedaydata.ltt).AddDays(-2)))
+        //                        {
+        //                            sevdaydata = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(fivedaydata.ltt).AddDays(-2)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+        //                            if (sevdaydata != null)
+        //                            {
+        //                                equities_Stats.SevendaysChange = Math.Round(Convert.ToDouble(((itemx.open - sevdaydata.open) / sevdaydata.open) * 100), 2);
+        //                                equities_Stats.SevendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - sevdaydata.open), 2);
+        //                            }
+        //                        }
+        //                        if (sevdaydata != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-3)))
+        //                        {
+        //                            tendays = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-3)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+        //                            if (tendays != null)
+        //                            {
+        //                                equities_Stats.TendaysChange = Math.Round(Convert.ToDouble(((itemx.open - tendays.open) / tendays.open) * 100), 2);
+        //                                equities_Stats.TendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - tendays.open), 2);
+        //                            }
+        //                        }
+        //                        if (tendays != null && quotelist.Any(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(sevdaydata.ltt).AddDays(-4)))
+        //                        {
+        //                            fifitendays = quotelist.Where(z => Convert.ToDateTime(z.ltt) <= Convert.ToDateTime(tendays.ltt).AddDays(-4)).OrderByDescending(t => Convert.ToDateTime(t.ltt)).FirstOrDefault();
+        //                            if (fifitendays != null)
+        //                            {
+        //                                equities_Stats.FifteendaysChange = Math.Round(Convert.ToDouble(((itemx.open - fifitendays.open) / fifitendays.open) * 100), 2);
+        //                                equities_Stats.FifteendaysPriceChange = Math.Round(Convert.ToDouble(itemx.open - fifitendays.open), 2);
+        //                            }
+        //                        }
+
+        //                        stats.Add(equities_Stats);
+
+
+        //                    }
+        //                    catch (Exception ex)
+        //                    {
+
+        //                        throw;
+        //                    }
+        //                }
+
+        //                try
+        //                {
+        //                    db.Equities_Stats.AddRange(stats);
+        //                    //db.Entry(equity).State = EntityState.Modified;
+        //                    db.SaveChanges();
+        //                }
+        //                catch (Exception ex)
+        //                {
+
+        //                    throw;
+        //                }
+
+        //                //Console.WriteLine(equity.SecurityName);
+
+        //            }
+        //            catch (Exception ex)
+        //            {
+
+        //                throw;
+        //            };
+        //            Console.WriteLine(equity.Id);
+
+        //        }
+
+        //    }
+        //}
 
         public static async Task getInitStocks()
         {
@@ -734,6 +1239,28 @@ namespace MSNStocks
 
         }
 
+        static string ExecuteCommandNSEBlock(string filename)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            string param = "https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly";
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_Deal.bat" + " " + DateTime.Now.AddDays(-1).Date.ToString("dd-MM-yyyy") + " " + DateTime.Now.Date.ToString("dd-MM-yyyy"); ;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+
+
+        }
+
+
+
         private static string RemoveEmptyLines(string lines)
         {
             return Regex.Replace(lines, @"^\s*$\n|\r", string.Empty, RegexOptions.Multiline).TrimEnd();
@@ -995,7 +1522,7 @@ namespace MSNStocks
                                 if (isnew)
                                 {
 
-                                   
+
                                     string revenueIncrease = "";
                                     string ChangeInPercenate = string.Empty;
 
@@ -1005,14 +1532,14 @@ namespace MSNStocks
                                         revenueIncrease = revenueIncrease + " In CR and % of Revenue Increase " + Convert.ToDouble(Stock_Financial_Results_obj.RevenueDifference).ToString("N2");
                                     }
 
-                                    
+
                                     var parameters = new Dictionary<string, string>
                                     {
                                         ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
                                         ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
                                         ["priority"] = "1",
-                                        ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores  LTP is {3} and Revenue is {4}", item.companyName,
-                                        Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000, strlastvalue.ToString(), revenueIncrease),
+                                        ["message"] = string.Format("Company {0} Result EPS {1},NetProfit {2} Crores  LTP is {3} and Revenue is {4}. Previous EPS is {5} Current EPS is {6}",
+                                        item.companyName, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_obj.NET_PROFIT / 10000000, strlastvalue.ToString(), revenueIncrease, Stock_Financial_Results_obj.EPS, Stock_Financial_Results_Previous.EPS),
                                         ["title"] = "FinacialResult",
                                         ["retry"] = "30",
                                         ["expire"] = "300",
@@ -1061,14 +1588,112 @@ namespace MSNStocks
 
         }
 
+
+        public static async Task getNSEBlockResults()
+        {
+            string param = "";
+
+            try
+            {
+
+
+                var filteredtxt = ExecuteCommandNSEBlock(@"C:\Hosts\Breeze\NSE_Deals.bat");
+
+                var data = filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+
+                //List<NSE_DEALS_DB> alldatafromtable = new List<NSE_DEALS_DB>();
+                using (var db = new STOCKContext())
+                {
+                  var   alldatafromtable = db.NSE_DEALS.AsQueryable();
+
+
+                    //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
+                    var result = JsonConvert.DeserializeObject<Deals>(data);
+                    var groupbyScriptName = result.data.GroupBy(X => X.BD_SCRIP_NAME);
+
+                    foreach (var itemS in groupbyScriptName)
+                    {
+                        foreach (var item in itemS)
+                        {
+
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Id == item._id);
+                            if (Stock_Financial_Results_obj == null)
+                            {
+                                Stock_Financial_Results_obj = new NSE_DEALS_DB();
+                                Stock_Financial_Results_obj.Id = item._id;
+                                Stock_Financial_Results_obj.BD_QTY_TRD = item.BD_QTY_TRD;
+                                Stock_Financial_Results_obj.BD_TP_WATP = Convert.ToDecimal(item.BD_TP_WATP);
+                                Stock_Financial_Results_obj.BD_BUY_SELL = item.BD_BUY_SELL;
+                                Stock_Financial_Results_obj.BD_SYMBOL = item.BD_SYMBOL;
+                                Stock_Financial_Results_obj.BD_DT_DATE = Convert.ToDateTime(item.BD_DT_DATE);
+                                Stock_Financial_Results_obj.BD_CLIENT_NAME = item.BD_CLIENT_NAME;
+                                Stock_Financial_Results_obj.BD_REMARKS = item.BD_REMARKS.ToString();
+                                Stock_Financial_Results_obj.BD_SCRIP_NAME = item.BD_SCRIP_NAME;
+                                Stock_Financial_Results_obj.createdAt = item.createdAt;
+                                Stock_Financial_Results_obj.updatedAt = item.updatedAt;
+                                Stock_Financial_Results_obj.TIMESTAMP = item.TIMESTAMP;
+                                Stock_Financial_Results_obj.mTIMESTAMP = item.mTIMESTAMP;
+
+
+
+
+                                db.NSE_DEALS.Add(Stock_Financial_Results_obj);
+
+
+
+                                db.SaveChanges();
+                                if (Stock_Financial_Results_obj.BD_BUY_SELL.ToLower().Contains("buy"))
+                                {
+
+                                    var parameters = new Dictionary<string, string>
+                                    {
+                                        ["token"] = "a6qsrxr7i2nqzfyzqofuys4hm3rwax",
+                                        ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                                        ["priority"] = "1",
+                                        ["message"] = string.Format("Block Deal by {0} on Company {1} with QTY {2} at PRICE {3} and No of clients Booked {4}",
+                                        item.BD_CLIENT_NAME, item.BD_SCRIP_NAME, item.BD_QTY_TRD, item.BD_TP_WATP, itemS.Count()),
+                                        ["title"] = "BLOCK DEALS",
+                                        ["retry"] = "30",
+                                        ["expire"] = "300",
+                                        ["html"] = "1",
+                                        ["sound"] = "echo",
+                                        ["device"] = "iphone"
+                                    };
+                                    using var client = new HttpClient();
+                                    var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+                                    FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+                                }
+
+
+                            }
+                        }
+
+
+                    }
+                    // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
+
+                    //  string errors = process.StandardError.ReadToEnd();
+                    //Assert.IsTrue(string.IsNullOrEmpty(errors));
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+
+
+        }
+
         private static void StatsProfits(Stock_Financial_Results_NSE? Stock_Financial_Results_obj, Stock_Financial_Results_NSE? Stock_Financial_Results_Previous)
         {
             Stock_Financial_Results_obj.RevenueIncrease = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.Revenue - Stock_Financial_Results_Previous.Revenue : 0);
             Stock_Financial_Results_obj.Profit_Increase = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.NET_PROFIT - Stock_Financial_Results_Previous.NET_PROFIT : 0);
             Stock_Financial_Results_obj.RevenueDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.Revenue.Value, Stock_Financial_Results_obj.Revenue.Value) : 0);
             Stock_Financial_Results_obj.ProfitDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.NET_PROFIT.Value, Stock_Financial_Results_obj.NET_PROFIT.Value) : 0);
-           
-            
+
+
             Stock_Financial_Results_obj.EPS_INcrease = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? Stock_Financial_Results_obj.EPS - Stock_Financial_Results_Previous.EPS : 0);
             Stock_Financial_Results_obj.EPSDifference = Convert.ToDecimal(Stock_Financial_Results_Previous != null ? CalculateChange(Stock_Financial_Results_Previous.EPS.Value, Stock_Financial_Results_obj.EPS.Value) : 0);
         }

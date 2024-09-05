@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using MSNStocks.Models.Deals;
 
 namespace MSNStocks.Models
 {
@@ -28,7 +29,11 @@ namespace MSNStocks.Models
         public virtual DbSet<Stock_Financial_Results> Stock_Financial_Results { get; set; } = null!;
         public virtual DbSet<Stock_Financial_Results_NSE> Stock_Financial_Results_NSE { get; set; } = null!;
 
+        public virtual DbSet<NSE_DEALS_DB> NSE_DEALS { get; set; } = null!;
+       
+        public virtual DbSet<Equities_Ratings> Equities_Ratings { get; set; } = null!;
 
+        public virtual DbSet<Equities_Volume_Stats> Equities_Volume_Stats { get; set; } = null!;
         public virtual DbSet<LiveStock> LiveStocks { get; set; } = null!;
         public virtual DbSet<TempPivot> TempPivots { get; set; } = null!;
         public virtual DbSet<TempPivotResult> TempPivotResults { get; set; } = null!;

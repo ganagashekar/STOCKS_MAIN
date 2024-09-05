@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MSNStocks.Models
 {
@@ -41,6 +42,84 @@ namespace MSNStocks.Models
 
         public string SecurityId { get; set; }
     }
+    public class Equities_Volume_Stats
+    {
+        [Key]
+        public long Id { get; set; }
+        public string? Symbol { set; get; }
+        public decimal? VolumeUPBy_Percentage { get; set; }
+        public DateTime? Updated { get; set; }
+
+        public string? Stock_name { get; set; }
+        public decimal? LTP { get; set; }
+        public decimal? Yesterday_volume { get; set; }
+        public decimal? Todays_volume { get; set; }
+    }
+    public class Equities_Ratings
+    {
+        [Key]
+        public long ID { get; set; }
+        public string? Symbol { get; set; }
+
+        public decimal? PIVOT { get; set; }
+
+        public decimal? FR1 { get; set; }
+
+        public decimal? FR2 { get; set; }
+
+        public decimal? FR3 { get; set; }
+
+        public decimal? FS1 { get; set; }
+
+        public decimal? FS2 { get; set; }
+
+        public decimal? FS3 { get; set; }
+
+        public decimal? RSI { get; set; }
+
+        public decimal? MACD { get; set; }
+
+        public decimal? MFI { get; set; }
+
+        public decimal? MCADSIG { get; set; }
+
+        public decimal? ADX { get; set; }
+
+        public decimal? ATR { get; set; }
+
+        public decimal? ROC125 { get; set; }
+
+        public decimal? ROC21 { get; set; }
+
+        public decimal? Williams { get; set; }
+
+        public decimal? Strengths { get; set; }
+
+        public decimal? Weakness { get; set; }
+
+        public decimal? Opportunity { get; set; }
+
+        public decimal? Threats { get; set; }
+
+        public string? FII { get; set; }
+
+        public decimal? FFI_INCREASE { get; set; }
+
+        public string MutaulFOunds { get; set; }
+
+        public decimal? MF_Increase { get; set; }
+
+        public string? SecuirtyId { get; set; }
+
+        public string? Postive { get; set; }
+        public string? Negative { get; set; }
+        public string companyName { get; set; }
+        public DateTime? Updated_on { get; set; }
+
+    }
+
+    //Completion time: 2024-09-01T17:46:04.2279970+05:30
+
     public partial class Equity
     {
         public long Id { get; set; }

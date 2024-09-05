@@ -16,6 +16,9 @@
         public decimal currentChange { get; set; }
 
         public string stockCode { get; set; }
+
+        public decimal ttq { set; get; }
+        public decimal ttv { set;get; }
     }
 
 }

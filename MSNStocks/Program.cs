@@ -13,7 +13,7 @@ public class Program
             await API_MSN_Library.getInitStocksFromSECID();
             await API_MSN_Library.InsertMMSCompanies();
             await API_MSN_Library.UpdownStcoks();
-            await API_MSN_Library.EquitiesStats();
+            
 
 
 
