@@ -34,6 +34,10 @@ namespace MSNStocks.Models
         public virtual DbSet<Equities_Ratings> Equities_Ratings { get; set; } = null!;
 
         public virtual DbSet<Equities_Volume_Stats> Equities_Volume_Stats { get; set; } = null!;
+
+        public virtual DbSet<AOEquities> AOEquities { get; set; } = null!;
+        public virtual DbSet<AO_Depth> AO_Depth { get; set; } = null!;
+
         public virtual DbSet<LiveStock> LiveStocks { get; set; } = null!;
         public virtual DbSet<TempPivot> TempPivots { get; set; } = null!;
         public virtual DbSet<TempPivotResult> TempPivotResults { get; set; } = null!;

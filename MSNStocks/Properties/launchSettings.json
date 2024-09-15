@@ -3,6 +3,10 @@
     "WSL": {
       "commandName": "WSL2",
       "distributionName": ""
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Ganga\\Code\\Stock\\MSNStocks\\bin\\Debug\\net6.0\\MSNStocks.exe"
     }
   }
 }

@@ -324,6 +324,6 @@ namespace ICICIVolumeBreakouts
 
 
             //#endregion
-        }
+         }
     }
 }

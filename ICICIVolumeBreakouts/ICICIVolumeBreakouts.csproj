@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Program2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="com.breeze.breezeconnect" Version="1.0.7" />
   </ItemGroup>
 

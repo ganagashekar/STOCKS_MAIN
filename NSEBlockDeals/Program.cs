@@ -5,7 +5,10 @@ namespace NSEBlockDeals
     {
         static async Task Main(string[] args)
         {
-            MSNStocks.API_MSN_Library.getNSEBlockResults();
+           
+            var t2=MSNStocks.API_MSN_Library.getNSEBulkResults();
+            var t1 = MSNStocks.API_MSN_Library.getNSEBlockResults();
+            Task.WaitAll(t1, t2);
         }
     }
 }

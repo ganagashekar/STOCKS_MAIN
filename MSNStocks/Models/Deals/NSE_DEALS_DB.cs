@@ -26,7 +26,7 @@ namespace MSNStocks.Models.Deals
 
         public decimal? BD_TP_WATP { get; set; }
 
-        public string BD_REMARKS { get; set; }
+        public string? BD_REMARKS { get; set; }
 
         public DateTime? TIMESTAMP { get; set; }
 
@@ -34,9 +34,9 @@ namespace MSNStocks.Models.Deals
 
         public DateTime? updatedAt { get; set; }
 
- 
+       public string? DEALTYPE { get; set; }
 
-        public string mTIMESTAMP { get; set; }
+        public string? mTIMESTAMP { get; set; }
 
     }
 
