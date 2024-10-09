@@ -748,7 +748,8 @@ namespace STM_API.Services
             bool isEnabledForAutoTrade = false, bool IsNotifications = false, int dynamicminValue = 0, int dynamicmaxValue = 0,
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
-            bool IsIncludeDeleted = false,string EC="All", string statsColumnRecords = null, string statsColumnCondition = null, int lastRecords = 0)
+            bool IsIncludeDeleted = false,string EC="All", string statsColumnRecords = null, string statsColumnCondition = null, int lastRecords = 0, bool IsVolumeBRK = false, 
+            bool Is52weeks = false, bool isOrderbyCHG = false)
         {
 
           
@@ -792,6 +793,12 @@ namespace STM_API.Services
 
                     sqlComm.Parameters.AddWithValue("@StatsColumn", statsColumnRecords);
                     sqlComm.Parameters.AddWithValue("@Condition", statsColumnCondition);
+
+                    sqlComm.Parameters.AddWithValue("@IsVolumeStats", IsVolumeBRK);
+
+                    sqlComm.Parameters.AddWithValue("@Isweek51", Is52weeks);
+
+                         sqlComm.Parameters.AddWithValue("@isOrderbyCHG", isOrderbyCHG);
 
 
                     sqlComm.CommandType = CommandType.StoredProcedure;
@@ -845,6 +852,7 @@ namespace STM_API.Services
 
                             IEnumerable<SuperTrendResult> Strend =quotesList.GetSuperTrend(10, 3);
                             var candleResult = quotesList.GetMarubozu(85);
+                            IEnumerable<AdxResult> adxresults = quotesList.GetAdx(14);
 
                             var _stokc = new EquitiesHsitry();
                             _stokc.symbol = r["symbol"].ToString();
@@ -914,6 +922,8 @@ namespace STM_API.Services
                             _stokc.pr_open = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.open)); //Convert.ToString(r[67] ?? "");
                             _stokc.pr_volume = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => x.VolumeC));// Convert.ToString(r[68] ?? "");
                             _stokc.pr_date = string.Join(',', quotelist.Skip(quotelist.Count - 30).Take(30).Select(x => Convert.ToDateTime(x.ltt).ToShortDateString()));// Convert.ToString(r[69] ?? "");
+
+                            _stokc.pr_adx= string.Join(",", adxresults.Skip(quotelist.Count - 30).Take(30).Select(x => x.Adx.HasValue ? Convert.ToDouble(x.Adx).ToString("F2") : ""));
 
                             _stokc.pr_Macresult = string.Join(",", macdresult.Skip(quotelist.Count - 30).Take(30).Select(x => x.Macd.HasValue ? Convert.ToDouble(x.Macd).ToString("F2") : ""));
                             _stokc.pr_RSI = string.Join(",", rsiResults.Skip(quotelist.Count - 30).Take(30).Select(x => x.Rsi.HasValue ? Convert.ToDouble(x.Rsi).ToString("F2") : ""));

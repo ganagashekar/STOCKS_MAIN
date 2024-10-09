@@ -50,6 +50,10 @@ using System.Security.Cryptography;
 using ICICIVolumeBreakouts.Models.Histrry;
 using Microsoft.EntityFrameworkCore.Metadata;
 using AngelBroking;
+using MSNStocks.AO;
+using NIFTYTraders.Models;
+using System.Reflection;
+using STM_API.Extention;
 
 namespace MSNStocks
 {
@@ -448,33 +452,31 @@ namespace MSNStocks
             string RefreshToken = ""; // optional
 
             var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\angel.txt");
-            string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            //string HUbUrl = url;
-
-
-            //string[] line;
-            //string arg = "0";
-
-
-            SmartApi connect = new SmartApi(api_key, JWTToken, RefreshToken);
-
+            //string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             OutputBaseClass obj = new OutputBaseClass();
+            var tokenresults = JsonConvert.DeserializeObject<AngelToken>(text);
 
-            //Login by client code and password
-            obj = connect.GenerateSession(Client_code, Password, text);
-            AngelToken agr = obj.TokenResponse;
 
-            Console.WriteLine("------GenerateSession call output-------------");
-            Console.WriteLine(JsonConvert.SerializeObject(agr));
-            Console.WriteLine("----------------------------------------------");
 
-            //Get Token
-            obj = connect.GenerateToken();
-            agr = obj.TokenResponse;
+            SmartApi connect = new SmartApi(api_key, tokenresults.jwtToken, tokenresults.refreshToken);
 
-            Console.WriteLine("------GenerateToken call output-------------");
-            Console.WriteLine(JsonConvert.SerializeObject(agr));
-            Console.WriteLine("----------------------------------------------");
+
+
+            ////Login by client code and password
+            //obj = connect.GenerateSession(Client_code, Password, text);
+            //AngelToken agr = obj.TokenResponse;
+
+            //Console.WriteLine("------GenerateSession call output-------------");
+            //Console.WriteLine(JsonConvert.SerializeObject(agr));
+            //Console.WriteLine("----------------------------------------------");
+
+            ////Get Token
+            //obj = connect.GenerateToken();
+            //agr = obj.TokenResponse;
+
+            //Console.WriteLine("------GenerateToken call output-------------");
+            //Console.WriteLine(JsonConvert.SerializeObject(agr));
+            //Console.WriteLine("----------------------------------------------");
 
 
 
@@ -485,7 +487,7 @@ namespace MSNStocks
             //Console.WriteLine("------GetProfile call output-------------");
             //Console.WriteLine(JsonConvert.SerializeObject(gp));
             //Console.WriteLine("----------------------------------------------");
-           
+
 
             try
             {
@@ -505,7 +507,7 @@ namespace MSNStocks
                     string APISecret = string.Empty;
                     string token = string.Empty;
                     var url = "http://localhost:99/breezeOperation";
-                   
+
 
 
                     //switch (0)
@@ -519,10 +521,10 @@ namespace MSNStocks
                     //        break;
                     //}
                     var bodyresponse = JsonConvert.DeserializeObject<Customer>(Getdetails(token, APIKEY).Result);
-                   
+
                     foreach (var equity in equites)
                     {
-                        Console.WriteLine(equity.SecurityName);
+
                         try
                         {
 
@@ -545,70 +547,80 @@ namespace MSNStocks
                             {
                                 exchangeTokens = new ExchangeTokens()
                                 {
-                                    BSE = new List<string>(){
-                                         equity.Symbol.Replace("1.1!", "")
-                                }
+                                    BSE = new List<string>() { equity.Symbol.Replace("1.1!", "") },
+                                    NSE = new List<string>() { equity.Isinno != null ? equity.Isinno.Replace("1.1!", "") : "" },
                                 },
-                                mode="FULL"
+                                mode = "FULL"
 
                             });
-                            if (Quotes.status && Quotes!=null && Quotes.data.fetched.Any())
+                            int i = 0;
+                            if (Quotes.status && Quotes.data.fetched.Count > 1)
                             {
-                                AOEquities ao = new AOEquities();
-                                ao.ltp = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().ltp);
-                                ao.tradeVolume = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().tradeVolume);
-                                ao.tradingSymbol = Convert.ToString(Quotes.data.fetched.FirstOrDefault().tradingSymbol);
-                                ao.NSECODE = equity.IssuerName;
-                                ao.opnInterest= Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().opnInterest);
-                                ao.lastTradeQty= Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().lastTradeQty);
-                                ao.avgPrice = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().avgPrice);
-                                ao.open = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().open);
-                                ao.low = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().low);
-                                ao.high = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().high);
-                                ao.close = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().close);
-                                ao.lowerCircuit = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().lowerCircuit);
-                                ao.upperCircuit = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().upperCircuit);
+                                Console.WriteLine(equity.SecurityName);
+                                var datas_result = Quotes.data.fetched.Where(x => x.depth.buy.FirstOrDefault().quantity > 0).ToList();
 
-                                ao.netChange = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().netChange);
-                                ao.percentChange = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().percentChange);
 
-                                ao.symbolToken = Convert.ToString(Quotes.data.fetched.FirstOrDefault().symbolToken);
-                                ao.symbol = equity.Symbol;
-                                ao.WeekHigh52 = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault()._52WeekHigh);
-                                ao.WeekLow52 = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault()._52WeekLow);
-
-                                ao.exchange = Quotes.data.fetched.FirstOrDefault().exchange;
-                                ao.exchFeedTime = Convert.ToDateTime(Quotes.data.fetched.FirstOrDefault().exchFeedTime);
-                                ao.exchTradeTime= Convert.ToDateTime(Quotes.data.fetched.FirstOrDefault().exchTradeTime);
-                                ao.totBuyQuan = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().totBuyQuan);
-                                ao.totSellQuan = Convert.ToDecimal(Quotes.data.fetched.FirstOrDefault().totSellQuan);
-                                db.AOEquities.Add(ao);
-                                int OrderID = 1;
-                                foreach (var depth in Quotes.data.fetched.FirstOrDefault().depth.buy)
+                                if (datas_result.Any())
                                 {
-                                    AO_Depth aO_Depth = new AO_Depth();
-                                    aO_Depth.price = Convert.ToDecimal(depth.price);
-                                    aO_Depth.orders  = Convert.ToInt64(depth.orders);
-                                    aO_Depth.quantity    = Convert.ToInt64(depth.quantity);
-                                    aO_Depth.symbolToken = Convert.ToString(Quotes.data.fetched.FirstOrDefault().symbolToken);
-                                    aO_Depth.Type = "BUY";
-                                    OrderID = OrderID + 1;
-                                    db.AO_Depth.Add(aO_Depth);
-                                }
-                                 OrderID = 1;
-                                foreach (var depth in Quotes.data.fetched.FirstOrDefault().depth.sell)
-                                {
-                                    AO_Depth aO_Depth = new AO_Depth();
-                                    aO_Depth.price = Convert.ToDecimal(depth.price);
-                                    aO_Depth.orders = Convert.ToInt64(depth.orders);
-                                    aO_Depth.quantity = Convert.ToInt64(depth.quantity);
-                                    aO_Depth.symbolToken = Convert.ToString(Quotes.data.fetched.FirstOrDefault().symbolToken);
-                                    aO_Depth.Type = "SELL";
-                                    OrderID = OrderID + 1;
-                                    db.AO_Depth.Add(aO_Depth);
-                                }
 
-                               // db.SaveChanges();
+                                    AOEquities ao = new AOEquities();
+                                    ao.ltp = Convert.ToDecimal(datas_result.FirstOrDefault().ltp);
+                                    ao.tradeVolume = Convert.ToDecimal(datas_result.FirstOrDefault().tradeVolume);
+                                    ao.tradingSymbol = Convert.ToString(datas_result.FirstOrDefault().tradingSymbol);
+                                    ao.NSECODE = equity.IssuerName;
+                                    ao.opnInterest = Convert.ToDecimal(datas_result.FirstOrDefault().opnInterest);
+                                    ao.lastTradeQty = Convert.ToDecimal(datas_result.FirstOrDefault().lastTradeQty);
+                                    ao.avgPrice = Convert.ToDecimal(datas_result.FirstOrDefault().avgPrice);
+                                    ao.open = Convert.ToDecimal(datas_result.FirstOrDefault().open);
+                                    ao.low = Convert.ToDecimal(datas_result.FirstOrDefault().low);
+                                    ao.high = Convert.ToDecimal(datas_result.FirstOrDefault().high);
+                                    ao.close = Convert.ToDecimal(datas_result.FirstOrDefault().close);
+                                    ao.lowerCircuit = Convert.ToDecimal(datas_result.FirstOrDefault().lowerCircuit);
+                                    ao.upperCircuit = Convert.ToDecimal(datas_result.FirstOrDefault().upperCircuit);
+
+                                    ao.netChange = Convert.ToDecimal(datas_result.FirstOrDefault().netChange);
+                                    ao.percentChange = Convert.ToDecimal(datas_result.FirstOrDefault().percentChange);
+
+                                    ao.symbolToken = Convert.ToString(datas_result.FirstOrDefault().symbolToken);
+                                    ao.symbol = equity.Symbol;
+                                    ao.WeekHigh52 = Convert.ToDecimal(datas_result.FirstOrDefault()._52WeekHigh);
+                                    ao.WeekLow52 = Convert.ToDecimal(datas_result.FirstOrDefault()._52WeekLow);
+
+                                    ao.exchange = datas_result.FirstOrDefault().exchange;
+                                    ao.exchFeedTime = Convert.ToDateTime(datas_result.FirstOrDefault().exchFeedTime);
+                                    ao.exchTradeTime = Convert.ToDateTime(datas_result.FirstOrDefault().exchTradeTime);
+                                    ao.totBuyQuan = Convert.ToDecimal(datas_result.FirstOrDefault().totBuyQuan);
+                                    ao.totSellQuan = Convert.ToDecimal(datas_result.FirstOrDefault().totSellQuan);
+                                    db.AOEquities.Add(ao);
+                                    int OrderID = 1;
+                                    foreach (var depth in datas_result.FirstOrDefault().depth.buy)
+                                    {
+                                        AO_Depth aO_Depth = new AO_Depth();
+                                        aO_Depth.price = Convert.ToDecimal(depth.price);
+                                        aO_Depth.orders = Convert.ToInt64(depth.orders);
+                                        aO_Depth.quantity = Convert.ToInt64(depth.quantity);
+                                        aO_Depth.symbolToken = Convert.ToString(datas_result.FirstOrDefault().symbolToken);
+                                        aO_Depth.Type = "BUY";
+                                        aO_Depth.OrderID = OrderID;
+                                        OrderID = OrderID + 1;
+                                        db.AO_Depth.Add(aO_Depth);
+                                    }
+                                    OrderID = 1;
+                                    foreach (var depth in datas_result.FirstOrDefault().depth.sell)
+                                    {
+                                        AO_Depth aO_Depth = new AO_Depth();
+                                        aO_Depth.price = Convert.ToDecimal(depth.price);
+                                        aO_Depth.orders = Convert.ToInt64(depth.orders);
+                                        aO_Depth.quantity = Convert.ToInt64(depth.quantity);
+                                        aO_Depth.symbolToken = Convert.ToString(datas_result.FirstOrDefault().symbolToken);
+                                        aO_Depth.Type = "SELL";
+                                        aO_Depth.OrderID = OrderID;
+                                        OrderID = OrderID + 1;
+                                        db.AO_Depth.Add(aO_Depth);
+                                    }
+
+                                    // db.SaveChanges();
+                                }
                             }
 
 
@@ -624,11 +636,11 @@ namespace MSNStocks
                                 Equities_Ratings = new Equities_Volume_Stats();
                                 Isnew = true;
                             }
-                            if(results==null)
+                            if (results == null)
                             {
                                 Thread.Sleep(10);
-                                 data = connect.GetCandleData(input);
-                                 results = data.GetCandleDataResponse;
+                                data = connect.GetCandleData(input);
+                                results = data.GetCandleDataResponse;
                             }
                             if (results == null)
                             {
@@ -827,7 +839,7 @@ namespace MSNStocks
 
 
             }
-            
+
         }
 
         private static object ExecuteCommandBatforStatas(string? securityId)
@@ -1634,12 +1646,12 @@ namespace MSNStocks
 
         }
 
-        static string ExecuteCommandNSEBlock(string filename,string Type)
+        static string ExecuteCommandNSEBlock(string filename, string Type)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "cmd.exe";
             string param = "https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly";
-            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_Deal.bat" + " " + Type+ " " + DateTime.Now.AddDays(-1).Date.ToString("dd-MM-yyyy") + " " + DateTime.Now.Date.ToString("dd-MM-yyyy"); ;
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_Deal.bat" + " " + Type + " " + DateTime.Now.AddDays(-1).Date.ToString("dd-MM-yyyy") + " " + DateTime.Now.Date.ToString("dd-MM-yyyy"); ;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
             startInfo.UseShellExecute = false;
@@ -1976,7 +1988,7 @@ namespace MSNStocks
             }
             catch (Exception ex)
             {
-                
+
 
             }
 
@@ -1999,7 +2011,7 @@ namespace MSNStocks
                 //List<NSE_DEALS_DB> alldatafromtable = new List<NSE_DEALS_DB>();
                 using (var db = new STOCKContext())
                 {
-                  var   alldatafromtable = db.NSE_DEALS.ToList();
+                    var alldatafromtable = db.NSE_DEALS.ToList();
 
 
                     //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
@@ -2011,7 +2023,8 @@ namespace MSNStocks
                         foreach (var item in itemS)
                         {
 
-                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Id == item._id);
+
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Id == item._id && x.TIMESTAMP == item.TIMESTAMP);
                             if (Stock_Financial_Results_obj == null)
                             {
                                 try
@@ -2032,10 +2045,10 @@ namespace MSNStocks
                                     Stock_Financial_Results_obj.mTIMESTAMP = item.mTIMESTAMP;
                                     Stock_Financial_Results_obj.DEALTYPE = "block-deals";
                                 }
-                                catch 
+                                catch
                                 {
 
-                                    
+
                                 }
 
 
@@ -2117,7 +2130,7 @@ namespace MSNStocks
                         foreach (var item in itemS)
                         {
 
-                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Id == item._id);
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.Id == item._id && x.TIMESTAMP == item.TIMESTAMP);
                             if (Stock_Financial_Results_obj == null)
                             {
                                 try
@@ -2805,6 +2818,97 @@ namespace MSNStocks
         public static void CalculateXIRR()
         {
             throw new NotImplementedException();
+        }
+
+        public static async Task GenerateNiftyTraderAsync(string expiryDate,string Code)
+        {
+           // string ExpiryDate = "2024-10-17";
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    var result = await client.GetAsync($"https://webapi.niftytrader.in/webapi/option/option-chain-data?symbol={Code}&exchange=nse&expiryDate={expiryDate}&atmBelow=0&atmAbove=0");
+                    result.EnsureSuccessStatusCode();
+                    string resultContentString = await result.Content.ReadAsStringAsync();
+                    NiftyTrader resultContent = JsonConvert.DeserializeObject<NiftyTrader>(resultContentString);
+
+                    var dt = ToDataTable(resultContent.resultData.opDatas.ToList());
+
+                    using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                    {
+                        var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.TableLock, null)
+                        {
+                            DestinationTableName = "dbo.NIFTYTRADER",
+                            BatchSize = dt.Rows.Count
+                        };
+                        conn.Open();
+                        bc.WriteToServer(dt);
+                        conn.Close();
+                        bc.Close();
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+            }
+
+        }
+        public static DataTable ToDataTable<T>( List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Defining type of data column gives proper data table 
+                var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name, type);
+            }
+            foreach (T item in items)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
+        public static async Task GenerateBankNiftyTraderAsync()
+        {
+            string ExpiryDate = "2024-10-17";
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"https://webapi.niftytrader.in/webapi/option/option-chain-data?symbol=banknifty&exchange=nse&expiryDate={ExpiryDate}&atmBelow=0&atmAbove=0");
+                result.EnsureSuccessStatusCode();
+                string resultContentString = await result.Content.ReadAsStringAsync();
+                NiftyTrader resultContent = JsonConvert.DeserializeObject<NiftyTrader>(resultContentString);
+
+                var dt = ToDataTable(resultContent.resultData.opDatas.ToList());
+
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+                    var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.TableLock, null)
+                    {
+                        DestinationTableName = "dbo.Ticker_Stocks",
+                        BatchSize = dt.Rows.Count
+                    };
+                    conn.Open();
+                    bc.WriteToServer(dt);
+                    conn.Close();
+                    bc.Close();
+                }
+
+            }
+
         }
     }
 

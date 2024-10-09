@@ -18,7 +18,7 @@ namespace AngelBroking
         public string refreshToken { get; set; }
         public string feedToken { get; set; }
     }
-    class AngelTokenResponse
+    public class AngelTokenResponse
     {
         public bool status { get; set; }
         public string message { get; set; }
@@ -441,6 +441,7 @@ namespace AngelBroking
     public class ExchangeTokens
     {
         public List<string> BSE { get; set; }
+        public List<string> NSE { get; set; }
     }
 
     public class QuoteData

@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AngelBroking\AngelBroking.csproj" />
+    <ProjectReference Include="..\STM_API\STM_API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

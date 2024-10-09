@@ -237,6 +237,7 @@ namespace STM_API.Model
 
         public string pr_volume { set; get; }
         public string pr_date { set; get; }
+        public string pr_adx { set; get; }
 
         public int BearishCount { set; get; }
         public int BullishCount { set; get; }
