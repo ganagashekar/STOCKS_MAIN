@@ -5,6 +5,7 @@ using STM_API.Model.BreezeAPIModel;
 using Newtonsoft.Json;
 using STM_API.AutomationModel;
 using STM_API.AutomationModels;
+using System.Text.Json;
 
 namespace STM_API.Services
 {
@@ -66,12 +67,12 @@ namespace STM_API.Services
                    {
                        buyATPrice = Convert.ToDecimal(row.Field<decimal>("buyATPrice")),
                        buyATChange = Convert.ToDecimal(row.Field<decimal>("buyATChange")),
-                       sellATPrice = row.Field<decimal>("sellAtPrice"),
+                       sellATPrice = Convert.ToDecimal(row.Field<decimal>("sellAtPrice")),
                        symbol = row.Field<string>("Symbol"),
                        stockName = row.Field<string>("StockName"),
                        stockCode = row.Field<string>("StockCode"),
                        ttq= Convert.ToDecimal(row.Field<decimal>("ttq")),
-                       ttv = Convert.ToDecimal(row.Field<decimal>("ttv")),
+                       ttv = Convert.ToDecimal(row.Field<double>("ttv")),
                    }).ToList();
                 return items.ToList();
             }
@@ -161,11 +162,15 @@ namespace STM_API.Services
                 var results = GetExportAutomationLiveStocksToJson();
 
 
-                var chubnkresulst = results.Chunk<Equities>(3000);
+                var chubnkresulst = results.Chunk<LiveAutomatioNobject>(4000);
                 int i = 0;
+                var jsonSerializerOptions = new JsonSerializerOptions()
+                {
+                    IgnoreNullValues = true
+                };
                 foreach (var item in chubnkresulst)
                 {
-                    var json = JsonConvert.SerializeObject(item);
+                    var json = JsonConvert.SerializeObject(item );
                     System.IO.File.WriteAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", i), json);
                     i++;
                 }
@@ -179,7 +184,7 @@ namespace STM_API.Services
             }
         }
 
-        private List<Equities> GetExportAutomationLiveStocksToJson()
+        private List<LiveAutomatioNobject> GetExportAutomationLiveStocksToJson()
         {
             DataSet ds = new DataSet();
 
@@ -198,9 +203,10 @@ namespace STM_API.Services
 
             try
             {
-                List<Equities> items = ds.Tables[0].AsEnumerable().Select(row => new Equities
+                List<LiveAutomatioNobject> items = ds.Tables[0].AsEnumerable().Select(row => new LiveAutomatioNobject
                 {
-                    symbol = row.Field<string>("symbol")
+                    symbol = row.Field<string>("symbol"),
+                    
                 }).ToList();
                 return items.ToList();
             }

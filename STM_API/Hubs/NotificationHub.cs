@@ -59,12 +59,14 @@ namespace STM_API.Hubs
 
         public async Task GetBuyStockTriggers(int Id)
         {
+           
+
             try
             {
-                if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoks", Id)))
+                if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id)))
                 {
                     var text = System.IO.File.ReadAllText(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id));
-                    var equities = System.Text.Json.JsonSerializer.Deserialize<List<BuyStockAlertModel>>(text).ToList();
+                    var equities = JsonConvert.DeserializeObject<List<BuyStockAlertModel>>(text).ToList();
 
                     var result = _breezapiServices.GetBuyStockTriggers().ToList();
                     await Clients.Caller.SendAsync("SendGetBuyStockTriggers", result.Where(x => equities.Any(y => y.symbol == x.symbol)).ToList());
@@ -92,6 +94,7 @@ namespace STM_API.Hubs
 
         public async Task GetAllStocksForLoadAutomation(int Id)
         {
+          
 
             if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id)))
             {

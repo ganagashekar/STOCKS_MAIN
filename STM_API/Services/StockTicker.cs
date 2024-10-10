@@ -1982,7 +1982,7 @@ namespace STM_API.Services
                 var results = SendAllStocksForLoad();
                 ExportAllLiveStocksToJson(results.ToList());
 
-                var chubnkresulst = results.Chunk<Equities>(3000);
+                var chubnkresulst = results.Chunk<Equities>(4000);
                 int i = 0;
                 foreach (var item in chubnkresulst)
                 {

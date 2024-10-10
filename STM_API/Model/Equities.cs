@@ -111,6 +111,10 @@ namespace STM_API.Model
         public int BullishCount_95 { get; set; }
 
     }
+    public class LiveAutomatioNobject
+    {
+        public string symbol { get; set; }
+    }
     public class Equities
     {
         public string? msn_secid { get; set; }

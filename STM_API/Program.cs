@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Extensions.Options;
 using STM_API.Hubs;
 using STM_API.Services;
 using System.Net;
 using System.Reflection.PortableExecutable;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 //var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
 //store.Open(OpenFlags.ReadOnly);
@@ -44,6 +47,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<StockTicker>();
 builder.Services.AddScoped<BreezapiServices>();
+builder.Services.Configure<JsonOptions>(options =>
+{
+    // Set this to true to ignore null or default values
+    options.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 //builder.Services.ConfigureHttpJsonOptions(options => {
 //    options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
 //});
