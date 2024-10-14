@@ -30,7 +30,11 @@ namespace MSNStocks.Models
         public virtual DbSet<Stock_Financial_Results_NSE> Stock_Financial_Results_NSE { get; set; } = null!;
 
         public virtual DbSet<NSE_DEALS_DB> NSE_DEALS { get; set; } = null!;
-       
+
+        public virtual DbSet<NSELOWHIGH> NSELOWHIGH { get; set; } = null!;
+
+        
+
         public virtual DbSet<Equities_Ratings> Equities_Ratings { get; set; } = null!;
 
         public virtual DbSet<Equities_Volume_Stats> Equities_Volume_Stats { get; set; } = null!;

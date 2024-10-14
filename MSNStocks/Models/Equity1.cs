@@ -148,5 +148,30 @@ namespace MSNStocks.Models
 
         public bool? IsLatestQuaterUpdated { get; set; }
         public DateTime? FinancialUpdatedOn { get; set; }
+
+
+        public bool? IsOptions { get; set; }
+
+        public bool? IsNifty { get; set; }
+
+        public bool? IsBankNifty { get; set; }
+
+        public bool? IsSensex { get; set; }
+
+        public bool? IsFinNifty { get; set; }
+
+        public bool? Is52Low { get; set; }
+
+        public bool? Is52High { get; set; }
+
+        public int? MSN_Valuation { get; set; }
+
+        public int? MSN_Health { get; set; }
+
+        public int? MSN_Growth { get; set; }
+
+        public int? MSN_Performance { get; set; }
+
+        public int? MSN_Earnings { get; set; }
     }
 }

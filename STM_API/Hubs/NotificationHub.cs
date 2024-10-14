@@ -56,6 +56,12 @@ namespace STM_API.Hubs
         }
 
 
+        public async Task GetDashboard_option_data()
+        {
+            var result = _breezapiServices.GetDashboard_Stats();
+            await Clients.Caller.SendAsync("SendGetDashboard_option_data", result);
+        }
+
 
         public async Task GetBuyStockTriggers(int Id)
         {

@@ -54,6 +54,9 @@ using MSNStocks.AO;
 using NIFTYTraders.Models;
 using System.Reflection;
 using STM_API.Extention;
+using MSNStocks.Models.NiftyTrader;
+using NSEBlockDeals.HIGH;
+using MSNStocks.Models.Insights;
 
 namespace MSNStocks
 {
@@ -1666,6 +1669,26 @@ namespace MSNStocks
 
         }
 
+        static string ExecuteCommandNSEWeek(string filename, string Type)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            string param = "https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly";
+            startInfo.Arguments = @"/c C:\Hosts\Breeze\NSE_52weeks.bat" + " " + Type + " " + DateTime.Now.AddDays(-1).Date.ToString("dd-MM-yyyy") + " " + DateTime.Now.Date.ToString("dd-MM-yyyy"); ;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+
+
+        }
+
 
 
         private static string RemoveEmptyLines(string lines)
@@ -2344,6 +2367,17 @@ namespace MSNStocks
                         try
                         {
                             var stockresult = await getstockDetails(equity.MSN_SECID);
+                            var stockinsights = await getstockDetailsinsights(equity.MSN_SECID);
+
+
+                            equity.Industry = stockresult.equity.company.industry ?? string.Empty;
+                            equity.SectorName = stockresult.equity.company.sector ?? string.Empty;
+                            equity.MSN_Growth = stockinsights.MSN_Growth;
+                            equity.MSN_Health = stockinsights.MSN_Health;
+                            equity.MSN_Performance = stockinsights.MSN_Performance;
+                            equity.MSN_Valuation = stockinsights.MSN_Valuation;
+                            equity.MSN_Earnings = stockinsights.MSN_Earnings;
+
                             string PreviousRecommondation = equity.Recommondations;
                             string CurrentRecommondation = string.Empty;
                             if (stockresult.equity != null)
@@ -2399,6 +2433,7 @@ namespace MSNStocks
                         equity.Recommondations = stockresult.equity.analysis.estimate.recommendation ?? "Null";
                     }
                     equity.UpdatedOn = DateTime.Now;
+
                     db.Entry(equity).State = EntityState.Modified;
                     db.SaveChanges();
 
@@ -2414,6 +2449,53 @@ namespace MSNStocks
             var result = await HttpHelper.Get<List<MainResposne>>(string.Format(url, sec), "");
             return result.FirstOrDefault();
             // var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
+        }
+
+        public static async Task<MNS_valuations> getstockDetailsinsights(string sec)
+        {
+            MNS_valuations mNS_Valuations = new MNS_valuations();
+            ////System.Threading.Thread.Sleep(1000);
+            var url = "https://api.msn.com/msn/v0/pages/finance/insights?apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&activityId=E4BA41B3-D3A3-4A2A-8382-714F85D9AD2F&ocid=finance-utils-peregrine&cm=en-us&it=web&scn=ANON&ids={0}&wrapodata=false";
+            var result = await HttpHelper.Get<List<MSNInsights>>(string.Format(url, sec), "");
+            mNS_Valuations.MSN_Valuation = GetAIInsights(result, "Valuation", "good");
+            mNS_Valuations.MSN_Growth = GetAIInsights(result, "growth", "good");
+            mNS_Valuations.MSN_Performance = GetAIInsights(result, "performance", "good");
+            mNS_Valuations.MSN_Earnings = GetAIInsights(result, "earnings", "good");
+            mNS_Valuations.MSN_Health = GetAIInsights(result, "health", "good");
+
+
+
+
+            return mNS_Valuations;
+            //// var findresult = JsonConvert.DeserializeObject<StockQueryFirst>(result.data.stocks.FirstOrDefault().ToString());
+            ///
+
+
+            //try
+            //{
+            //    var client = new HttpClient();
+            //    var request = new HttpRequestMessage(HttpMethod.Get, "https://api.msn.com/msn/v0/pages/finance/insights?apikey=0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM&activityId=E4BA41B3-D3A3-4A2A-8382-714F85D9AD2F&ocid=finance-utils-peregrine&cm=en-us&it=web&scn=ANON&ids=ahh5pr&wrapodata=false");
+            //    // request.Headers.Add("Cookie", "_C_Auth=; MUID=3DFCE38B7B936AE335B3F69D7ABA6B4C; _C_ETH=1; _EDGE_S=F=1&SID=1B36B047CE366059153FA551CF1F612B; _EDGE_V=1; MUIDB=3DFCE38B7B936AE335B3F69D7ABA6B4C");
+            //    var response = await client.SendAsync(request);
+            //    response.EnsureSuccessStatusCode();
+            //    string body = await response.Content.ReadAsStringAsync();
+            //    //Console.WriteLine(await response.Content.ReadAsStringAsync());
+            //    var resultss = JsonConvert.DeserializeObject<List<MSNInsights>>(body);
+            //    return null;
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
+        }
+
+        private static int GetAIInsights(List<MSNInsights> result, string category, string good)
+        {
+            var Valuation_data = result.FirstOrDefault()?.insights.Where(x => x.category.ToLower() == category.ToLower()).ToList();
+            var Valuation_data_good = Valuation_data.Where(x => x.details.evaluationStatus.ToLower() == "good").Count();
+            //var valuationcount = Convert.ToInt32(Valuation_data_good + 0.14285714285714288 + 0.14285714285714285);
+            return Convert.ToInt32(Valuation_data_good + 0.14285714285714288 + 0.14285714285714285);
         }
 
         internal static Task InsertFromMicrosoft()
@@ -2820,9 +2902,9 @@ namespace MSNStocks
             throw new NotImplementedException();
         }
 
-        public static async Task GenerateNiftyTraderAsync(string expiryDate,string Code)
+        public static async Task GenerateNiftyTraderAsync(string expiryDate, string Code)
         {
-           // string ExpiryDate = "2024-10-17";
+            // string ExpiryDate = "2024-10-17";
             using (var client = new HttpClient())
             {
                 try
@@ -2833,6 +2915,55 @@ namespace MSNStocks
                     NiftyTrader resultContent = JsonConvert.DeserializeObject<NiftyTrader>(resultContentString);
 
                     var dt = ToDataTable(resultContent.resultData.opDatas.ToList());
+                    var opTotals = resultContent.resultData.opTotals;
+
+                    List<NIFTYTRader_ITM_OTM> nIFTYTRader_ITM_OTMs = new List<NIFTYTRader_ITM_OTM>
+                    {
+                        new NIFTYTRader_ITM_OTM()
+                        {
+
+                            CreatedDate = resultContent.resultData.opDatas.FirstOrDefault().created_at,
+                            itm_total_calls_change_oi = opTotals.itm_total_calls.itm_total_calls_change_oi,
+                            itm_total_calls_change_oi_value = opTotals.itm_total_calls.itm_total_calls_change_oi_value,
+                            itm_total_calls_oi = opTotals.itm_total_calls.itm_total_calls_oi,
+                            itm_total_calls_oi_value = opTotals.itm_total_calls.itm_total_calls_oi_value,
+                            itm_total_calls_volume = opTotals.itm_total_calls.itm_total_calls_volume,
+
+                            itm_total_puts_change_oi = opTotals.itm_total_puts.itm_total_puts_change_oi,
+                            itm_total_puts_change_oi_value = opTotals.itm_total_puts.itm_total_puts_change_oi_value,
+                            itm_total_puts_oi = opTotals.itm_total_puts.itm_total_puts_oi,
+                            itm_total_puts_oi_value = opTotals.itm_total_puts.itm_total_puts_oi_value,
+                            itm_total_puts_volume = opTotals.itm_total_puts.itm_total_puts_volume,
+
+                            otm_total_calls_change_oi = opTotals.otm_total_calls.otm_total_calls_change_oi,
+                            otm_total_calls_change_oi_value = opTotals.otm_total_calls.otm_total_calls_change_oi_value,
+                            otm_total_calls_oi = opTotals.otm_total_calls.otm_total_calls_oi,
+                            otm_total_calls_oi_value = opTotals.otm_total_calls.otm_total_calls_oi_value,
+                            otm_total_calls_volume = opTotals.otm_total_calls.otm_total_calls_volume,
+
+                            otm_total_puts_change_oi = opTotals.otm_total_puts.otm_total_puts_change_oi,
+                            otm_total_puts_change_oi_value = opTotals.otm_total_puts.otm_total_puts_change_oi_value,
+                            otm_total_puts_oi = opTotals.otm_total_puts.otm_total_puts_oi,
+                            otm_total_puts_oi_value = opTotals.otm_total_puts.otm_total_puts_oi_value,
+                            otm_total_puts_volume = opTotals.otm_total_puts.otm_total_puts_volume,
+
+                            total_calls_change_oi = opTotals.total_calls_puts.total_calls_change_oi,
+                            total_calls_change_oi_value = opTotals.total_calls_puts.total_puts_change_oi_value,
+                            total_calls_oi = opTotals.total_calls_puts.total_calls_oi,
+                            total_puts_change_oi = opTotals.total_calls_puts.total_puts_change_oi,
+                            total_calls_oi_value = opTotals.total_calls_puts.total_calls_oi_value,
+
+
+                            total_calls_volume = opTotals.total_calls_puts.total_calls_volume,
+                            total_puts_change_oi_value = opTotals.total_calls_puts.total_puts_change_oi_value,
+                            total_puts_oi_value = opTotals.total_calls_puts.total_puts_oi_value,
+                            total_puts_oi = opTotals.total_calls_puts.total_puts_oi,
+                            total_puts_volume = opTotals.total_calls_puts.total_puts_volume
+
+                        }
+                    };
+
+                    var dt2 = ToDataTable(nIFTYTRader_ITM_OTMs.ToList());
 
                     using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
                     {
@@ -2846,6 +2977,19 @@ namespace MSNStocks
                         conn.Close();
                         bc.Close();
                     }
+
+                    using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                    {
+                        var bc = new SqlBulkCopy(conn, SqlBulkCopyOptions.TableLock, null)
+                        {
+                            DestinationTableName = "dbo.NIFTYTRader_ITM_OTM",
+                            BatchSize = dt.Rows.Count
+                        };
+                        conn.Open();
+                        bc.WriteToServer(dt2);
+                        conn.Close();
+                        bc.Close();
+                    }
                 }
                 catch (Exception)
                 {
@@ -2856,7 +3000,7 @@ namespace MSNStocks
             }
 
         }
-        public static DataTable ToDataTable<T>( List<T> items)
+        public static DataTable ToDataTable<T>(List<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
 
@@ -2908,6 +3052,216 @@ namespace MSNStocks
                 }
 
             }
+
+        }
+
+
+
+        public static async Task Get52weeklow()
+        {
+            string param = "";
+
+            try
+            {
+
+
+                var filteredtxt = ExecuteCommandNSEWeek(@"C:\Hosts\Breeze\NSE_Deals.bat", "live-analysis-data-52weeklowstock");
+
+                var datalow = filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+                var resultlow = JsonConvert.DeserializeObject<NSE_lowHigh>(datalow);
+                var groupbyScriptName = resultlow.data.GroupBy(X => X.symbol);
+
+                //List<NSE_DEALS_DB> alldatafromtable = new List<NSE_DEALS_DB>();
+                using (var db = new STOCKContext())
+                {
+                    var alldatafromtable = db.NSELOWHIGH.AsQueryable();
+
+
+                    //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
+
+
+                    foreach (var itemS in groupbyScriptName)
+                    {
+                        foreach (var item in itemS)
+                        {
+
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.symbol == item.symbol && x.CreatedON == resultlow.timestamp);
+                            if (Stock_Financial_Results_obj == null)
+                            {
+                                try
+                                {
+                                    Stock_Financial_Results_obj = new NSELOWHIGH();
+                                    Stock_Financial_Results_obj.pChange = item.pChange;
+                                    Stock_Financial_Results_obj.comapnyName = item.comapnyName;
+                                    Stock_Financial_Results_obj.prevClose = Convert.ToDecimal(item.prevClose);
+                                    Stock_Financial_Results_obj.ltp = item.ltp;
+                                    Stock_Financial_Results_obj.prev52WHL = item.prev52WHL;
+                                    Stock_Financial_Results_obj.CreatedON = resultlow.timestamp;
+                                    Stock_Financial_Results_obj.new52WHL = item.new52WHL;
+                                    Stock_Financial_Results_obj.pChange = item.pChange;
+                                    Stock_Financial_Results_obj.change = item.change;
+                                    Stock_Financial_Results_obj.symbol = item.symbol;
+                                    Stock_Financial_Results_obj.series = item.series;
+                                    Stock_Financial_Results_obj.Type = "Low";
+                                    Stock_Financial_Results_obj.prevHLDate = item.prevHLDate;
+
+
+
+
+
+                                }
+                                catch
+                                {
+
+
+                                }
+
+
+
+
+                                db.NSELOWHIGH.Add(Stock_Financial_Results_obj);
+
+
+
+                                db.SaveChanges();
+
+
+
+                            }
+                        }
+
+
+                    }
+                    // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
+
+                    //  string errors = process.StandardError.ReadToEnd();
+                    //Assert.IsTrue(string.IsNullOrEmpty(errors));
+
+
+                    db.Equitys.FromSqlRaw(
+
+                       @"Update Equitys set Is52High=1 where IssuerName in (
+
+Select e.IssuerName from Equitys E
+inner join [NSELOWHIGH] HL on e.IssuerName=HL.symbol and Type='HIGH' and CAST(HL.CreatedON as Date)=CAST(GETDATE() as Date))
+
+
+Update Equitys set Is52Low=1 where IssuerName in (
+
+Select e.IssuerName from Equitys E
+inner join [NSELOWHIGH] HL on e.IssuerName=HL.symbol and Type='LOW' and CAST(HL.CreatedON as Date)=CAST(GETDATE() as Date))");
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+
+
+        }
+
+
+        public static async Task Get52weekhigh()
+        {
+            string param = "";
+
+            try
+            {
+
+
+                var filteredtxt = ExecuteCommandNSEWeek(@"C:\Hosts\Breeze\NSE_Deals.bat", "live-analysis-data-52weekhighstock");
+
+                var datalow = filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString();
+                var resultlow = JsonConvert.DeserializeObject<NSE_lowHigh>(datalow);
+                var groupbyScriptName = resultlow.data.GroupBy(X => X.symbol);
+
+                //List<NSE_DEALS_DB> alldatafromtable = new List<NSE_DEALS_DB>();
+                using (var db = new STOCKContext())
+                {
+                    var alldatafromtable = db.NSELOWHIGH.AsQueryable();
+
+
+                    //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
+
+
+                    foreach (var itemS in groupbyScriptName)
+                    {
+                        foreach (var item in itemS)
+                        {
+
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.symbol == item.symbol && x.CreatedON == resultlow.timestamp);
+                            if (Stock_Financial_Results_obj == null)
+                            {
+                                try
+                                {
+                                    Stock_Financial_Results_obj = new NSELOWHIGH();
+                                    Stock_Financial_Results_obj.pChange = item.pChange;
+                                    Stock_Financial_Results_obj.comapnyName = item.comapnyName;
+                                    Stock_Financial_Results_obj.prevClose = Convert.ToDecimal(item.prevClose);
+                                    Stock_Financial_Results_obj.ltp = item.ltp;
+                                    Stock_Financial_Results_obj.prev52WHL = item.prev52WHL;
+                                    Stock_Financial_Results_obj.CreatedON = resultlow.timestamp;
+                                    Stock_Financial_Results_obj.new52WHL = item.new52WHL;
+                                    Stock_Financial_Results_obj.pChange = item.pChange;
+                                    Stock_Financial_Results_obj.change = item.change;
+                                    Stock_Financial_Results_obj.symbol = item.symbol;
+                                    Stock_Financial_Results_obj.series = item.series;
+                                    Stock_Financial_Results_obj.prevHLDate = item.prevHLDate;
+                                    Stock_Financial_Results_obj.Type = "High";
+
+
+
+
+
+                                }
+                                catch
+                                {
+
+
+                                }
+
+
+
+
+                                db.NSELOWHIGH.Add(Stock_Financial_Results_obj);
+
+
+
+                                db.SaveChanges();
+
+
+
+                            }
+                        }
+
+
+                    }
+                    // Assert.IsTrue(output.Contains("StringToBeVerifiedInAUnitTest"));
+
+                    //  string errors = process.StandardError.ReadToEnd();
+                    //Assert.IsTrue(string.IsNullOrEmpty(errors));
+
+                    db.Equitys.FromSqlRaw(
+
+                        @"Update Equitys set Is52High=1 where IssuerName in (
+
+Select e.IssuerName from Equitys E
+inner join [NSELOWHIGH] HL on e.IssuerName=HL.symbol and Type='HIGH' and CAST(HL.CreatedON as Date)=CAST(GETDATE() as Date))
+
+
+Update Equitys set Is52Low=1 where IssuerName in (
+
+Select e.IssuerName from Equitys E
+inner join [NSELOWHIGH] HL on e.IssuerName=HL.symbol and Type='LOW' and CAST(HL.CreatedON as Date)=CAST(GETDATE() as Date))");
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+
 
         }
     }

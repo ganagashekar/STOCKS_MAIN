@@ -6,7 +6,35 @@ using System.Threading.Tasks;
 
 namespace MSNStocks.Models.Deals
 {
-   
+
+    public class NSELOWHIGH
+    {
+        public long Id { set; get; }
+        public string symbol { get; set; }
+
+        public string series { get; set; }
+
+        public string comapnyName { get; set; }
+
+        public decimal new52WHL { get; set; }
+
+        public decimal prev52WHL { get; set; }
+
+        public string prevHLDate { get; set; }
+
+        public decimal ltp { get; set; }
+
+        public decimal prevClose { get; set; }
+
+        public decimal change { get; set; }
+
+        public decimal pChange { get; set; }
+
+        public string Type { get; set; }
+
+        public string CreatedON { get; set; }
+
+    }
 
     public class NSE_DEALS_DB
     {
