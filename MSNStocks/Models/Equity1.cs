@@ -173,5 +173,13 @@ namespace MSNStocks.Models
         public int? MSN_Performance { get; set; }
 
         public int? MSN_Earnings { get; set; }
+
+        public decimal? Week52High { set; get; }
+        public decimal? Week52low { set; get; }
+
+        public DateTime? LTT { set; get; }
+        public decimal? LTP {  set; get; }   
+
+        public decimal? ChangeOfNow {  set; get; }
     }
 }

@@ -379,6 +379,9 @@ namespace STM_API.Services
 
                             _stokc.StockCode = r["StockCode"].ToString();
                             _stokc.Stock_Name = r["Stock_Name"].ToString();
+                            _stokc.BullishCount_95 = Convert.ToDouble(r["BullishCount_95"].ToString());
+                            _stokc.BullishCount_100 = Convert.ToDouble(r["BullishCount_100"].ToString());
+
                             //_stokc.candleResult_Volume = Convert.ToDouble(r["candleResult_Volume"].ToString());
                             //_stokc.macdresult_Macd = Convert.ToDouble(r["macdresult_Macd"].ToString());
                             //_stokc.macdresult_Signal = Convert.ToDouble(r["macdresult_Signal"].ToString());

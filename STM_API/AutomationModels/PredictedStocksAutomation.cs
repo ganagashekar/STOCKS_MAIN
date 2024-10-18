@@ -52,6 +52,9 @@
         public string Stock_Name { get; set; }
         public string StockCode { get; set; }
 
+        public double? BullishCount_95 { get; set; }
+        public double? BullishCount_100 { get; set; }
+
     }
 
 }

@@ -1,11 +1,14 @@
 ﻿
+using AngelBroking;
 using BSE_Financilas;
 using ICICIVolumeBreakouts.Models;
+using ICICIVolumeBreakouts.Models.Histrry;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MSNStocks.Models;
 using MSNStocks.Models.Deals;
+using MSNStocks.Models.Insights;
+using MSNStocks.Models.NiftyTrader;
 using MSNStocks.Models.results;
 using MSNStocks.Models.xml;
 using MSNStocks.Models.xml2;
@@ -20,43 +23,18 @@ using MSNStocks.Query;
 using MSNStocks.Result;
 using MSNStocks.WebApp;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using NIFTYTraders.Models;
+using NSEBlockDeals.HIGH;
 using RestSharp;
 using Skender.Stock.Indicators;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Reflection.PortableExecutable;
-using System.Security.Policy;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using static System.Net.WebRequestMethods;
-using System.Security.Cryptography;
-using ICICIVolumeBreakouts.Models.Histrry;
-using Microsoft.EntityFrameworkCore.Metadata;
-using AngelBroking;
-using MSNStocks.AO;
-using NIFTYTraders.Models;
 using System.Reflection;
-using STM_API.Extention;
-using MSNStocks.Models.NiftyTrader;
-using NSEBlockDeals.HIGH;
-using MSNStocks.Models.Insights;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace MSNStocks
 {
@@ -2341,6 +2319,19 @@ namespace MSNStocks
 
         }
 
+       //public static  decimal CalculateChange(decimal previous, decimal current)
+       // {
+       //     if (previous == 0)
+       //         return 0;
+
+       //     if (current == 0)
+       //         return -100;
+
+       //     var change = ((current - previous) / previous) * 100;
+
+       //     return change;
+       // }
+
         public static async Task getInitStocksFromSECID()
         {
 
@@ -2352,7 +2343,7 @@ namespace MSNStocks
                 Console.WriteLine("Database Connected");
                 Console.WriteLine();
                 Console.WriteLine("Listing Category Sales For 1997s");
-                var equites = db.Equitys.ToList().Where(x => x.MSN_SECID != null).Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
+                var equites = db.Equitys.AsNoTracking().ToList().Where(x => x.MSN_SECID != null).Where(x => Convert.ToDateTime(x.UpdatedOn) != Convert.ToDateTime(DateTime.Now));
 
 
                 int count = 0;
@@ -2377,6 +2368,11 @@ namespace MSNStocks
                             equity.MSN_Performance = stockinsights.MSN_Performance;
                             equity.MSN_Valuation = stockinsights.MSN_Valuation;
                             equity.MSN_Earnings = stockinsights.MSN_Earnings;
+                            equity.Week52High = Convert.ToDecimal(stockresult.quote.price52wHigh);
+                            equity.Week52low= Convert.ToDecimal(stockresult.quote.price52wLow);
+                            equity.LTP = Convert.ToDecimal(stockresult.quote.price);
+                            equity.LTT = DateTime.Now;//stockresult.quote.timeLastTraded;
+                            equity.ChangeOfNow =Convert.ToDecimal(CalculateChange(Convert.ToDecimal(stockresult.quote.price52wHigh), Convert.ToDecimal(stockresult.quote.price)))*100;
 
                             string PreviousRecommondation = equity.Recommondations;
                             string CurrentRecommondation = string.Empty;
@@ -2418,7 +2414,7 @@ namespace MSNStocks
                         }
                         catch (Exception)
                         {
-                            System.Threading.Thread.Sleep(1000);
+                            //System.Threading.Thread.Sleep(1000);
 
                         }
 
@@ -2434,11 +2430,13 @@ namespace MSNStocks
                     }
                     equity.UpdatedOn = DateTime.Now;
 
+
+
                     db.Entry(equity).State = EntityState.Modified;
                     db.SaveChanges();
-
-
                 }
+               
+                
             }
         }
 
@@ -2912,6 +2910,10 @@ namespace MSNStocks
                     var result = await client.GetAsync($"https://webapi.niftytrader.in/webapi/option/option-chain-data?symbol={Code}&exchange=nse&expiryDate={expiryDate}&atmBelow=0&atmAbove=0");
                     result.EnsureSuccessStatusCode();
                     string resultContentString = await result.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(resultContentString))
+                    {
+                        return;
+                    }
                     NiftyTrader resultContent = JsonConvert.DeserializeObject<NiftyTrader>(resultContentString);
 
                     var dt = ToDataTable(resultContent.resultData.opDatas.ToList());
