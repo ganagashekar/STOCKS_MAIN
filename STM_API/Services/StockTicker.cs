@@ -736,7 +736,7 @@ namespace STM_API.Services
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
             bool IsIncludeDeleted = false,string EC="All", string statsColumnRecords = null, string statsColumnCondition = null, int lastRecords = 0, bool IsVolumeBRK = false, 
-            bool Is52weeks = false, bool isOrderbyCHG = false)
+            bool Is52weeks = false, bool isOrderbyCHG = false, bool isDeal=false)
         {
 
           
@@ -785,7 +785,8 @@ namespace STM_API.Services
 
                     sqlComm.Parameters.AddWithValue("@Isweek51", Is52weeks);
 
-                         sqlComm.Parameters.AddWithValue("@isOrderbyCHG", isOrderbyCHG);
+                    sqlComm.Parameters.AddWithValue("@isOrderbyCHG", isOrderbyCHG);
+                    sqlComm.Parameters.AddWithValue("@isDealtype", isDeal);
 
 
                     sqlComm.CommandType = CommandType.StoredProcedure;
@@ -943,8 +944,8 @@ namespace STM_API.Services
                             _stokc.isIncludeDeleted = Convert.ToBoolean(r["IsExclude"] ?? false);
 
                             _stokc.past_PercentageChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PercentageChange"].ToString()) ?  0 : r["Past_PercentageChange"].ToString());
-                            _stokc.past_PriceChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PriceChange"].ToString()) ? 0 : r["Past_PriceChange"].ToString()); 
-
+                            _stokc.past_PriceChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PriceChange"].ToString()) ? 0 : r["Past_PriceChange"].ToString());
+                            _stokc.DealCount = Convert.ToInt16(r["DealOpen"] ?? 0); ;
 
                             //_stokc.Week_min = !string.IsNullOrEmpty(r[25].ToString()) ? Convert.Todouble(r[25]) : default(double?);
                             //_stokc.Week_max = !string.IsNullOrEmpty(r[26].ToString()) ? Convert.Todouble(r[26]) : default(double?);
@@ -2059,8 +2060,40 @@ namespace STM_API.Services
                 throw;
 
             }
+            DataSet ds1 = new DataSet();
+            try
+            {
+                //  var NewStock = db.Live_Stocks.FromSql("Execute dbo.SP_GET_LIVE_STOCKS_BY_STOCK {0}", stock.Symbol).ToList(); //.FirstOrDefault(x => x.symbol == stock.Symbol);
+                List<Equities> stocks = new List<Equities>();
 
-            return ConvertDataTableToHTMLTableInOneLine(ds.Tables[0]);
+
+                using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+                {
+
+                    //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                    SqlCommand sqlComm = new SqlCommand("GetDealData", conn);
+                    sqlComm.Parameters.AddWithValue("@Symbol", symbol);
+
+                    sqlComm.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter da = new SqlDataAdapter();
+                    da.SelectCommand = sqlComm;
+
+                    da.Fill(ds1);
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+
+            }
+            var data=ConvertDataTableToHTMLTableInOneLine(ds.Tables[0]);
+            var data2 = ConvertDataTableToHTMLTableInOneLine(ds1.Tables[0]);
+
+            return data + "</br>" + data2;
         }
 
         internal bool SaveWatchList(string onDate, string id)

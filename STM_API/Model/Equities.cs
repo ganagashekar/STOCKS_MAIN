@@ -278,6 +278,8 @@ namespace STM_API.Model
         public double? past_PriceChange { get; set; }
         public double? past_PercentageChange { get; set; }
 
+        public double? DealCount { set; get; }  
+
 
 
 

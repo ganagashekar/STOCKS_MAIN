@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using STM_API.AutomationModel;
 using STM_API.AutomationModels;
 using System.Text.Json;
+using System.Linq;
 
 namespace STM_API.Services
 {
@@ -589,12 +590,114 @@ namespace STM_API.Services
         }
 
 
+        public NiftyTrader_Stats GetDashboard_StatsForNiftyTrader()
+        {
+            Maain_Dahsbaord_Stats maain_Dahsbaord_Stats = new Maain_Dahsbaord_Stats();
+
+            NiftyTrader_Stats niftyTrader_Stats = new NiftyTrader_Stats();
+
+            string tablename = "StockTalibStats";
+
+            List<NiftyTrader_Stats_DB> stocks = new List<NiftyTrader_Stats_DB>();
+            DataSet ds = new DataSet();
+
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                SqlCommand sqlComm = new SqlCommand("GetNiftyTrader", conn);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+
+                foreach (var r in NewStock)
+                {
+                    try
+                    {
+                        var _stokc = new NiftyTrader_Stats_DB();
+                        _stokc.CNTS = Convert.ToInt32((r["CNTS"].ToString()));
+                        _stokc.puts_builtup = (r["puts_builtup"].ToString());
+                        _stokc.Symbol = (r["Symbol"].ToString());
+                        _stokc.Date = Convert.ToDateTime(r["Date"].ToString());
+
+                        stocks.Add(_stokc);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                }
+
+                try
+                {
+                   
+                    var grouplist = stocks.GroupBy(x => x.Symbol);
+                    foreach (var group in grouplist)
+                    {
+                        if (group.Any(x => x.Symbol == "NIFTY"))
+                        {
+                            niftyTrader_Stats.Nifty_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying").CNTS;
+                            niftyTrader_Stats.Nifty_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying").CNTS;
+
+                            niftyTrader_Stats.Nifty_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering").CNTS;
+                            niftyTrader_Stats.Nifty_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering").CNTS;
+
+                            niftyTrader_Stats.Nifty_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering").CNTS;
+                            niftyTrader_Stats.Nifty_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering").CNTS;
+
+                            niftyTrader_Stats.Nifty_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing").CNTS;
+                            niftyTrader_Stats.Nifty_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing").CNTS;
+                        }
+
+                        if (group.Any(x => x.Symbol == "BANKNIFTY"))
+                        {
+                            niftyTrader_Stats.BANK_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying").CNTS;
+                            niftyTrader_Stats.BANK_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying").CNTS;
+
+                            niftyTrader_Stats.BANK_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering").CNTS;
+                            niftyTrader_Stats.BANK_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering").CNTS;
+
+                            niftyTrader_Stats.BANK_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering").CNTS;
+                            niftyTrader_Stats.BANK_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering").CNTS;
+
+                            niftyTrader_Stats.BANK_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing").CNTS;
+                            niftyTrader_Stats.BANK_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing").CNTS;
+                        }
+
+
+
+
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+                return niftyTrader_Stats;
+
+
+            }
+
+
+            return niftyTrader_Stats;
+        }
+
+
+
         public Maain_Dahsbaord_Stats GetDashboard_Stats()
         {
             Maain_Dahsbaord_Stats maain_Dahsbaord_Stats = new Maain_Dahsbaord_Stats();
 
             string tablename = "StockTalibStats";
-            
+
             List<Dashboard_Stats> stocks = new List<Dashboard_Stats>();
             DataSet ds = new DataSet();
 
@@ -680,7 +783,7 @@ namespace STM_API.Services
 
                     throw;
                 }
-                
+
                 return maain_Dahsbaord_Stats;
 
 

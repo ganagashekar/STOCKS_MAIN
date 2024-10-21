@@ -2370,6 +2370,8 @@ namespace MSNStocks
                             equity.MSN_Earnings = stockinsights.MSN_Earnings;
                             equity.Week52High = Convert.ToDecimal(stockresult.quote.price52wHigh);
                             equity.Week52low= Convert.ToDecimal(stockresult.quote.price52wLow);
+                            equity.Is52High = Convert.ToDecimal(stockresult.quote.priceDayHigh) > Convert.ToDecimal(stockresult.quote.price52wHigh);
+                            equity.Is52Low = Convert.ToDecimal(stockresult.quote.priceDayLow) > Convert.ToDecimal(stockresult.quote.priceDayLow);
                             equity.LTP = Convert.ToDecimal(stockresult.quote.price);
                             equity.LTT = DateTime.Now;//stockresult.quote.timeLastTraded;
                             equity.ChangeOfNow =Convert.ToDecimal(CalculateChange(Convert.ToDecimal(stockresult.quote.price52wHigh), Convert.ToDecimal(stockresult.quote.price)))*100;

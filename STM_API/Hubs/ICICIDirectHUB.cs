@@ -84,8 +84,8 @@ namespace STM_API.Hubs
             string TDays = "", string WatchList = "", bool isTarget = false, bool isBullish = false, bool isbearish = false,
             bool IsOrderbyVolume = false, bool IsAward = false, string orderby_obj = "", string order = "", int skip = 0, int take = 250,
             bool IsExcludedeleted = false, string EC = "All", string StatsColumnRecords = "", string StatsColumnCondition = "", string pastChangeRecords = "",
-            bool IsVolumeBRK = false, bool Is52weeks = false, bool isOrderbyCHG = false
-            )
+            bool IsVolumeBRK = false, bool Is52weeks = false, bool isOrderbyCHG = false, bool isDeal = false)
+            
         {
             if (StatsColumnCondition!=null && string.IsNullOrEmpty(StatsColumnCondition.Replace(" ","")))
             {
@@ -94,7 +94,7 @@ namespace STM_API.Hubs
             }
 
             var results = _stockTicker.GetStocksList(isfavorite, isUpperCircuit, islowerCircuit, isEnabledForAutoTrade, IsNotifications, dynamicminValue, dynamicmaxValue, TDays, WatchList, isTarget, isBullish, isbearish, IsOrderbyVolume
-                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted, EC, StatsColumnRecords, StatsColumnCondition, Convert.ToInt32(pastChangeRecords), IsVolumeBRK, Is52weeks, isOrderbyCHG).ToList();
+                , IsAward, orderby_obj, order, skip, take, IsExcludedeleted, EC, StatsColumnRecords, StatsColumnCondition, Convert.ToInt32(pastChangeRecords), IsVolumeBRK, Is52weeks, isOrderbyCHG, isDeal).ToList();
             //int counts =  results.FirstOrDefault().rowcount- results.Count() ;
 
 
