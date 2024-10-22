@@ -11,24 +11,24 @@ namespace STM_API.Model
     }
     public class NiftyTrader_Stats
     {
-        public int Nifty_Put_Buying { get; set; }
-        public int Nifty_Put_Long_Covering { get; set; }
-        public int Nifty_Put_Short_Covering { get; set; }
-        public int Nifty_Put_Writing { set; get; }
-        public int Nifty_Call_Buying { set; get; }
-        public int Nifty_Call_Long_Covering { set; get; }
-        public int Nifty_Call_Short_Covering { set; get; }
-        public int Nifty_Call_Writing { set; get; }
+        public int? Nifty_Put_Buying { get; set; }
+        public int? Nifty_Put_Long_Covering { get; set; }
+        public int? Nifty_Put_Short_Covering { get; set; }
+        public int? Nifty_Put_Writing { set; get; }
+        public int? Nifty_Call_Buying { set; get; }
+        public int? Nifty_Call_Long_Covering { set; get; }
+        public int? Nifty_Call_Short_Covering { set; get; }
+        public int? Nifty_Call_Writing { set; get; }
 
 
-        public int BANK_Put_Buying { get; set; }
-        public int BANK_Put_Long_Covering { get; set; }
-        public int BANK_Put_Short_Covering { get; set; }
-        public int BANK_Put_Writing { set; get; }
-        public int BANK_Call_Buying { set; get; }
-        public int BANK_Call_Long_Covering { set; get; }
-        public int BANK_Call_Short_Covering { set; get; }
-        public int BANK_Call_Writing { set; get; }
+        public int? BANK_Put_Buying { get; set; }
+        public int? BANK_Put_Long_Covering { get; set; }
+        public int? BANK_Put_Short_Covering { get; set; }
+        public int? BANK_Put_Writing { set; get; }
+        public int? BANK_Call_Buying { set; get; }
+        public int? BANK_Call_Long_Covering { set; get; }
+        public int? BANK_Call_Short_Covering { set; get; }
+        public int? BANK_Call_Writing { set; get; }
     }
 
     public class Dashboard_Stats

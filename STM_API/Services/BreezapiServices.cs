@@ -642,32 +642,32 @@ namespace STM_API.Services
                     {
                         if (group.Any(x => x.Symbol == "NIFTY"))
                         {
-                            niftyTrader_Stats.Nifty_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying").CNTS;
-                            niftyTrader_Stats.Nifty_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying").CNTS;
+                            niftyTrader_Stats.Nifty_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying")?.CNTS;
+                            niftyTrader_Stats.Nifty_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying")?.CNTS;
 
-                            niftyTrader_Stats.Nifty_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering").CNTS;
-                            niftyTrader_Stats.Nifty_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering").CNTS;
+                            niftyTrader_Stats.Nifty_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering")?.CNTS;
+                            niftyTrader_Stats.Nifty_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering")?.CNTS;
 
-                            niftyTrader_Stats.Nifty_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering").CNTS;
-                            niftyTrader_Stats.Nifty_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering").CNTS;
+                            niftyTrader_Stats.Nifty_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering")?.CNTS;
+                            niftyTrader_Stats.Nifty_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering")?.CNTS;
 
-                            niftyTrader_Stats.Nifty_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing").CNTS;
-                            niftyTrader_Stats.Nifty_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing").CNTS;
+                            niftyTrader_Stats.Nifty_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing")?.CNTS;
+                            niftyTrader_Stats.Nifty_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing")?.CNTS;
                         }
 
                         if (group.Any(x => x.Symbol == "BANKNIFTY"))
                         {
-                            niftyTrader_Stats.BANK_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying").CNTS;
-                            niftyTrader_Stats.BANK_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying").CNTS;
+                            niftyTrader_Stats.BANK_Put_Buying = group.FirstOrDefault(x => x.puts_builtup == "Put Buying")?.CNTS;
+                            niftyTrader_Stats.BANK_Call_Buying = group.FirstOrDefault(x => x.puts_builtup == "Call Buying")?.CNTS;
 
-                            niftyTrader_Stats.BANK_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering").CNTS;
-                            niftyTrader_Stats.BANK_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering").CNTS;
+                            niftyTrader_Stats.BANK_Call_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Long Covering")?.CNTS;
+                            niftyTrader_Stats.BANK_Put_Long_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Long Covering")?.CNTS;
 
-                            niftyTrader_Stats.BANK_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering").CNTS;
-                            niftyTrader_Stats.BANK_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering").CNTS;
+                            niftyTrader_Stats.BANK_Put_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Put Short Covering")?.CNTS;
+                            niftyTrader_Stats.BANK_Call_Short_Covering = group.FirstOrDefault(x => x.puts_builtup == "Call Short Covering")?.CNTS;
 
-                            niftyTrader_Stats.BANK_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing").CNTS;
-                            niftyTrader_Stats.BANK_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing").CNTS;
+                            niftyTrader_Stats.BANK_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing")?.CNTS;
+                            niftyTrader_Stats.BANK_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing")?.CNTS;
                         }
 
 
