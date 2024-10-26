@@ -636,7 +636,7 @@ namespace STM_API.Services
 
                 try
                 {
-                   
+
                     var grouplist = stocks.GroupBy(x => x.Symbol);
                     foreach (var group in grouplist)
                     {
@@ -653,6 +653,7 @@ namespace STM_API.Services
 
                             niftyTrader_Stats.Nifty_Call_Writing = group.FirstOrDefault(x => x.puts_builtup == "Call Writing")?.CNTS;
                             niftyTrader_Stats.Nifty_Put_Writing = group.FirstOrDefault(x => x.puts_builtup == "Put Writing")?.CNTS;
+                            niftyTrader_Stats.Lastupdated_Nifty_Trader_Date = group.FirstOrDefault()?.Date.ToString();
                         }
 
                         if (group.Any(x => x.Symbol == "BANKNIFTY"))
@@ -691,6 +692,48 @@ namespace STM_API.Services
         }
 
 
+        public List<Dashboard_Counts_For_QTY> GetDashboardQtyCount()
+        {
+            DataSet ds = new DataSet();
+            List<Dashboard_Counts_For_QTY> stocks = new List<Dashboard_Counts_For_QTY>();
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                SqlCommand sqlComm = new SqlCommand("[Get_Dashaboard_Quantity_Count]", conn);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+
+                try
+                {
+                    foreach (var r in NewStock)
+                    {
+                        var _stokc = new Dashboard_Counts_For_QTY();
+                        _stokc.Buy = Convert.ToDouble((r["Buy"].ToString()));
+                        _stokc.Sell = Convert.ToDouble(r["Sell"].ToString());
+                        _stokc.XTimes = Convert.ToDouble(r["XTimes"].ToString());
+                        _stokc.Type = (r["Type"].ToString());
+                        _stokc.Symbol = (r["Symbol"].ToString());
+                        _stokc.LastUpdatedOn = Convert.ToDateTime(r["LastUpdate"].ToString());
+                        _stokc.CHG = Convert.ToDouble(r["CHG"].ToString());
+                        stocks.Add(_stokc);
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                   
+                }
+            }
+            return stocks;
+        }
 
         public Maain_Dahsbaord_Stats GetDashboard_Stats()
         {
@@ -744,39 +787,81 @@ namespace STM_API.Services
                 {
                     var groupbyNifty = stocks.Where(x => x.y_Type == "IsNifty");
                     maain_Dahsbaord_Stats.Nifty_Current_AvgChange = (double)groupbyNifty.FirstOrDefault().T_TotalAvg;
-                    maain_Dahsbaord_Stats.Nifty_Current_Advance = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1).T_Counts;
-                    maain_Dahsbaord_Stats.Nifty_Current_Decline = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0).T_Counts;
+                    maain_Dahsbaord_Stats.Nifty_Current_Advance = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Nifty_Current_Decline = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
                     maain_Dahsbaord_Stats.NiftyName = "NIFTY";
                     maain_Dahsbaord_Stats.Nifty_Previous_AvgChange = (double)groupbyNifty.FirstOrDefault().y_TotalAvg;
-                    maain_Dahsbaord_Stats.Nifty_Previous_Advance = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1).y_Counts;
-                    maain_Dahsbaord_Stats.Nifty_Previous_Decline = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0).y_Counts;
+                    maain_Dahsbaord_Stats.Nifty_Previous_Advance = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts;
+                    maain_Dahsbaord_Stats.Nifty_Previous_Decline = (double)groupbyNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts;
 
                     var groupbyBankNifty = stocks.Where(x => x.y_Type == "IsBankNifty");
                     maain_Dahsbaord_Stats.BankNifty_Current_AvgChange = (double)groupbyBankNifty.FirstOrDefault().T_TotalAvg;
-                    maain_Dahsbaord_Stats.BankNifty_Current_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1).T_Counts;
-                    maain_Dahsbaord_Stats.BankNifty_Current_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0).T_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Current_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Current_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
                     maain_Dahsbaord_Stats.BankNiftyName = "BANKNIFTY";
                     maain_Dahsbaord_Stats.BankNifty_Previous_AvgChange = (double)groupbyBankNifty.FirstOrDefault().y_TotalAvg;
-                    maain_Dahsbaord_Stats.BankNifty_Previous_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1).y_Counts;
-                    maain_Dahsbaord_Stats.BankNifty_Previous_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0).y_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Previous_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Previous_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts;
 
                     var groupbyOption = stocks.Where(x => x.y_Type == "IsOptions");
                     maain_Dahsbaord_Stats.Option_Current_AvgChange = (double)groupbyOption.FirstOrDefault().T_TotalAvg;
-                    maain_Dahsbaord_Stats.Option_Current_Advance = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 1).T_Counts;
-                    maain_Dahsbaord_Stats.Option_Current_Decline = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 0).T_Counts;
+                    maain_Dahsbaord_Stats.Option_Current_Advance = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Option_Current_Decline = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
                     maain_Dahsbaord_Stats.OptionName = "Options";
                     maain_Dahsbaord_Stats.Option_Previous_AvgChange = (double)groupbyOption.FirstOrDefault().y_TotalAvg;
-                    maain_Dahsbaord_Stats.Option_Previous_Advance = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 1).y_Counts;
-                    maain_Dahsbaord_Stats.Option_Previous_Decline = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 0).y_Counts;
+                    maain_Dahsbaord_Stats.Option_Previous_Advance = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts;
+                    maain_Dahsbaord_Stats.Option_Previous_Decline = (double)groupbyOption.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts;
 
                     var groupbyPSU = stocks.Where(x => x.y_Type == "ISPSU");
                     maain_Dahsbaord_Stats.PSU_Current_AvgChange = (double)groupbyPSU.FirstOrDefault().T_TotalAvg;
-                    maain_Dahsbaord_Stats.PSU_Current_Advance = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 1).T_Counts;
-                    maain_Dahsbaord_Stats.PSU_Current_Decline = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 0).T_Counts;
+                    maain_Dahsbaord_Stats.PSU_Current_Advance = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.PSU_Current_Decline = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
                     maain_Dahsbaord_Stats.PSUName = "PSU";
                     maain_Dahsbaord_Stats.PSU_Previous_AvgChange = (double)groupbyPSU.FirstOrDefault().y_TotalAvg;
-                    maain_Dahsbaord_Stats.PSU_Previous_Advance = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 1).y_Counts;
-                    maain_Dahsbaord_Stats.PSU_Previous_Decline = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 0).y_Counts;
+                    maain_Dahsbaord_Stats.PSU_Previous_Advance = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts;
+                    maain_Dahsbaord_Stats.PSU_Previous_Decline = (double)groupbyPSU.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts;
+
+
+                    var groupbyFinancials = stocks.Where(x => x.y_Type == "Financials");
+                    maain_Dahsbaord_Stats.Financials_Advance = (double)groupbyFinancials.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Financials_Decline = (double)groupbyFinancials.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+
+                    var groupbyHealthcare = stocks.Where(x => x.y_Type == "Healthcare");
+                    maain_Dahsbaord_Stats.Healthcare_Advance = (double)groupbyHealthcare.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Healthcare_Decline = (double)groupbyHealthcare.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+                    var groupbyIndustrials = stocks.Where(x => x.y_Type == "Industrials");
+                    maain_Dahsbaord_Stats.Industrials_Advance = (double)groupbyIndustrials.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Industrials_Decline = (double)groupbyIndustrials.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+
+                    var groupbyTechnology = stocks.Where(x => x.y_Type == "Technology");
+                    maain_Dahsbaord_Stats.Technology_Advance = (double)groupbyTechnology.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Technology_Decline = (double)groupbyTechnology.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+
+                    var groupbyEnergy = stocks.Where(x => x.y_Type == "Energy");
+                    maain_Dahsbaord_Stats.Energy_Advance = (double)groupbyEnergy.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.Engery_Decline = (double)groupbyEnergy.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+                    var groupbyRealEstate = stocks.Where(x => x.y_Type == "Real Estate");
+                    maain_Dahsbaord_Stats.RealEstate_Advance = (double)groupbyRealEstate.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
+                    maain_Dahsbaord_Stats.RealEstate_Decline = (double)groupbyRealEstate.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+
+                    var exceptionList = new List<string> { "IsNifty", "IsBankNifty", "IsOptions", "ISPSU" };
+
+                    maain_Dahsbaord_Stats.TotalSectorAvg = (double)groupbyRealEstate.FirstOrDefault()?.T_TotalAvg;
+                    var allgroupsectors_Decline = stocks.Where(e => !exceptionList.Contains(e.y_Type)).Where(x => x.T_Adavcne_Decline == 0);
+                    var allgroupsectors_Advance = stocks.Where(e => !exceptionList.Contains(e.y_Type)).Where(x => x.T_Adavcne_Decline == 1);
+
+                    maain_Dahsbaord_Stats.TotalSectorAvg_Advance = allgroupsectors_Advance.Sum(x => x.T_Counts);
+                    maain_Dahsbaord_Stats.TotalSectorAvg_Decline = allgroupsectors_Decline.Sum(x => x.T_Counts);
+
+                    maain_Dahsbaord_Stats.LastUpdateDateTime = stocks.LastOrDefault().T_Date.ToString();
+
+
+
                 }
                 catch (Exception ex)
                 {

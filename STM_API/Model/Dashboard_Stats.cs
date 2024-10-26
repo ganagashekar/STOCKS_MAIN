@@ -29,6 +29,7 @@ namespace STM_API.Model
         public int? BANK_Call_Long_Covering { set; get; }
         public int? BANK_Call_Short_Covering { set; get; }
         public int? BANK_Call_Writing { set; get; }
+        public string Lastupdated_Nifty_Trader_Date { set; get; }
     }
 
     public class Dashboard_Stats
@@ -47,6 +48,20 @@ namespace STM_API.Model
         public double? y_TotalAvg { get; set; }
         public string y_Type { get; set; }
     }
+
+    public class Dashboard_Counts_For_QTY
+    {
+
+        public double Buy { get; set; }
+        public double Sell { get; set; }
+        public string Type { get; set; }
+        public string Symbol { get; set; }
+        public double XTimes { get; set; }
+        public double CHG { get; set; }
+
+        public DateTime LastUpdatedOn { get; set; }
+    }
+
     public class Maain_Dahsbaord_Stats
     {
         public double Nifty_Current_AvgChange { set; get; }
@@ -77,6 +92,22 @@ namespace STM_API.Model
         public double PSU_Previous_Advance { set; get; }
         public double PSU_Previous_Decline { set; get; }
         public string PSUName { get; set; }
+        public double Financials_Advance { get;  set; }
+        public double Financials_Decline { get;  set; }
+        public double Healthcare_Advance { get;  set; }
+        public double Healthcare_Decline { get;  set; }
+        public double Industrials_Advance { get;  set; }
+        public double Industrials_Decline { get;  set; }
+        public double Technology_Advance { get;  set; }
+        public double Technology_Decline { get;  set; }
+        public double Energy_Advance { get;  set; }
+        public double Engery_Decline { get;  set; }
+        public double RealEstate_Advance { get;  set; }
+        public double RealEstate_Decline { get;  set; }
+        public double? TotalSectorAvg { get;  set; }
+        public int? TotalSectorAvg_Advance { get;  set; }
+        public int? TotalSectorAvg_Decline { get; set; }
 
+        public string LastUpdateDateTime { get; set; }
     }
 }

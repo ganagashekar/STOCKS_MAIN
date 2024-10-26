@@ -62,6 +62,12 @@ namespace STM_API.Hubs
             await Clients.Caller.SendAsync("SendGetDashboard_option_data", result);
         }
 
+        public async Task GetDashboard_qty_data()
+        {
+            var result = _breezapiServices.GetDashboardQtyCount();
+            await Clients.Caller.SendAsync("SendGetDashboard_qty_data", result);
+        }
+
         public async Task GetDashboard_option_data_NiftyTrader()
         {
             var result = _breezapiServices.GetDashboard_StatsForNiftyTrader();
