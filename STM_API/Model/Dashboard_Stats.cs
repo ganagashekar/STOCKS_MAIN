@@ -110,4 +110,25 @@ namespace STM_API.Model
 
         public string LastUpdateDateTime { get; set; }
     }
+
+    public class Dashboard_High_low
+    {
+        public string OH_OL { set; get; }
+        public Double Counts { set; get; }
+        public string Type { set; get; }
+
+    }
+
+    public class Dashboard_High_low_Stats
+    {
+        public int isnifty_lowtrend { set; get; }
+        public int isnifty_uptrend { set; get; }
+        public int ispsu_lowtrend { set; get; }
+        public int ispsu_uptrend { set; get; }
+        public int isoptions_lowtrend { set; get; }
+        public int isoptions_uptrend { set; get; }
+        public int isbanknifty_lowtrend { set; get; }
+        public int isbanknifty_uptrend { set; get; }
+    }
+
 }

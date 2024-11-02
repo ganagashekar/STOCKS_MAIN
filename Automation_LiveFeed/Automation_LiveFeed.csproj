@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="Program.cs" />
+    <Compile Remove="Program_cpy - Copy.cs" />
   </ItemGroup>
 
   <ItemGroup>

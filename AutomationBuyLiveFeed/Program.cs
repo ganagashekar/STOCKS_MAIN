@@ -117,7 +117,7 @@ namespace ConsoleAppTestProject
                 }
               //  Console.WriteLine(arg);
 
-                await using var connection = new HubConnectionBuilder().WithUrl("http://localhost:8080/BreezeOperation").WithAutomaticReconnect().Build();
+                await using var connection = new HubConnectionBuilder().WithUrl("http://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
                 Random r = new Random();
                 Console.WriteLine(connection.ConnectionId);
                 BreezeConnect breeze = new BreezeConnect(APIKEY);

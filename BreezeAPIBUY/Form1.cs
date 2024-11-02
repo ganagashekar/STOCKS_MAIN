@@ -1,7 +1,15 @@
-using Breeze;
-using MSNStocks;
+﻿using Breeze;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace BreezeOrdersAPI
+namespace BreezeAPIBUY
 {
     public partial class Form1 : Form
     {
@@ -10,14 +18,8 @@ namespace BreezeOrdersAPI
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-
             try
             {
                 string APIKEY = string.Empty;
@@ -49,8 +51,8 @@ namespace BreezeOrdersAPI
 
                 var datsa = System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes("NIFTY", "NFO".ToString(), "2024-10-31", "Options".ToString(), "Others".ToString(), ""));
                 //var details=breeze.getFunds();
-                string Expdate = dateTimePicker1.Text;
-               
+               // string Expdate = dateTimePicker1.Text;
+
             }
             catch (Exception ex)
             {

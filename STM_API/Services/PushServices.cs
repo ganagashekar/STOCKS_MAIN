@@ -75,6 +75,9 @@ namespace STM_API.Services
             FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
         }
 
-
+        internal async Task GetDashboardStatsHighLow()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

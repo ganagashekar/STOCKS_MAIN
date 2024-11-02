@@ -729,7 +729,7 @@ namespace STM_API.Services
                 catch (Exception ex)
                 {
 
-                   
+
                 }
             }
             return stocks;
@@ -877,5 +877,57 @@ namespace STM_API.Services
 
             return maain_Dahsbaord_Stats;
         }
+
+        public async Task<Dashboard_High_low_Stats> GetDashboardStatsHighLow()
+        {
+            DataSet ds = new DataSet();
+            Dashboard_High_low_Stats dashboard_High_Low_Stats = new Dashboard_High_low_Stats();
+
+            List<Dashboard_High_low> dashboard_High_Low = new List<Dashboard_High_low>();
+
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                SqlCommand sqlComm = new SqlCommand("[GetDashboard_Stats_HIGH_LOW]", conn);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+                foreach (var r in NewStock)
+                {
+                    var _stokc = new Dashboard_High_low();
+                    _stokc.OH_OL = r["OH_OL"].ToString();
+                    _stokc.Counts = Convert.ToInt32(r["Counts"].ToString());
+                    _stokc.Type = r["Type"].ToString();
+                    dashboard_High_Low.Add(_stokc);
+
+                }
+            }
+
+           
+
+            dashboard_High_Low_Stats.ispsu_lowtrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsPSU").ToList().Where(x => x.OH_OL == "LowTrend")?.FirstOrDefault()?.Counts);
+            dashboard_High_Low_Stats.ispsu_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsPSU").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
+
+            dashboard_High_Low_Stats.isnifty_lowtrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsNifty").ToList().Where(x => x.OH_OL == "LowTrend")?.FirstOrDefault()?.Counts);
+            dashboard_High_Low_Stats.isnifty_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsNifty").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
+
+            dashboard_High_Low_Stats.isoptions_lowtrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsOptions").ToList().Where(x => x.OH_OL == "LowTrend")?.FirstOrDefault()?.Counts);
+            dashboard_High_Low_Stats.isoptions_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsOptions").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
+
+            dashboard_High_Low_Stats.isbanknifty_lowtrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsBANKNIFTY").ToList().Where(x => x.OH_OL == "LowTrend")?.FirstOrDefault()?.Counts);
+            dashboard_High_Low_Stats.isbanknifty_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsBANKNIFTY").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
+
+            return dashboard_High_Low_Stats;
+        }
     }
 }
+
+
+//OH_OL Counts	Type
+//LowTrend	1	IsNifty

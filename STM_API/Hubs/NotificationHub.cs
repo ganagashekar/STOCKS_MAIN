@@ -77,7 +77,7 @@ namespace STM_API.Hubs
 
         public async Task GetBuyStockTriggers(int Id)
         {
-           
+
 
             try
             {
@@ -112,7 +112,7 @@ namespace STM_API.Hubs
 
         public async Task GetAllStocksForLoadAutomation(int Id)
         {
-          
+
 
             if (System.IO.File.Exists(string.Format("{0}{1}{2}.json", @"C:\Hosts\JobStocksJson\", "LiveStcoksForAutomation", Id)))
             {
@@ -162,7 +162,7 @@ namespace STM_API.Hubs
         }
 
 
-        public async Task GetStocksStatisticsBenchMarks(int number, bool Isorderbysize = true, string Date = "" )
+        public async Task GetStocksStatisticsBenchMarks(int number, bool Isorderbysize = true, string Date = "")
         {
             if (string.IsNullOrEmpty(Date))
             {
@@ -580,8 +580,44 @@ namespace STM_API.Hubs
 
         public async Task GetBuyForAutomation_Auto()
         {
-            var results = _breezapiServices.GetBuyForAutomation();
-            await Clients.All.SendAsync("SendGetBuyForAutomation_Auto", results.ToList());
+            //  var results = _breezapiServices.GetBuyForAutomation();
+            List<Equities> equities = new List<Equities>();
+
+            equities.Add(new Equities()
+            {
+                SecurityId = "NIFTY",
+
+            });
+            equities.Add(new Equities()
+            {
+                SecurityId = "BANKINFTY",
+
+            });
+
+            await Clients.All.SendAsync("SendGetBuyForAutomation_Auto", equities.ToList());
+        }
+
+
+        public async Task GetTickDataOption(string data)
+        {
+            await Clients.All.SendAsync("SendGetTickDataOption", data);
+        }
+
+
+        public async Task GetTickDataForOptions(string StockCode, string expirydate)
+        {
+            var data = new List<string>()
+            {
+                StockCode,expirydate
+            };
+
+            await Clients.All.SendAsync("SendGetTickDataForOptions", data);
+        }
+
+        public async Task GetDashboardStatsHighLow()
+        {
+            var results = _breezapiServices.GetDashboardStatsHighLow().Result;
+            await Clients.All.SendAsync("SendGetashboardStatsHighLow", results);
         }
 
 

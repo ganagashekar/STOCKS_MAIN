@@ -3268,6 +3268,42 @@ inner join [NSELOWHIGH] HL on e.IssuerName=HL.symbol and Type='LOW' and CAST(HL.
 
 
         }
+
+        public static void PlaceOrderForAutomatio(string expdate)
+        {
+            try
+            {
+                string APIKEY = string.Empty;
+                string APISecret = string.Empty;
+                string token = string.Empty;
+                var url = "http://localhost:99/breezeOperation";
+                var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
+                string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                string HUbUrl = url;
+
+
+                string[] line;
+                string arg = "0";
+
+
+                switch (0)
+                {
+                    case 0:
+                        line = lines[0].ToString().Split(',');
+                        APIKEY = line[0];
+                        APISecret = line[1];
+                        token = line[2];
+                        HUbUrl = "http://localhost:8080/BreezeOperation";
+                        break;
+                }
+                var bodyresponse = JsonConvert.DeserializeObject<Customer>(Getdetails(token, APIKEY).Result);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

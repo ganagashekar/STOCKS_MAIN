@@ -25,27 +25,22 @@ namespace ConsoleAppTestProject
     {
 
 
-        public static double round_down(double num, int divisor)
-        {
-            return num - (num % divisor);
-
-        }
         static async Task Main(string[] args)
         {
-
+          
             var url = "";
-
+          
             var text = System.IO.File.ReadAllText("C:\\Hosts\\ICICI_Key\\jobskeys.txt");
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             string HUbUrl = url;
-
+            
             try
             {
                 string APIKEY = string.Empty;
                 string APISecret = string.Empty;
                 string token = string.Empty;
                 string[] line;
-                string arg = "0";
+                string arg = "1";
                 if (args.Any())
                     arg = args[0];
                 switch (Convert.ToInt16(arg))
@@ -78,41 +73,39 @@ namespace ConsoleAppTestProject
                         token = line[2];
                         HUbUrl = "http://localhost:99/BreezeOperation";
                         break;
-
+                  
                 }
                 BreezeConnect breeze = new BreezeConnect(APIKEY);
                 breeze.generateSessionAsPerVersion(APISecret, token);
+               // breeze.();
                 var responseObject = await breeze.wsConnectAsync();
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await breeze.subscribeFeedsAsync(
+                        exchangeCode: "NFO",
+                        stockCode: "NIFTY",
+                        productType: "options",
+                        expiryDate: "31-Oct-2024",
+                        strikePrice: "24900",
+                        right: "Call",
+                        getExchangeQuotes: true,
+                        getMarketDepth: true)
+                   ));
+
                 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseObject));
-                Console.WriteLine(arg);
-                Console.WriteLine(HUbUrl);
-                await using var connection = new HubConnectionBuilder().WithUrl("https://localhost:7189/BreezeOperation").WithAutomaticReconnect().Build();
-                await connection.StartAsync();
-                Console.WriteLine(connection.ConnectionId);
+                //Console.WriteLine(arg);
+                //Console.WriteLine(HUbUrl);
+                //await using var connection = new HubConnectionBuilder().WithUrl(HUbUrl).WithAutomaticReconnect().Build();
+                //Random r = new Random();
+                //Console.WriteLine(connection.ConnectionId);
+                //BreezeConnect breeze = new BreezeConnect(APIKEY);
+                //breeze.generateSessionAsPerVersion(APISecret, token);
+                //var responseObject = await breeze.wsConnectAsync();
+                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseObject));
 
-                connection.On<List<string>>("SendGetTickDataForOptions", async param =>
-                {
-                    //var results = GetQuote(APISecret, token, data.Success.session_token, APIKEY, "NIFTY", "NFO", "2024-10-31", "options", "call");
+                //await connection.StartAsync();
+                //Console.WriteLine("Conection" + connection.ConnectionId);
+                //Console.WriteLine("GetAllStocksForLoadAutomation" + Convert.ToInt16(arg));
+                //await connection.SendAsync("GetAllStocksForLoadAutomation", Convert.ToInt16(arg));
 
-                    var datsa = System.Text.Json.JsonSerializer.Deserialize<QuotesData>(System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes(param[0].ToString(), "NFO".ToString(), param[1].ToString(), "Options".ToString(), "Others".ToString(), "")));
-
-                    var spotprice = datsa.Success.FirstOrDefault().spot_price;
-
-                    var spotpriceselection =round_down(Convert.ToDouble(spotprice), 100);
-
-                    await breeze.subscribeFeedsAsync(
-                         exchangeCode: "NFO",
-                         stockCode: "NIFTY",
-                         productType: "options",
-                         expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
-                         strikePrice: spotpriceselection.ToString(),
-                         right: "Call",
-                         getExchangeQuotes: true,
-                         getMarketDepth: true);
-                                
-
-
-                });
 
                 breeze.ticker(async (data) =>
                 {
@@ -120,21 +113,20 @@ namespace ConsoleAppTestProject
                     try
                     {
 
-                       // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
-                        if (connection.State == HubConnectionState.Connected)
-                        {
-                            //Console.WriteLine(JsonSerializer.Serialize(data));
-                            // Console.WriteLine("Ticker Data:" + System.Text.Json.JsonSerializer.Serialize(data));
-                            await connection.InvokeAsync("GetTickDataOption", System.Text.Json.JsonSerializer.Serialize(data));
-                        }
+                        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
+                        ////if (connection.State == HubConnectionState.Connected)
+                        ////{
+                        //    // Console.WriteLine(JsonSerializer.Serialize(data));
+                        //    // Console.WriteLine("Ticker Data:" + JsonSerializer.Serialize(data));
+                        //    await connection.InvokeAsync("CaptureLiveDataForBuyForAutomation", System.Text.Json.JsonSerializer.Serialize(data));
+
+                        //}
+
+
+
+
 
                     }
-
-
-
-
-
-
                     catch (Exception)
                     {
 
@@ -145,26 +137,28 @@ namespace ConsoleAppTestProject
 
 
 
-
                 });
-                //BreezeConnect breeze = new BreezeConnect(APIKEY);
-                //breeze.generateSessionAsPerVersion(APISecret, token);
-                //var responseObject = await breeze.wsConnectAsync();
-                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseObject));
 
 
-                //Console.WriteLine("Conection" + connection.ConnectionId);
-                //Console.WriteLine("GetAllStocksForLoadAutomation" + Convert.ToInt16(arg));
-                //await connection.SendAsync("GetAllStocksForLoadAutomation", Convert.ToInt16(arg));
+                //connection.On<object>("SendGetTickDataForOptions", async param =>
+                //{
+                //    //var results = GetQuote(APISecret, token, data.Success.session_token, APIKEY, "NIFTY", "NFO", "2024-10-31", "options", "call");
+
+                //    var datsa = System.Text.Json.JsonSerializer.Deserialize<QuotesData>(System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes("NIFTY", "NFO".ToString(), "2024-10-31", "Options".ToString(), "Others".ToString(), "")));
+
+
+                //   var dara=( await breeze.subscribeFeedsAsync(exchangeCode: "NFO",
+                //           stockCode: "NIFTY",
+                //           productType: "Options",
+                //           expiryDate: "2024-10-31",
+                //           strikePrice: "24000",
+                //           right: "Call", 
+                //           true, false
+                //           ));
+
+                //});
+
                
-
-                
-
-
-               
-
-
-
 
 
                 //Console.WriteLine(await breeze.subscribeFeedsAsync(exchangeCode: "NFO",
