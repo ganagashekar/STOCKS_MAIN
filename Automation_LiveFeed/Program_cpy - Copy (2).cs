@@ -91,7 +91,50 @@ namespace ConsoleAppTestProject
                 Console.WriteLine(connection.ConnectionId);
 
 
+                try
+                {
+                    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await breeze.subscribeFeedsAsync(
+                           /* exchangeCode: */"NFO",
+                           /* stockCode:*/ "NIFTY",
+                           /* productType:*/ "options",
+                           /* expiryDate: */ "07-Nov-2024",
+                           /* strikePrice: */ "24000",
+                           /* right: */ "Put",
+                           /* getExchangeQuotes:*/ true,
+                           /* getMarketDepth: */ false)
+                       ));
 
+                    var datas = await breeze.subscribeFeedsAsync("4.1!50381");
+                    breeze.ticker((data) =>
+                    {
+                        Console.WriteLine("Ticker Data:" + System.Text.Json.JsonSerializer.Serialize(data));
+                    });
+
+                    var datsa = System.Text.Json.JsonSerializer.Deserialize<QuotesData>(System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes("NIFTY", "NFO".ToString(),
+                        "2024-11-07", "Options".ToString(), "Others".ToString(), "")));
+
+                    var spotprice = datsa.Success.FirstOrDefault().spot_price;
+
+                    var spotpriceselection = round_down(Convert.ToDouble(spotprice), 100);
+                    //var data = await breeze.subscribeFeedsAsync(
+                    //          exchangeCode: "NFO",
+                    //          stockCode: "NIFTY",
+                    //          productType: "Options",
+                    //          expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
+                    //          strikePrice: spotpriceselection.ToString(),
+                    //          right: "call",
+                    //          getExchangeQuotes: true,
+                    //         getMarketDepth: false
+                    //          );
+
+                   
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+               
                 connection.On<List<string>>("SendGetTickDataForOptions", async param =>
                 {
                     //var results = GetQuote(APISecret, token, data.Success.session_token, APIKEY, "NIFTY", "NFO", "2024-10-31", "options", "call");
@@ -103,76 +146,83 @@ namespace ConsoleAppTestProject
 
                     var spotpriceselection =round_down(Convert.ToDouble(spotprice), 100);
 
-                    await breeze.subscribeFeedsAsync(
-                         exchangeCode: "NFO",
-                         stockCode: param[0].ToString(),
-                         productType: "options",
-                         expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
-                         strikePrice: spotpriceselection.ToString(),
-                         right: "Call",
-                         getExchangeQuotes: true,
-                         getMarketDepth: true);
-
                     //await breeze.subscribeFeedsAsync(
                     //     exchangeCode: "NFO",
                     //     stockCode: param[0].ToString(),
                     //     productType: "options",
                     //     expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
                     //     strikePrice: spotpriceselection.ToString(),
-                    //     right: "Call",true,false
+                    //     right: "Call",
+                    //     getExchangeQuotes: true,
+                    //     getMarketDepth: true);
+
+                    var datas=await breeze.subscribeFeedsAsync("4.2!50374");
+                    //var data=await breeze.subscribeFeedsAsync(
+                    //     exchangeCode: "NFO",
+                    //     stockCode: param[0].ToString(),
+                    //     productType: "Options",
+                    //     expiryDate: "2024-11-07",
+                    //     strikePrice: "24000",
+                    //     right: "Call",true,true
                     //     );
 
 
 
                 });
 
-                var result = await breeze.subscribeFeedsAsync("4.1!50374");
-                // Console.WriteLine(JsonSerializer.Serialize(breeze.placeOrder(stockCode: "NIFTY", exchangeCode: "NFO", productType: "options", action: "buy", orderType: "limit", stoploss: "0", quantity: "25", price: "0.30", validity: "day", validityDate: "2024-10-24T06:00:00.000Z", disclosedQuantity: "0", expiryDate: "2024-10-24T06:00:00.000Z", right: "call", strikePrice: "0", userRemark: "Test", orderTypeFresh: "", orderRateFresh: "")));
-                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await breeze.subscribeFeedsAsync(
-                //        /* exchangeCode: */"NFO",
-                //        /* stockCode:*/ "NIFTY",
-                //        /* productType:*/ "options",
-                //        /* expiryDate: */ "07-Nov-2024",
-                //        /* strikePrice: */ "24900",
-                //        /* right: */ "Put",
-                //        /* getExchangeQuotes:*/ true,
-                //        /* getMarketDepth: */ false)
-                //    ));
+                try
+                {
+                    breeze.ticker(async (data) =>
+                            {
+
+                                try
+                                {
+
+                                    // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
+                                    if (connection.State == HubConnectionState.Connected)
+                                    {
+                                        //Console.WriteLine(JsonSerializer.Serialize(data));
+                                        // Console.WriteLine("Ticker Data:" + System.Text.Json.JsonSerializer.Serialize(data));
+                                        await connection.InvokeAsync("GetTickDataOption", System.Text.Json.JsonSerializer.Serialize(data));
+                                    }
+
+                                }
 
 
-                breeze.ticker(async (data) =>
+
+
+
+
+                                catch (Exception)
+                                {
+
+
+                                }
+
+
+
+
+
+
+                            });
+                }
+                catch (Exception)
                 {
 
-                    try
-                    {
+                    throw;
+                }
 
-                       // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
-                        if (connection.State == HubConnectionState.Connected)
-                        {
-                            //Console.WriteLine(JsonSerializer.Serialize(data));
-                            // Console.WriteLine("Ticker Data:" + System.Text.Json.JsonSerializer.Serialize(data));
-                            await connection.InvokeAsync("GetTickDataOption", System.Text.Json.JsonSerializer.Serialize(data));
-                        }
-
-                    }
+            
 
 
-
-
-
-
-                    catch (Exception)
-                    {
-
-
-                    }
-
-
-
-
-
-
-                });
+                //var data = await breeze.subscribeFeedsAsync(
+                //     exchangeCode: "NFO",
+                //     stockCode: "NIFTY",
+                //     productType: "options",
+                //     expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
+                //     strikePrice: spotpriceselection.ToString(),
+                //     right: "Call", false, false
+                //     );
                 //BreezeConnect breeze = new BreezeConnect(APIKEY);
                 //breeze.generateSessionAsPerVersion(APISecret, token);
                 //var responseObject = await breeze.wsConnectAsync();
@@ -182,12 +232,12 @@ namespace ConsoleAppTestProject
                 //Console.WriteLine("Conection" + connection.ConnectionId);
                 //Console.WriteLine("GetAllStocksForLoadAutomation" + Convert.ToInt16(arg));
                 //await connection.SendAsync("GetAllStocksForLoadAutomation", Convert.ToInt16(arg));
-               
-
-                
 
 
-               
+
+
+
+
 
 
 

@@ -9,10 +9,13 @@
 
   <ItemGroup>
     <Compile Remove="Program.cs" />
+    <Compile Remove="Program_cpy - Copy %282%29.cs" />
+    <Compile Remove="Program_cpy - Copy %283%29.cs" />
     <Compile Remove="Program_cpy - Copy.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="com.breeze.breezeconnect" Version="1.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
@@ -20,10 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Lib\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OWNBreezeApi\Breeze-CSharp-SDK-developer\BreezeConnect.csproj" />
   </ItemGroup>
 
 </Project>

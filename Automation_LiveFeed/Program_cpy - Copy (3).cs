@@ -90,8 +90,6 @@ namespace ConsoleAppTestProject
                 await connection.StartAsync();
                 Console.WriteLine(connection.ConnectionId);
 
-
-
                 connection.On<List<string>>("SendGetTickDataForOptions", async param =>
                 {
                     //var results = GetQuote(APISecret, token, data.Success.session_token, APIKEY, "NIFTY", "NFO", "2024-10-31", "options", "call");
@@ -125,20 +123,6 @@ namespace ConsoleAppTestProject
 
 
                 });
-
-                var result = await breeze.subscribeFeedsAsync("4.1!50374");
-                // Console.WriteLine(JsonSerializer.Serialize(breeze.placeOrder(stockCode: "NIFTY", exchangeCode: "NFO", productType: "options", action: "buy", orderType: "limit", stoploss: "0", quantity: "25", price: "0.30", validity: "day", validityDate: "2024-10-24T06:00:00.000Z", disclosedQuantity: "0", expiryDate: "2024-10-24T06:00:00.000Z", right: "call", strikePrice: "0", userRemark: "Test", orderTypeFresh: "", orderRateFresh: "")));
-                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await breeze.subscribeFeedsAsync(
-                //        /* exchangeCode: */"NFO",
-                //        /* stockCode:*/ "NIFTY",
-                //        /* productType:*/ "options",
-                //        /* expiryDate: */ "07-Nov-2024",
-                //        /* strikePrice: */ "24900",
-                //        /* right: */ "Put",
-                //        /* getExchangeQuotes:*/ true,
-                //        /* getMarketDepth: */ false)
-                //    ));
-
 
                 breeze.ticker(async (data) =>
                 {

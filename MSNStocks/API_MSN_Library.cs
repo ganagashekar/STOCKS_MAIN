@@ -2962,7 +2962,10 @@ namespace MSNStocks
                             total_puts_change_oi_value = opTotals.total_calls_puts.total_puts_change_oi_value,
                             total_puts_oi_value = opTotals.total_calls_puts.total_puts_oi_value,
                             total_puts_oi = opTotals.total_calls_puts.total_puts_oi,
-                            total_puts_volume = opTotals.total_calls_puts.total_puts_volume
+                            total_puts_volume = opTotals.total_calls_puts.total_puts_volume,
+                            Created_at=resultContent.resultData.opDatas.FirstOrDefault().created_at,
+                            Time=resultContent.resultData.opDatas.FirstOrDefault().time
+
 
                         }
                     };

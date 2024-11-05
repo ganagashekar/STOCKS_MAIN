@@ -70,5 +70,8 @@ namespace MSNStocks.Models.NiftyTrader
 
         public double? total_puts_change_oi_value { get; set; }
 
+        public DateTime Created_at { get; set; }    
+        public string Time { set; get; }
+
     }
 }
