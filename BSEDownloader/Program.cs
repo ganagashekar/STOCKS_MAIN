@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mail;
@@ -92,7 +93,30 @@ public class Program
     }
 
 
-    
+    public static async Task SendPushServicesAsyncASAPMsg(string tittle, string message)
+    {
+        //var iphonelis = new List<string>() { "SELL_STOCK_DOWN", "BSE_NEWS", "IPO_UpComming", "IPO_UpComming", "IPO_Current" };
+        //var iphonelis = new List<string>() { "SELL_STOCK_DOWN" };
+        var parameters = new Dictionary<string, string>
+        {
+            ["token"] = "afxwjdnt1hq72zbi5p6c9ku8e8k9b3",
+            ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+            ["priority"] = "1",
+            ["message"] = message,
+            ["title"] = tittle,
+            ["retry"] = "30",
+            ["expire"] = "300",
+            ["html"] = "1",
+            ["sound"] = "echo",
+            ["device"] = "iphone"
+        };
+
+        using var client = new HttpClient();
+        var response = await client.PostAsync("https://api.pushover.net/1/messages.json", new
+        FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+    }
+
+
     static void Main()
     {
         var cmd = @"curl   ""https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w?pageno={0}&strCat=&strPrevDate={1}&strScrip=&strSearch=P&strToDate={2}&strType=C&subcategory="" ^
@@ -111,7 +135,7 @@ public class Program
 
 
         //var output = ExecuteCurl(string.Format(cmd,1, 20231026, 20231026));
-
+        string filterbsenew = System.IO.File.ReadAllText(@"C:\Hosts\ICICI_Key\FilterBSENEWS.txt");
         var output = ExecuteCurl(string.Format(cmd, 1, DateTime.Now.Date.ToString("yyyyMMdd"), DateTime.Now.Date.ToString("yyyyMMdd")));
         var Resp_obj = JsonConvert.DeserializeObject<BSE_NEWS>(output);
 
@@ -127,18 +151,43 @@ public class Program
             {
                 Resp_obj = JsonConvert.DeserializeObject<BSE_NEWS>(output);
 
-
-
                 foreach (var r in Resp_obj.Table)
                 {
                     string atatchementur = string.IsNullOrEmpty(r.ATTACHMENTNAME) ? "" : "https://www.bseindia.com/xml-data/corpfiling/AttachLive/" + r.ATTACHMENTNAME;
                     var filteredtxt = ExecuteCommand(@"C:\Hosts\Breeze\filternews.bat", atatchementur);
+
+                    string[] stringArray = filterbsenew.Split(",");
+
+                    if (stringArray.Any(x => r.SUBCATNAME.Contains(x)))
+                    {
+                        continue;
+                    }
+
+
+                    #region commentted
+                    //try
+                    //{
+                    //    if (r.SUBCATNAME == "Financial Results")
+                    //    {
+                    //        SendPushServicesAsyncASAPMsg("Financials_Resulst of " + r.NEWSSUB,
+                    //            string.IsNullOrEmpty(r.ATTACHMENTNAME) ? "" : "https://www.bseindia.com/xml-data/corpfiling/AttachLive/" + r.ATTACHMENTNAME);
+                    //    }
+                    //}
+                    //catch (Exception ex)
+                    //{
+
+
+                    //}
+
+
+
                     //if (!string.IsNullOrEmpty(filteredtxt))
                     //{
                     //    sendnotification(Convert.ToString(r.SLONGNAME) ?? "",
                     //        filteredtxt, atatchementur,
                     //        r.NEWSSUB);
                     //}
+                    #endregion
                     using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
                     {
 

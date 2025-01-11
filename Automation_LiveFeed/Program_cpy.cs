@@ -11,18 +11,75 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration.Json;
 using Newtonsoft.Json;
 using StocksBuy.model.BreezeModel.Quote;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 
 //.Net Core 3.1
 namespace ConsoleAppTestProject
 {
-
-    public class AppSettings
+    public class EquitiesOptions
     {
-        public string url { get; set; }
+        public string Symbol { set; get; }
+        public string IssuerName { set; get; }
+        public string SecurityName { set; get; }
     }
+
+    public static class AppSettings
+    {
+        //public string url { get; set; }
+
+        public static List<EquitiesOptions> GetEquities(string NiftyStrikePrice, string BankNifty)
+        {
+
+            DataSet ds = new DataSet();
+
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                //using(SqlConnection conn = new SqlConnection("Server=103.21.58.192;Database=skyshwx7_;User ID=Honey;Password=K!cjn3376;TrustServerCertificate=false;Trusted_Connection=false;MultipleActiveResultSets=true;")) {
+                SqlCommand sqlComm = new SqlCommand("GetEquitiesSymbolForOption", conn);
+
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+
+            try
+            {
+                List<EquitiesOptions> items = ds.Tables[0].AsEnumerable().Select(row => new EquitiesOptions
+                {
+                    Symbol = row.Field<string>("Symbol"),
+                    IssuerName = row.Field<string>("IssuerName"),
+                    SecurityName = row.Field<string>("SecurityName"),
+
+                }).ToList();
+                return items.ToList();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
+
+        }
+    }
+
+
 
     public class Program
     {
+
+        public List<Equities> equities = new List<Equities>();
+        public Program()
+        {
+            equities = new List<Equities>();
+
+        }
 
 
         public static double round_down(double num, int divisor)
@@ -32,6 +89,7 @@ namespace ConsoleAppTestProject
         }
         static async Task Main(string[] args)
         {
+
 
             var url = "";
 
@@ -90,67 +148,64 @@ namespace ConsoleAppTestProject
                 await connection.StartAsync();
                 Console.WriteLine(connection.ConnectionId);
 
+                
+
+                var txt = System.IO.File.ReadAllText(@"C:\Hosts\ICICI_Key\NIftyTrader.txt").Split(Environment.NewLine);
+
+                var nify = txt[0].Split(",");
+                var bnify = txt[1].Split(",");
 
 
                 connection.On<List<string>>("SendGetTickDataForOptions", async param =>
                 {
                     //var results = GetQuote(APISecret, token, data.Success.session_token, APIKEY, "NIFTY", "NFO", "2024-10-31", "options", "call");
 
-                    var datsa = System.Text.Json.JsonSerializer.Deserialize<QuotesData>(System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes(param[0].ToString(), "NFO".ToString(),
-                        param[1].ToString(), "Options".ToString(), "Others".ToString(), "")));
+                    double Niftyspotpriceselection = GerQuoteData(nify[0], nify[1], breeze);
+                    double Bankspotpriceselection = GerQuoteData("CNXBAN", bnify[1], breeze);
 
-                    var spotprice = datsa.Success.FirstOrDefault().spot_price;
+                    var symbol = AppSettings.GetEquities(Convert.ToInt32(Niftyspotpriceselection).ToString(), Convert.ToInt32(Bankspotpriceselection).ToString());
 
-                    var spotpriceselection =round_down(Convert.ToDouble(spotprice), 100);
+                    var BK_actual_symbols = symbol.ToList().Where(x => x.SecurityName.Contains("-PE")).ToList().Where(x => x.SecurityName.Contains(bnify[2].ToString())).ToList().Where(x => x.SecurityName.Contains(Bankspotpriceselection.ToString()));
 
-                    await breeze.subscribeFeedsAsync(
-                         exchangeCode: "NFO",
-                         stockCode: param[0].ToString(),
-                         productType: "options",
-                         expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
-                         strikePrice: spotpriceselection.ToString(),
-                         right: "Call",
-                         getExchangeQuotes: true,
-                         getMarketDepth: true);
+                    var actual_symbols = symbol.ToList().Where(x=>x.SecurityName.Contains("-PE")).ToList().Where(x => x.SecurityName.Contains(nify[2].ToString())).ToList().Where(x=>x.SecurityName.Contains(Niftyspotpriceselection.ToString()));
+                    foreach (var item in actual_symbols)
+                    {
+                        var result = await breeze.subscribeFeedsAsync(item.Symbol);
+                    }
+                    Thread.Sleep(10);
+                    foreach (var item in BK_actual_symbols)
+                    {
+                        var result = await breeze.subscribeFeedsAsync(item.Symbol);
+                    }
 
-                    //await breeze.subscribeFeedsAsync(
-                    //     exchangeCode: "NFO",
-                    //     stockCode: param[0].ToString(),
-                    //     productType: "options",
-                    //     expiryDate: datsa.Success.FirstOrDefault().expiry_date.ToString(),
-                    //     strikePrice: spotpriceselection.ToString(),
-                    //     right: "Call",true,false
-                    //     );
 
 
 
                 });
 
-                var result = await breeze.subscribeFeedsAsync("4.1!50374");
-                // Console.WriteLine(JsonSerializer.Serialize(breeze.placeOrder(stockCode: "NIFTY", exchangeCode: "NFO", productType: "options", action: "buy", orderType: "limit", stoploss: "0", quantity: "25", price: "0.30", validity: "day", validityDate: "2024-10-24T06:00:00.000Z", disclosedQuantity: "0", expiryDate: "2024-10-24T06:00:00.000Z", right: "call", strikePrice: "0", userRemark: "Test", orderTypeFresh: "", orderRateFresh: "")));
-                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await breeze.subscribeFeedsAsync(
-                //        /* exchangeCode: */"NFO",
-                //        /* stockCode:*/ "NIFTY",
-                //        /* productType:*/ "options",
-                //        /* expiryDate: */ "07-Nov-2024",
-                //        /* strikePrice: */ "24900",
-                //        /* right: */ "Put",
-                //        /* getExchangeQuotes:*/ true,
-                //        /* getMarketDepth: */ false)
-                //    ));
 
+                //Console.WriteLine(await breeze.subscribeFeedsAsync(exchangeCode: "NFO",
+                //         stockCode: "NIFTY",
+                //         productType: "Options",
+                //         expiryDate: "21-Nov-2024",
+                //         strikePrice: "23300",
+                //         right: "call",
+                //         false, true
+                //         ));
 
+               
                 breeze.ticker(async (data) =>
                 {
 
                     try
                     {
 
-                       // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
+                        // Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(data));
                         if (connection.State == HubConnectionState.Connected)
                         {
                             //Console.WriteLine(JsonSerializer.Serialize(data));
                             // Console.WriteLine("Ticker Data:" + System.Text.Json.JsonSerializer.Serialize(data));
+                            System.IO.File.AppendAllText("C:\\Hosts\\ICICI_Key\\ticks.txt", System.Text.Json.JsonSerializer.Serialize(data));
                             await connection.InvokeAsync("GetTickDataOption", System.Text.Json.JsonSerializer.Serialize(data));
                         }
 
@@ -182,12 +237,12 @@ namespace ConsoleAppTestProject
                 //Console.WriteLine("Conection" + connection.ConnectionId);
                 //Console.WriteLine("GetAllStocksForLoadAutomation" + Convert.ToInt16(arg));
                 //await connection.SendAsync("GetAllStocksForLoadAutomation", Convert.ToInt16(arg));
-               
-
-                
 
 
-               
+
+
+
+
 
 
 
@@ -243,6 +298,18 @@ namespace ConsoleAppTestProject
                 Console.WriteLine(ex);
                 Console.ReadLine();
             }
+        }
+
+        private static double GerQuoteData(string Stockcode, string expdate, BreezeConnect breeze)
+        {
+            var datsa = System.Text.Json.JsonSerializer.Deserialize<QuotesData>(System.Text.Json.JsonSerializer.Serialize(breeze.getQuotes(
+                Stockcode, "NFO".ToString(),
+                expdate.ToString(), "Options".ToString(), "Others".ToString(), "")));
+
+            var spotprice = datsa.Success.FirstOrDefault().spot_price;
+
+            var spotpriceselection = round_down(Convert.ToDouble(spotprice), 100);
+            return spotpriceselection;
         }
     }
 }

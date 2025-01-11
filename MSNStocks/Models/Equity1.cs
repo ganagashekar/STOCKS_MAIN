@@ -105,7 +105,7 @@ namespace MSNStocks.Models
 
         public decimal? FFI_INCREASE { get; set; }
 
-        public string MutaulFOunds { get; set; }
+        public string? MutaulFOunds { get; set; }
 
         public decimal? MF_Increase { get; set; }
 
@@ -113,10 +113,100 @@ namespace MSNStocks.Models
 
         public string? Postive { get; set; }
         public string? Negative { get; set; }
-        public string companyName { get; set; }
+        public string? companyName { get; set; }
         public DateTime? Updated_on { get; set; }
 
+        public string? ActiveCandle { set; get; }    
+
+        public decimal? GAIN_FROM_LOW_52 { get; set; }
+        public decimal? FALL_FROM_LOW_52 { get; set; }
+
+        public decimal? EMA_5 { get; set; }
+        public decimal? EMA_10 { get; set; }
+        public decimal? EMA_12 { get; set; }
+        public decimal? EMA_20 { get; set; }
+        public decimal? EMA_26 { get; set; }
+        public decimal? EMA_50 { get; set; }
+        public decimal? EMA_100 { get; set; }
+        public decimal? EMA_200 { get; set; }
+        public decimal? SMA_5 { get; set; }
+        public decimal? SMA_10 { get; set; }
+        public decimal? SMA_20 { get; set; }
+        public decimal? SMA_30 { get; set; }
+        public decimal? SMA_150 { get; set; }
+        public decimal? SMA_50 { get; set; }
+        public decimal? SMA_100 { get; set; }
+        public decimal? SMA_200 { get; set; }
+        public decimal? Return_YTD { get; set; }
+        public decimal? Return_1week { get; set; }
+        public decimal? Return_1Month { get; set; }
+        public decimal? Return_3Month { get; set; }
+        public decimal? Return_6Month { get; set; }
+        public decimal? Return_1Year { get; set; }
+        public decimal? DayDelievery_Volume { get; set; }
+        public decimal? WeekDelievery_Volume { get; set; }
+        public decimal? MonthDelievery_Volume { get; set; }
+
     }
+
+
+
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+    public class Equities_Ratings_Model
+    {
+        public string PIVOT { get; set; }
+        public string companyName { get; set; }
+        public string FR1 { get; set; }
+        public string FR2 { get; set; }
+        public string FR3 { get; set; }
+        public string FS1 { get; set; }
+        public string FS2 { get; set; }
+        public string FS3 { get; set; }
+        public string RSI { get; set; }
+        public string MACD { get; set; }
+        public string MFI { get; set; }
+        public string MCADSIG { get; set; }
+        public string ADX { get; set; }
+        public string ATR { get; set; }
+        public string ROC125 { get; set; }
+        public string ROC21 { get; set; }
+        public string Williams { get; set; }
+        public string Strengths { get; set; }
+        public string Weakness { get; set; }
+        public string Opportunity { get; set; }
+        public string Threats { get; set; }
+        public string Postive { get; set; }
+        public string Negative { get; set; }
+        public string ema_5day { get; set; }
+        public string ema_10day { get; set; }
+        public string ema_12day { get; set; }
+        public string ema_20day { get; set; }
+        public string ema_26day { get; set; }
+        public string ema_50day { get; set; }
+        public string ema_100day { get; set; }
+        public string ema_200day { get; set; }
+        public string sma_5day { get; set; }
+        public string sma_10day { get; set; }
+        public string sma_12day { get; set; }
+        public string sma_20day { get; set; }
+        public string sma_26day { get; set; }
+        public string sma_50day { get; set; }
+        public string sma_100day { get; set; }
+        public string sma_200day { get; set; }
+        public string loworHigh52 { get; set; }
+        public string delivery_1day_Vol { get; set; }
+        public string delivery_1week_Vol { get; set; }
+        public string delivery_1Month_Vol { get; set; }
+        public string return_1Month { get; set; }
+        public string return_3Month { get; set; }
+        public string return_6Month { get; set; }
+        public string return_1year { get; set; }
+        public string ActiveCandle { get; set; }
+        public string sma_30day { get;  set; }
+        public object sma_150day { get; internal set; }
+    }
+
+
 
     //Completion time: 2024-09-01T17:46:04.2279970+05:30
 
@@ -133,6 +223,7 @@ namespace MSNStocks.Models
         public string? Isinno { get; set; }
         public string? Industry { get; set; }
         public string? Instrument { get; set; }
+        public string? exchange { get; set; }   
         public string? SectorName { get; set; }
         public string? IndustryNewName { get; set; }
         public string? IgroupName { get; set; }
@@ -178,8 +269,8 @@ namespace MSNStocks.Models
         public decimal? Week52low { set; get; }
 
         public DateTime? LTT { set; get; }
-        public decimal? LTP {  set; get; }   
+        public decimal? LTP { set; get; }
 
-        public decimal? ChangeOfNow {  set; get; }
+        public decimal? ChangeOfNow { set; get; }
     }
 }

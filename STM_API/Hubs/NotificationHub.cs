@@ -620,6 +620,12 @@ namespace STM_API.Hubs
             await Clients.All.SendAsync("SendGetashboardStatsHighLow", results);
         }
 
+        public async Task GetDashboardPorC()
+        {
+            var results = _breezapiServices.GetDashboardPorC().Result;
+            await Clients.All.SendAsync("SendGetDashboardPorC", results);
+        }
+
 
     }
 }

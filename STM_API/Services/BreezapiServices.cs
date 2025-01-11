@@ -796,12 +796,12 @@ namespace STM_API.Services
 
                     var groupbyBankNifty = stocks.Where(x => x.y_Type == "IsBankNifty");
                     maain_Dahsbaord_Stats.BankNifty_Current_AvgChange = (double)groupbyBankNifty.FirstOrDefault().T_TotalAvg;
-                    maain_Dahsbaord_Stats.BankNifty_Current_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.T_Counts;
-                    maain_Dahsbaord_Stats.BankNifty_Current_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.T_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Current_Advance = groupbyBankNifty.FirstOrDefault(x => x?.T_Adavcne_Decline == 1) != null ? (double)groupbyBankNifty.FirstOrDefault(x => x?.T_Adavcne_Decline == 1)?.T_Counts : 0.0;
+                    maain_Dahsbaord_Stats.BankNifty_Current_Decline = groupbyBankNifty.FirstOrDefault(x => x?.T_Adavcne_Decline == 0) != null ? (double)groupbyBankNifty.FirstOrDefault(x => x?.T_Adavcne_Decline == 0)?.T_Counts : 0.0;
                     maain_Dahsbaord_Stats.BankNiftyName = "BANKNIFTY";
                     maain_Dahsbaord_Stats.BankNifty_Previous_AvgChange = (double)groupbyBankNifty.FirstOrDefault().y_TotalAvg;
-                    maain_Dahsbaord_Stats.BankNifty_Previous_Advance = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts;
-                    maain_Dahsbaord_Stats.BankNifty_Previous_Decline = (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts;
+                    maain_Dahsbaord_Stats.BankNifty_Previous_Advance = groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)!=null ? (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 1)?.y_Counts:0.0;
+                    maain_Dahsbaord_Stats.BankNifty_Previous_Decline = groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)!=null ? (double)groupbyBankNifty.FirstOrDefault(x => x.T_Adavcne_Decline == 0)?.y_Counts:0.0;
 
                     var groupbyOption = stocks.Where(x => x.y_Type == "IsOptions");
                     maain_Dahsbaord_Stats.Option_Current_AvgChange = (double)groupbyOption.FirstOrDefault().T_TotalAvg;
@@ -909,7 +909,7 @@ namespace STM_API.Services
                 }
             }
 
-           
+
 
             dashboard_High_Low_Stats.ispsu_lowtrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsPSU").ToList().Where(x => x.OH_OL == "LowTrend")?.FirstOrDefault()?.Counts);
             dashboard_High_Low_Stats.ispsu_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsPSU").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
@@ -924,6 +924,39 @@ namespace STM_API.Services
             dashboard_High_Low_Stats.isbanknifty_uptrend = Convert.ToInt32(dashboard_High_Low.Where(x => x.Type == "IsBANKNIFTY").ToList().Where(x => x.OH_OL == "UpTrend")?.FirstOrDefault()?.Counts);
 
             return dashboard_High_Low_Stats;
+        }
+
+        public async Task<List<OptionPorCModel>> GetDashboardPorC()
+        {
+            DataSet ds = new DataSet();
+
+
+            List<OptionPorCModel> dashboard_High_Low = new List<OptionPorCModel>();
+
+            using (SqlConnection conn = new SqlConnection("Server=HAADVISRI\\AGS;Database=STOCK;User ID=sa;Password=240149;TrustServerCertificate=True;Trusted_Connection=true;MultipleActiveResultSets=true;"))
+            {
+
+                SqlCommand sqlComm = new SqlCommand("[GetOptionPorC]", conn);
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = sqlComm;
+
+                da.Fill(ds);
+            }
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                var NewStock = ds.Tables[0].Rows.Cast<DataRow>();
+                foreach (var r in NewStock)
+                {
+                    var _stokc = new OptionPorCModel();
+                    _stokc.amount = string.IsNullOrEmpty(r["AMOUNT"].ToString()) ? 0 : Convert.ToDecimal(r["AMOUNT"]);
+                    _stokc.avgchg = string.IsNullOrEmpty(r["avgchg"].ToString()) ? 0 : Convert.ToDecimal(r["avgchg"]);
+                    _stokc.type = r["Type"]?.ToString();
+                    dashboard_High_Low.Add(_stokc);
+
+                }
+            }
+            return await Task.FromResult(dashboard_High_Low);
         }
     }
 }

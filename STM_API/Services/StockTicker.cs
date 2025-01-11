@@ -925,7 +925,12 @@ namespace STM_API.Services
                             _stokc.AwardCount = Convert.ToInt32(r["AwardCount"] ?? 0);
 
                            var resverse= quotelist.Skip(quotelist.Count - 10).Take(10).Select(x => Convert.ToDouble(x.change).ToString("N2")).Reverse();
-                            _stokc.last7DaysChange = string.Join(',', resverse);
+                            _stokc.last7DaysChange = resverse.Any() ? string.Join(',', resverse) :"0,0";
+                            _stokc.last7DaysChange = Convert.ToString(string.IsNullOrEmpty(r["Last7DaysChange"].ToString()) ? _stokc.last7DaysChange : r["Last7DaysChange"].ToString());
+                            _stokc.last7DaysChange = _stokc.last7DaysChange.ToString() == "0.00" ? "0.00,0.00": _stokc.last7DaysChange.ToString();
+
+                            _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "0,0");
+                            _stokc.quaterlyResults = _stokc.quaterlyResults.ToString() == "0.00" ? "0.00,0.00" : _stokc.quaterlyResults.ToString();
 
                             _stokc.fn_eps = Convert.ToDouble(r["fn_eps"] ?? 0);
                             _stokc.oPM_Percentage = Convert.ToDouble(r["OPM_Percentage"] ?? 0);
@@ -936,11 +941,11 @@ namespace STM_API.Services
                             _stokc.revenueDifference = Convert.ToDouble(r["RevenueDifference"] ?? 0);
                             _stokc.quarterEnd = Convert.ToDateTime(r["QuarterEnd"].ToString() !="" ? Convert.ToDateTime(r["QuarterEnd"]).ToShortDateString(): null);
                             _stokc.FnUpdatedon = Convert.ToDateTime(r["FnUpdatedon"].ToString() !="" ? Convert.ToDateTime(r["FnUpdatedon"]).ToShortDateString(): null);
-                            _stokc.last7DaysChange = Convert.ToString(string.IsNullOrEmpty(r["Last7DaysChange"].ToString()) ? _stokc.last7DaysChange :r["Last7DaysChange"].ToString());
+                            
                             _stokc.change = Convert.ToDouble(r["quote_priceChangePercent"].ToString())==0 ? _stokc.change: Convert.ToDouble(r["quote_priceChangePercent"].ToString());
                             _stokc.rowcount = Convert.ToInt32(r["counts"].ToString());
                             _stokc.futurePercentage = Convert.ToDouble(r["FuturePercentage"] ?? 0);
-                            _stokc.quaterlyResults = Convert.ToString(r["QuaterlyResults"] ?? "");
+                            
                             _stokc.isIncludeDeleted = Convert.ToBoolean(r["IsExclude"] ?? false);
 
                             _stokc.past_PercentageChange = Convert.ToDouble(string.IsNullOrEmpty(r["Past_PercentageChange"].ToString()) ?  0 : r["Past_PercentageChange"].ToString());
