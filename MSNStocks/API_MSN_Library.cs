@@ -85,7 +85,7 @@ namespace MSNStocks
                     Console.WriteLine("Database Connected");
                     Console.WriteLine();
                     Console.WriteLine("Listing Category Sales For 1997s");
-                    var equites = db.Equitys.Where(x=>x.exchange=="BSE").ToList();
+                    var equites = db.Equitys.Where(x => x.exchange == "BSE").ToList();
                     db.Equities_Stats.FromSqlRaw("truncate table Equities_Stats");
                     var TickerStocksHistries = db.TickerStocksHistries.ToList().Where(x => x.Ltt > DateTime.Now.AddDays(-45)).ToList();
 
@@ -106,88 +106,91 @@ namespace MSNStocks
 
                             var filteredtxt = ExecuteCommandBatforStatas(equity.SecurityId).ToString();
                             var result = JsonConvert.DeserializeObject<Equities_Ratings_Model>(filteredtxt.Split("\r\n").Where(x => !string.IsNullOrEmpty(x)).LastOrDefault().ToString());
-                            if (Isnew)
+                            if (result != null)
                             {
-                                db.Equities_Ratings.Add(Equities_Ratings);
+                                if (Isnew)
+                                {
+                                    db.Equities_Ratings.Add(Equities_Ratings);
+                                }
+                                Equities_Ratings.FFI_INCREASE = 0;
+                                var data = (result.Postive.Contains("FII") || result.Negative.Contains("FII")) ? result.Postive.Split("to") : null;
+                                if (data != null && data.Count() > 1)
+                                {
+                                    var FFIFrom = Convert.ToDecimal(data[0].Substring(data[0].Length - 6).Replace("%", string.Empty));
+                                    var FFIto = Convert.ToDecimal(data[1].Substring(0, 6).Replace("%", string.Empty));
+                                    Equities_Ratings.FFI_INCREASE = FFIto - FFIFrom;
+                                }
+                                Equities_Ratings.MF_Increase = 0;
+                                var data_MU = (result.Postive.Contains("Mutual Funds") || result.Negative.Contains("Mutual Funds")) ? result.Postive.Split("to") : null;
+                                if (data_MU != null && data_MU.Count() > 1)
+                                {
+                                    var FFIFrom = Convert.ToDecimal(data_MU[0].Substring(data_MU[0].Length - 6).Replace("%", string.Empty));
+                                    var FFIto = Convert.ToDecimal(data_MU[1].Substring(0, 6).Replace("%", string.Empty));
+                                    Equities_Ratings.MF_Increase = FFIto - FFIFrom;
+                                }
+
+                                Equities_Ratings.MACD = Convert.ToDecimal(result.MACD.ToString());
+                                Equities_Ratings.ROC125 = Convert.ToDecimal(result.ROC125.ToString());
+                                Equities_Ratings.ATR = Convert.ToDecimal(result.ATR.ToString());
+                                Equities_Ratings.FS1 = Convert.ToDecimal(result.FS1.ToString());
+                                Equities_Ratings.FS2 = Convert.ToDecimal(result.FS2.ToString());
+                                Equities_Ratings.FS3 = Convert.ToDecimal(result.FS3.ToString());
+                                Equities_Ratings.FR1 = Convert.ToDecimal(result.FS1.ToString());
+                                Equities_Ratings.FR2 = Convert.ToDecimal(result.FR2.ToString());
+                                Equities_Ratings.FR3 = Convert.ToDecimal(result.FR3.ToString());
+                                Equities_Ratings.ADX = Convert.ToDecimal(result.ADX.ToString());
+                                Equities_Ratings.ROC21 = Convert.ToDecimal(result.ROC21.ToString());
+                                Equities_Ratings.MCADSIG = Convert.ToDecimal(result.MCADSIG.ToString());
+                                Equities_Ratings.RSI = Convert.ToDecimal(result.RSI.ToString()); ;
+                                Equities_Ratings.MFI = Convert.ToDecimal(result.MFI.ToString());
+                                Equities_Ratings.Opportunity = Convert.ToDecimal(result.Opportunity.ToString());
+                                Equities_Ratings.PIVOT = Convert.ToDecimal(result.PIVOT.ToString());
+                                Equities_Ratings.Strengths = Convert.ToDecimal(result.Strengths.ToString());
+                                Equities_Ratings.Weakness = Convert.ToDecimal(result.Weakness.ToString());
+                                Equities_Ratings.Threats = Convert.ToDecimal(result.Threats.ToString());
+                                Equities_Ratings.SecuirtyId = equity.SecurityId ?? "";
+                                Equities_Ratings.Symbol = equity.Symbol ?? "";
+                                Equities_Ratings.Postive = result.Postive ?? "";
+                                Equities_Ratings.Negative = result.Negative ?? "";
+                                Equities_Ratings.Williams = Convert.ToDecimal(result.Williams.ToString());
+                                Equities_Ratings.FII = result.Postive ?? "";
+                                Equities_Ratings.MutaulFOunds = result.Negative ?? "";
+                                Equities_Ratings.companyName = result.companyName;
+                                Equities_Ratings.Updated_on = DateTime.Now;
+                                Equities_Ratings.ActiveCandle = result.ActiveCandle?.ToString();
+
+                                Equities_Ratings.FALL_FROM_LOW_52 = Convert.ToDecimal(result.loworHigh52.Contains("Fall") ?
+                                    result.loworHigh52.Split("Fall")[0].Replace("%", "") : null);
+
+                                Equities_Ratings.GAIN_FROM_LOW_52 = Convert.ToDecimal(result.loworHigh52.Contains("Gain") ?
+                                   result.loworHigh52.Split("Gain")[0].Replace("%", "") : null);
+
+                                //Equities_Ratings.Low_52= Convert.ToDecimal(result.loworHigh52.ToString())
+                                Equities_Ratings.EMA_5 = Convert.ToDecimal(result.ema_5day?.ToString());
+                                Equities_Ratings.EMA_10 = Convert.ToDecimal(result.ema_10day?.ToString());
+                                Equities_Ratings.EMA_12 = Convert.ToDecimal(result.ema_12day?.ToString());
+                                Equities_Ratings.EMA_20 = Convert.ToDecimal(result.ema_20day?.ToString());
+                                Equities_Ratings.EMA_26 = Convert.ToDecimal(result.ema_26day?.ToString());
+                                Equities_Ratings.EMA_50 = Convert.ToDecimal(result.ema_50day?.ToString());
+                                Equities_Ratings.EMA_100 = Convert.ToDecimal(result.ema_100day?.ToString());
+                                Equities_Ratings.EMA_200 = Convert.ToDecimal(result.ema_200day?.ToString());
+                                Equities_Ratings.SMA_5 = Convert.ToDecimal(result.sma_5day?.ToString());
+                                Equities_Ratings.SMA_10 = Convert.ToDecimal(result.sma_10day?.ToString());
+                                Equities_Ratings.SMA_20 = Convert.ToDecimal(result.sma_20day?.ToString());
+                                Equities_Ratings.SMA_30 = Convert.ToDecimal(result.sma_30day?.ToString());
+                                Equities_Ratings.SMA_150 = Convert.ToDecimal(result.sma_150day?.ToString());
+                                Equities_Ratings.SMA_50 = Convert.ToDecimal(result.sma_50day?.ToString());
+                                Equities_Ratings.SMA_100 = Convert.ToDecimal(result.sma_100day?.ToString());
+                                Equities_Ratings.SMA_200 = Convert.ToDecimal(result.sma_200day?.ToString());
+                                Equities_Ratings.Return_1Year = Convert.ToDecimal(result.return_1year?.ToString().Replace("%", ""));
+                                Equities_Ratings.Return_1Month = Convert.ToDecimal(result.return_1Month?.ToString().Replace("%", ""));
+                                Equities_Ratings.Return_3Month = Convert.ToDecimal(result.return_3Month?.ToString().Replace("%", ""));
+                                Equities_Ratings.Return_6Month = Convert.ToDecimal(result.return_6Month?.ToString().Replace("%", ""));
+                                Equities_Ratings.DayDelievery_Volume = Convert.ToDecimal(result.delivery_1day_Vol?.ToString().Replace("%", ""));
+                                Equities_Ratings.WeekDelievery_Volume = Convert.ToDecimal(result.delivery_1week_Vol?.ToString().Replace("%", ""));
+                                Equities_Ratings.MonthDelievery_Volume = Convert.ToDecimal(result.delivery_1Month_Vol?.ToString().Replace("%", ""));
+                                db.SaveChanges();
                             }
-                            Equities_Ratings.FFI_INCREASE = 0;
-                            var data = (result.Postive.Contains("FII") || result.Negative.Contains("FII")) ? result.Postive.Split("to") : null;
-                            if (data != null && data.Count() > 1)
-                            {
-                                var FFIFrom = Convert.ToDecimal(data[0].Substring(data[0].Length - 6).Replace("%", string.Empty));
-                                var FFIto = Convert.ToDecimal(data[1].Substring(0, 6).Replace("%", string.Empty));
-                                Equities_Ratings.FFI_INCREASE = FFIto - FFIFrom;
-                            }
-                            Equities_Ratings.MF_Increase = 0;
-                            var data_MU = (result.Postive.Contains("Mutual Funds") || result.Negative.Contains("Mutual Funds")) ? result.Postive.Split("to") : null;
-                            if (data_MU != null && data_MU.Count() > 1)
-                            {
-                                var FFIFrom = Convert.ToDecimal(data_MU[0].Substring(data_MU[0].Length - 6).Replace("%", string.Empty));
-                                var FFIto = Convert.ToDecimal(data_MU[1].Substring(0, 6).Replace("%", string.Empty));
-                                Equities_Ratings.MF_Increase = FFIto - FFIFrom;
-                            }
-
-                            Equities_Ratings.MACD = Convert.ToDecimal(result.MACD.ToString());
-                            Equities_Ratings.ROC125 = Convert.ToDecimal(result.ROC125.ToString());
-                            Equities_Ratings.ATR = Convert.ToDecimal(result.ATR.ToString());
-                            Equities_Ratings.FS1 = Convert.ToDecimal(result.FS1.ToString());
-                            Equities_Ratings.FS2 = Convert.ToDecimal(result.FS2.ToString());
-                            Equities_Ratings.FS3 = Convert.ToDecimal(result.FS3.ToString());
-                            Equities_Ratings.FR1 = Convert.ToDecimal(result.FS1.ToString());
-                            Equities_Ratings.FR2 = Convert.ToDecimal(result.FR2.ToString());
-                            Equities_Ratings.FR3 = Convert.ToDecimal(result.FR3.ToString());
-                            Equities_Ratings.ADX = Convert.ToDecimal(result.ADX.ToString());
-                            Equities_Ratings.ROC21 = Convert.ToDecimal(result.ROC21.ToString());
-                            Equities_Ratings.MCADSIG = Convert.ToDecimal(result.MCADSIG.ToString());
-                            Equities_Ratings.RSI = Convert.ToDecimal(result.RSI.ToString()); ;
-                            Equities_Ratings.MFI = Convert.ToDecimal(result.MFI.ToString());
-                            Equities_Ratings.Opportunity = Convert.ToDecimal(result.Opportunity.ToString());
-                            Equities_Ratings.PIVOT = Convert.ToDecimal(result.PIVOT.ToString());
-                            Equities_Ratings.Strengths = Convert.ToDecimal(result.Strengths.ToString());
-                            Equities_Ratings.Weakness = Convert.ToDecimal(result.Weakness.ToString());
-                            Equities_Ratings.Threats = Convert.ToDecimal(result.Threats.ToString());
-                            Equities_Ratings.SecuirtyId = equity.SecurityId ?? "";
-                            Equities_Ratings.Symbol = equity.Symbol ?? "";
-                            Equities_Ratings.Postive = result.Postive ?? "";
-                            Equities_Ratings.Negative = result.Negative ?? "";
-                            Equities_Ratings.Williams = Convert.ToDecimal(result.Williams.ToString());
-                            Equities_Ratings.FII = result.Postive ?? "";
-                            Equities_Ratings.MutaulFOunds = result.Negative ?? "";
-                            Equities_Ratings.companyName = result.companyName;
-                            Equities_Ratings.Updated_on = DateTime.Now;
-                            Equities_Ratings.ActiveCandle = result.ActiveCandle?.ToString();
-
-                            Equities_Ratings.FALL_FROM_LOW_52 = Convert.ToDecimal(result.loworHigh52.Contains("Fall") ?
-                                result.loworHigh52.Split("Fall")[0].Replace("%", "") : null);
-
-                            Equities_Ratings.GAIN_FROM_LOW_52 = Convert.ToDecimal(result.loworHigh52.Contains("Gain") ?
-                               result.loworHigh52.Split("Gain")[0].Replace("%", "") :  null); 
-
-                            //Equities_Ratings.Low_52= Convert.ToDecimal(result.loworHigh52.ToString())
-                            Equities_Ratings.EMA_5 = Convert.ToDecimal(result.ema_5day?.ToString());
-                            Equities_Ratings.EMA_10 = Convert.ToDecimal(result.ema_10day?.ToString());
-                            Equities_Ratings.EMA_12 = Convert.ToDecimal(result.ema_12day?.ToString());
-                            Equities_Ratings.EMA_20 = Convert.ToDecimal(result.ema_20day?.ToString());
-                            Equities_Ratings.EMA_26 = Convert.ToDecimal(result.ema_26day?.ToString());
-                            Equities_Ratings.EMA_50 = Convert.ToDecimal(result.ema_50day?.ToString());
-                            Equities_Ratings.EMA_100 = Convert.ToDecimal(result.ema_100day?.ToString());
-                            Equities_Ratings.EMA_200 = Convert.ToDecimal(result.ema_200day?.ToString());
-                            Equities_Ratings.SMA_5 = Convert.ToDecimal(result.sma_5day?.ToString());
-                            Equities_Ratings.SMA_10 = Convert.ToDecimal(result.sma_10day?.ToString());
-                            Equities_Ratings.SMA_20 = Convert.ToDecimal(result.sma_20day?.ToString());
-                            Equities_Ratings.SMA_30 = Convert.ToDecimal(result.sma_30day?.ToString());
-                            Equities_Ratings.SMA_150 = Convert.ToDecimal(result.sma_150day?.ToString());
-                            Equities_Ratings.SMA_50 = Convert.ToDecimal(result.sma_50day?.ToString());
-                            Equities_Ratings.SMA_100 = Convert.ToDecimal(result.sma_100day?.ToString());
-                            Equities_Ratings.SMA_200 = Convert.ToDecimal(result.sma_200day?.ToString());
-                            Equities_Ratings.Return_1Year = Convert.ToDecimal(result.return_1year?.ToString().Replace("%",""));
-                            Equities_Ratings.Return_1Month = Convert.ToDecimal(result.return_1Month?.ToString().Replace("%", ""));
-                            Equities_Ratings.Return_3Month = Convert.ToDecimal(result.return_3Month?.ToString().Replace("%", ""));
-                            Equities_Ratings.Return_6Month = Convert.ToDecimal(result.return_6Month?.ToString().Replace("%", ""));
-                            Equities_Ratings.DayDelievery_Volume = Convert.ToDecimal(result.delivery_1day_Vol?.ToString().Replace("%", ""));
-                            Equities_Ratings.WeekDelievery_Volume = Convert.ToDecimal(result.delivery_1week_Vol?.ToString().Replace("%", ""));
-                            Equities_Ratings.MonthDelievery_Volume = Convert.ToDecimal(result.delivery_1Month_Vol?.ToString().Replace("%", ""));
-                            db.SaveChanges();
 
 
                         }
@@ -199,7 +202,7 @@ namespace MSNStocks
 
 
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -2157,7 +2160,7 @@ namespace MSNStocks
                 //response.EnsureSuccessStatusCode();
                 //Console.WriteLine(await response.Content.ReadAsStringAsync());
 
- //var result = JsonConvert.DeserializeObject<Deals>(data);
+                //var result = JsonConvert.DeserializeObject<Deals>(data);
                 var result = JsonConvert.DeserializeObject<NSEALLDEALS>(data);
 
                 //List<NSE_DEALS_DB> alldatafromtable = new List<NSE_DEALS_DB>();
@@ -2168,14 +2171,14 @@ namespace MSNStocks
 
                     //string output = Getdate("https://www.nseindia.com/api/corporates-financial-results?index=equities&period=Quarterly");
                     //var result = JsonConvert.DeserializeObject<Deals>(data);
-                    var groupbyScriptName = result.BULK_DEALS_DATA.GroupBy(X => X.date);
+                    var groupbyScriptName = result.BULK_DEALS_DATA.GroupBy(X => X.symbol);
 
                     foreach (var itemS in groupbyScriptName)
                     {
                         foreach (var item in itemS)
                         {
 
-                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.BD_SYMBOL == item.symbol && x.BD_CLIENT_NAME==item.clientName && (x.BD_DT_DATE) ==Convert.ToDateTime(item.date));
+                            var Stock_Financial_Results_obj = alldatafromtable.FirstOrDefault(x => x.BD_SYMBOL == item.symbol && x.BD_CLIENT_NAME == item.clientName && (x.BD_DT_DATE) == Convert.ToDateTime(item.date));
                             if (Stock_Financial_Results_obj == null)
                             {
                                 try
@@ -2298,23 +2301,23 @@ namespace MSNStocks
                                 if (Stock_Financial_Results_obj.BD_BUY_SELL.ToLower().Contains("buy"))
                                 {
 
-                                    var parameters = new Dictionary<string, string>
-                                    {
-                                        ["token"] = "a6qsrxr7i2nqzfyzqofuys4hm3rwax",
-                                        ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
-                                        ["priority"] = "1",
-                                        ["message"] = string.Format("bulk-deals by {0} on Company {1} with QTY {2} at PRICE {3} and No of clients Booked {4}",
-                                        item.clientName, item.name, item.qty, item.watp, itemS.Count()),
-                                        ["title"] = "BLOCK DEALS",
-                                        ["retry"] = "30",
-                                        ["expire"] = "300",
-                                        ["html"] = "1",
-                                        ["sound"] = "echo",
-                                        ["device"] = "iphone"
-                                    };
-                                    using var hclient = new HttpClient();
-                                    var hresponse = await hclient.PostAsync("https://api.pushover.net/1/messages.json", new
-                                    FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
+                                    //var parameters = new Dictionary<string, string>
+                                    //{
+                                    //    ["token"] = "a6qsrxr7i2nqzfyzqofuys4hm3rwax",
+                                    //    ["user"] = "uh61jjrcvyy1tebgv184u67jr2r36x",
+                                    //    ["priority"] = "1",
+                                    //    ["message"] = string.Format("bulk-deals by {0} on Company {1} with QTY {2} at PRICE {3} and No of clients Booked {4}",
+                                    //    item.clientName, item.name, item.qty, item.watp, itemS.Count()),
+                                    //    ["title"] = "BLOCK DEALS",
+                                    //    ["retry"] = "30",
+                                    //    ["expire"] = "300",
+                                    //    ["html"] = "1",
+                                    //    ["sound"] = "echo",
+                                    //    ["device"] = "iphone"
+                                    //};
+                                    //using var hclient = new HttpClient();
+                                    //var hresponse = await hclient.PostAsync("https://api.pushover.net/1/messages.json", new
+                                    //FormUrlEncodedContent(parameters)).Result.Content.ReadAsStringAsync();
                                 }
 
 
