@@ -124,6 +124,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pyfiles", "Pyfiles", "{2301
 		..\..\..\Hosts\Breeze\positions.bat = ..\..\..\Hosts\Breeze\positions.bat
 		..\..\..\Hosts\Breeze\positions.py = ..\..\..\Hosts\Breeze\positions.py
 		..\..\..\Hosts\Breeze\sell_pressure_model.pkl = ..\..\..\Hosts\Breeze\sell_pressure_model.pkl
+		..\..\..\Hosts\stats (2).zip = ..\..\..\Hosts\stats (2).zip
 		ColabsStats\Stocs_Stats_For1Day.py = ColabsStats\Stocs_Stats_For1Day.py
 		ColabsStats\Stocs_Stats_For40Day = ColabsStats\Stocs_Stats_For40Day
 		ColabsStats\Stocs_Stats_For7Day.py = ColabsStats\Stocs_Stats_For7Day.py
